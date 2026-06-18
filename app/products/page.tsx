@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "../lib/supabase";
 import ProductCard from "../components/ProductCard";
 
-export default function ProductsPage() {
+function ProductsContent() {
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
 
@@ -190,5 +190,30 @@ export default function ProductsPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <main
+          style={{
+            minHeight: "100vh",
+            background: "#0b0b0f",
+            color: "white",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "18px",
+            fontWeight: "800",
+          }}
+        >
+          상품 불러오는 중...
+        </main>
+      }
+    >
+      <ProductsContent />
+    </Suspense>
   );
 }
