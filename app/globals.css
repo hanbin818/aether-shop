@@ -30,7 +30,6 @@ img {
 
 main {
   min-height: 100vh;
-  padding: 30px 60px;
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
@@ -38,62 +37,25 @@ main {
 
 nav {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 60px;
 }
 
-nav h1 {
-  font-size: 36px;
-  font-weight: 700;
-  letter-spacing: 6px;
-}
-
-nav div {
-  display: flex;
-  gap: 30px;
-}
-
-nav a {
-  color: #cfcfcf;
-  transition: 0.3s;
-}
-
-nav a:hover {
-  color: white;
-}
-
-section {
-  margin-top: 120px;
-}
-
-section h2 {
-  font-size: 64px;
-  margin-bottom: 20px;
-}
-
-section p {
-  font-size: 20px;
-  color: #cfcfcf;
-}
-
-section a {
-  display: inline-block;
-  margin-top: 30px;
-  padding: 14px 28px;
-  background: white;
-  color: black;
+button {
+  border: none;
   border-radius: 999px;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .product-card {
   width: 280px;
   max-width: 100%;
-  background: #15151d;
-  border-radius: 16px;
+  background: #fff;
+  border-radius: 18px;
   padding: 20px;
   transition: 0.3s;
+  color: #111;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }
 
 .product-card:hover {
@@ -102,11 +64,11 @@ section a {
 
 .product-image {
   width: 100%;
-  height: 320px;
+  height: 280px;
   object-fit: cover;
   object-position: center;
   display: block;
-  background: #222;
+  background: #f5f5f5;
   border-radius: 12px;
   margin-bottom: 15px;
 }
@@ -120,11 +82,13 @@ section a {
 .product-card h3 {
   margin: 10px 0;
   font-size: 20px;
+  color: #111;
 }
 
 .product-card span {
   font-weight: bold;
   font-size: 18px;
+  color: #111;
 }
 
 .product-detail {
@@ -140,15 +104,6 @@ section a {
   background: #222;
   border-radius: 20px;
   object-fit: cover;
-}
-
-button {
-  margin-top: 30px;
-  padding: 14px 30px;
-  border: none;
-  border-radius: 999px;
-  font-weight: bold;
-  cursor: pointer;
 }
 
 .cart-item {
@@ -184,21 +139,128 @@ button {
   font-size: 16px;
 }
 
-/* 모바일 완전 수정 */
+/* HOME - HERO */
+.hero-section {
+  width: min(1400px, calc(100% - 80px));
+  height: 420px;
+  margin: 40px auto 0;
+  padding: 0;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.28)),
+    url("/hero.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-content {
+  text-align: center;
+  color: white;
+}
+
+.hero-content h2 {
+  font-size: 56px;
+  letter-spacing: 10px;
+  margin-bottom: 14px;
+}
+
+.hero-content p {
+  font-size: 17px;
+  color: white;
+  margin-bottom: 28px;
+}
+
+.hero-content a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 34px;
+  background: white;
+  color: #111;
+  border-radius: 999px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+/* HOME - CATEGORY */
+.category-section {
+  width: min(1400px, calc(100% - 80px));
+  margin: 80px auto 0;
+  background: white;
+  padding: 70px 40px;
+  color: #111;
+}
+
+.category-grid {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 36px;
+  text-align: center;
+}
+
+.category-item {
+  color: #111;
+}
+
+.category-icon {
+  width: 86px;
+  height: 86px;
+  margin: 0 auto 14px;
+  border-radius: 24px;
+  background: #f5f5f5;
+  border: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.category-item p {
+  font-size: 15px;
+  font-weight: 900;
+  color: #111;
+}
+
+/* HOME - BEST */
+.best-section {
+  width: min(1400px, calc(100% - 80px));
+  margin: 80px auto 0;
+  background: white;
+  padding: 70px 40px;
+  color: #111;
+  text-align: center;
+}
+
+.best-section h2 {
+  font-size: 42px;
+  color: #111;
+  margin-bottom: 10px;
+}
+
+.best-section > p {
+  margin-bottom: 46px;
+  font-size: 16px;
+  color: #888;
+}
+
+.best-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 28px;
+  justify-items: center;
+}
+
+/* MOBILE */
 @media (max-width: 768px) {
   html,
   body {
     width: 100% !important;
     max-width: 100% !important;
     overflow-x: hidden !important;
-  }
-
-  * {
-    box-sizing: border-box !important;
-  }
-
-  body {
-    background: #0b0b0f !important;
   }
 
   main {
@@ -210,108 +272,92 @@ button {
 
   header {
     width: 100% !important;
-    max-width: 100% !important;
-    padding: 28px 18px 22px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 18px !important;
-    overflow: hidden !important;
+    padding: 28px 18px 24px !important;
+    align-items: center !important;
   }
 
-  header h1,
   header a:first-child {
-    font-size: 34px !important;
+    font-size: 32px !important;
     letter-spacing: 8px !important;
-    line-height: 1 !important;
+    text-align: center !important;
   }
 
   header nav {
     width: 100% !important;
-    max-width: 100% !important;
-    display: flex !important;
+    justify-content: center !important;
+    gap: 16px !important;
     flex-wrap: wrap !important;
-    justify-content: flex-start !important;
-    align-items: center !important;
-    gap: 12px !important;
-    margin: 0 !important;
   }
 
   header nav a {
     font-size: 14px !important;
-    white-space: nowrap !important;
   }
 
-  header form {
-    width: 100% !important;
+  header div {
     max-width: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    margin: 0 !important;
-    padding: 0 !important;
   }
 
   header input {
-    width: 100% !important;
     min-width: 0 !important;
-    height: 48px !important;
-    padding: 0 16px !important;
-    font-size: 14px !important;
-    border-radius: 999px !important;
   }
 
-  header button {
-    width: auto !important;
-    min-width: 64px !important;
-    height: 48px !important;
-    margin: 0 !important;
-    padding: 0 16px !important;
-    white-space: nowrap !important;
-    border-radius: 999px !important;
-  }
-
-  section {
+  .hero-section {
     width: calc(100% - 32px) !important;
-    max-width: calc(100% - 32px) !important;
-    margin: 44px auto 0 !important;
-    padding: 44px 18px !important;
-    overflow: hidden !important;
+    height: 360px !important;
+    margin: 32px auto 0 !important;
+    background-position: center !important;
   }
 
-  section h2 {
-    font-size: 34px !important;
-    line-height: 1.2 !important;
-    text-align: center !important;
+  .hero-content h2 {
+    font-size: 42px !important;
+    letter-spacing: 8px !important;
   }
 
-  section p {
+  .hero-content p {
     font-size: 15px !important;
-    text-align: center !important;
+    padding: 0 14px !important;
   }
 
-  section a {
-    padding: 12px 24px !important;
+  .hero-content a {
+    padding: 14px 30px !important;
     font-size: 14px !important;
   }
 
-  section > div {
+  .category-section,
+  .best-section {
+    width: calc(100% - 32px) !important;
+    margin: 44px auto 0 !important;
+    padding: 46px 20px !important;
+  }
+
+  .category-grid {
     width: 100% !important;
-    max-width: 100% !important;
-    display: flex !important;
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 22px !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 36px 24px !important;
   }
 
-  img {
-    max-width: 100% !important;
-    height: auto !important;
-    object-fit: cover !important;
+  .category-icon {
+    width: 78px !important;
+    height: 78px !important;
+    font-size: 32px !important;
   }
 
-  input {
-    max-width: 100% !important;
+  .category-item p {
+    font-size: 16px !important;
+  }
+
+  .best-section h2 {
+    font-size: 34px !important;
+  }
+
+  .best-section > p {
+    font-size: 15px !important;
+    margin-bottom: 34px !important;
+  }
+
+  .best-grid {
+    grid-template-columns: 1fr !important;
+    gap: 34px !important;
   }
 
   .product-card {
@@ -320,7 +366,7 @@ button {
   }
 
   .product-image {
-    height: 260px !important;
+    height: 240px !important;
   }
 
   .product-detail {

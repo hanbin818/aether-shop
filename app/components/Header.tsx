@@ -7,7 +7,6 @@ export default function Header() {
 
   const handleSearch = () => {
     if (!search.trim()) return;
-
     window.location.href = `/products?search=${encodeURIComponent(search)}`;
   };
 
@@ -17,30 +16,28 @@ export default function Header() {
         AETHER
       </a>
 
-      <div style={rightAreaStyle}>
-        <nav style={navStyle}>
-          <a href="/" style={navLinkStyle}>홈</a>
-          <a href="/products" style={navLinkStyle}>스토어</a>
-          <a href="/order-status" style={navLinkStyle}>주문확인</a>
-          <a href="/cart" style={navLinkStyle}>장바구니 🛒</a>
-          <a href="/login" style={navLinkStyle}>로그인</a>
-        </nav>
+      <nav style={navStyle}>
+        <a href="/" style={navLinkStyle}>홈</a>
+        <a href="/products" style={navLinkStyle}>스토어</a>
+        <a href="/order-status" style={navLinkStyle}>주문확인</a>
+        <a href="/cart" style={navLinkStyle}>장바구니</a>
+        <a href="/login" style={navLinkStyle}>로그인</a>
+      </nav>
 
-        <div style={searchBoxStyle}>
-          <input
-            placeholder="상품 검색"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSearch();
-            }}
-            style={searchInputStyle}
-          />
+      <div style={searchBoxStyle}>
+        <input
+          placeholder="상품 검색"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSearch();
+          }}
+          style={searchInputStyle}
+        />
 
-          <button onClick={handleSearch} style={searchButtonStyle}>
-            검색
-          </button>
-        </div>
+        <button onClick={handleSearch} style={searchButtonStyle}>
+          검색
+        </button>
       </div>
     </header>
   );
@@ -48,47 +45,39 @@ export default function Header() {
 
 const headerStyle = {
   background: "#111",
-  padding: "18px 40px 16px",
+  padding: "24px 20px",
   display: "flex",
-  justifyContent: "space-between",
-  alignItems: "flex-start",
+  flexDirection: "column" as const,
+  alignItems: "center",
+  gap: "18px",
   borderBottom: "1px solid #222",
-  gap: "24px",
+  width: "100%",
+  overflow: "hidden",
 };
 
 const logoStyle = {
   color: "white",
   textDecoration: "none",
-  fontSize: "30px",
+  fontSize: "36px",
   fontWeight: "900",
-  letterSpacing: "7px",
-  whiteSpace: "nowrap" as const,
+  letterSpacing: "8px",
   lineHeight: "1",
-  paddingTop: "4px",
-};
-
-const rightAreaStyle = {
-  display: "flex",
-  flexDirection: "column" as const,
-  alignItems: "flex-end",
-  gap: "6px",
-  marginLeft: "auto",
 };
 
 const navStyle = {
   display: "flex",
-  gap: "22px",
+  justifyContent: "center",
   alignItems: "center",
-  justifyContent: "flex-end",
-  height: "24px",
+  gap: "18px",
+  flexWrap: "wrap" as const,
+  width: "100%",
 };
 
 const navLinkStyle = {
   color: "#fff",
   textDecoration: "none",
   fontWeight: "800",
-  fontSize: "16px",
-  lineHeight: "24px",
+  fontSize: "14px",
   whiteSpace: "nowrap" as const,
 };
 
@@ -98,31 +87,30 @@ const searchBoxStyle = {
   background: "#fff",
   borderRadius: "999px",
   overflow: "hidden",
-  flexShrink: 0,
-  marginTop: "6px",
-  height: "42px",
-  width: "420px",
+  width: "100%",
+  maxWidth: "420px",
+  height: "48px",
 };
 
 const searchInputStyle = {
-  width: "320px",
-  height: "42px",
-  padding: "0 16px",
+  flex: 1,
+  minWidth: 0,
+  height: "48px",
+  padding: "0 18px",
   border: "none",
   outline: "none",
-  fontSize: "14px",
-  lineHeight: "42px",
+  fontSize: "15px",
   boxSizing: "border-box" as const,
 };
 
 const searchButtonStyle = {
-  width: "100px",
-  height: "42px",
+  width: "76px",
+  height: "48px",
   border: "none",
   background: "#fff",
   color: "#111",
-  padding: "0",
-  paddingBottom: "6px",
+  margin: 0,
+  padding: 0,
   cursor: "pointer",
   fontWeight: "900",
   fontSize: "14px",
