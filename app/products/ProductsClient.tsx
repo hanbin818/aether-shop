@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { supabase } from "../lib/supabase";
-import ProductCard from "../components/ProductCard";
+import { supabase } from "@/app/lib/supabase";
+import ProductCard from "@/app/components/ProductCard";
 
 function ProductsClient() {
   const searchParams = useSearchParams();
