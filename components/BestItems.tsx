@@ -43,72 +43,15 @@ export default function BestItems() {
       ) : products.length === 0 ? (
         <p className="section-empty-text">등록된 판매 상품이 없습니다.</p>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "18px 14px",
-            width: "100%",
-          }}
-        >
+        <div className="best-grid">
           {products.map((product) => (
-            <a
-              key={product.id}
-              href={`/product/${product.id}`}
-              style={{
-                width: "100%",
-                background: "#fff",
-                color: "#111",
-                textDecoration: "none",
-                borderRadius: "14px",
-                overflow: "hidden",
-              }}
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                style={{
-                  width: "100%",
-                  height: "170px",
-                  objectFit: "cover",
-                  background: "#f5f5f5",
-                }}
-              />
+            <a key={product.id} href={`/product/${product.id}`} className="best-card">
+              <img src={product.image} alt={product.name} className="best-image" />
 
-              <div style={{ padding: "10px 4px 6px" }}>
-                <p
-                  style={{
-                    fontSize: "11px",
-                    color: "#888",
-                    fontWeight: 800,
-                    letterSpacing: "1px",
-                    marginBottom: "6px",
-                    textAlign: "center",
-                  }}
-                >
-                  {product.brand}
-                </p>
-
-                <h3
-                  style={{
-                    fontSize: "13px",
-                    lineHeight: "1.35",
-                    color: "#111",
-                    marginBottom: "8px",
-                    textAlign: "center",
-                  }}
-                >
-                  {product.name}
-                </h3>
-
-                <p
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 900,
-                    color: "#111",
-                    textAlign: "center",
-                  }}
-                >
+              <div className="best-info">
+                <p className="best-brand">{product.brand}</p>
+                <h3 className="best-name">{product.name}</h3>
+                <p className="best-price">
                   ₩{Number(product.price).toLocaleString()}
                 </p>
               </div>
@@ -116,6 +59,93 @@ export default function BestItems() {
           ))}
         </div>
       )}
+
+      <style jsx>{`
+        .best-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 22px;
+          width: 100%;
+        }
+
+        .best-card {
+          width: 100%;
+          background: #fff;
+          color: #111;
+          text-decoration: none;
+          border-radius: 16px;
+          overflow: hidden;
+          border: 1px solid #eee;
+        }
+
+        .best-image {
+          width: 100%;
+          height: 240px;
+          object-fit: cover;
+          background: #f5f5f5;
+          display: block;
+        }
+
+        .best-info {
+          padding: 14px 8px 12px;
+        }
+
+        .best-brand {
+          font-size: 12px;
+          color: #888;
+          font-weight: 800;
+          letter-spacing: 1px;
+          margin-bottom: 7px;
+          text-align: center;
+        }
+
+        .best-name {
+          font-size: 14px;
+          line-height: 1.35;
+          color: #111;
+          margin-bottom: 9px;
+          text-align: center;
+          min-height: 38px;
+        }
+
+        .best-price {
+          font-size: 15px;
+          font-weight: 900;
+          color: #111;
+          text-align: center;
+        }
+
+        @media (max-width: 768px) {
+          .best-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px 12px;
+          }
+
+          .best-image {
+            height: 170px;
+          }
+
+          .best-card {
+            border-radius: 14px;
+          }
+
+          .best-info {
+            padding: 10px 5px 8px;
+          }
+
+          .best-brand {
+            font-size: 11px;
+          }
+
+          .best-name {
+            font-size: 13px;
+          }
+
+          .best-price {
+            font-size: 14px;
+          }
+        }
+      `}</style>
     </section>
   );
 }
