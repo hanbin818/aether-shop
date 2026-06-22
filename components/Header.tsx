@@ -15,74 +15,101 @@ export default function Header() {
       style={{
         width: "100%",
         background: "#fff",
-        color: "#111",
-        borderBottom: "1px solid #eee",
+        borderBottom: "1px solid #ececec",
       }}
     >
       <div
         style={{
-          padding: "18px 18px 18px",
+          padding: "18px",
         }}
       >
+        {/* 로고 */}
         <div
           style={{
             textAlign: "center",
+            marginBottom: "22px",
           }}
         >
           <a
             href="/"
             style={{
-              color: "#111",
               textDecoration: "none",
+              color: "#111",
               fontSize: "38px",
               fontWeight: 900,
-              letterSpacing: "10px",
-              lineHeight: 1,
+              letterSpacing: "8px",
             }}
           >
             AETHER
           </a>
         </div>
 
+        {/* 메뉴 */}
         <nav
           style={{
-            marginTop: "24px",
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            textAlign: "center",
+            gridTemplateColumns: "repeat(4,1fr)",
             borderTop: "1px solid #eee",
             borderBottom: "1px solid #eee",
             padding: "15px 0",
+            textAlign: "center",
+            marginBottom: "18px",
           }}
         >
-          {[
-            ["SHOP", "/products"],
-            ["MEN", "/men"],
-            ["WOMEN", "/women"],
-            ["ORDER", "/order"],
-          ].map(([label, href]) => (
-            <a
-              key={label}
-              href={href}
-              style={{
-                color: "#111",
-                textDecoration: "none",
-                fontSize: "13px",
-                fontWeight: 900,
-                letterSpacing: "3px",
-              }}
-            >
-              {label}
-            </a>
-          ))}
+          <a
+            href="/products"
+            style={{
+              textDecoration: "none",
+              color: "#111",
+              fontWeight: 700,
+              fontSize: "14px",
+            }}
+          >
+            전체상품
+          </a>
+
+          <a
+            href="/men"
+            style={{
+              textDecoration: "none",
+              color: "#111",
+              fontWeight: 700,
+              fontSize: "14px",
+            }}
+          >
+            남성
+          </a>
+
+          <a
+            href="/women"
+            style={{
+              textDecoration: "none",
+              color: "#111",
+              fontWeight: 700,
+              fontSize: "14px",
+            }}
+          >
+            여성
+          </a>
+
+          <a
+            href="/order"
+            style={{
+              textDecoration: "none",
+              color: "#111",
+              fontWeight: 700,
+              fontSize: "14px",
+            }}
+          >
+            주문조회
+          </a>
         </nav>
 
+        {/* 검색 */}
         <div
           style={{
-            marginTop: "20px",
             display: "flex",
-            alignItems: "center",
-            gap: "8px",
+            gap: "10px",
           }}
         >
           <input
@@ -91,68 +118,66 @@ export default function Header() {
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSearch();
             }}
-            placeholder="상품 검색"
+            placeholder="브랜드 또는 상품명을 검색하세요"
             style={{
               flex: 1,
-              height: "44px",
-              border: "1px solid #ddd",
-              outline: "none",
+              height: "46px",
               borderRadius: "999px",
-              padding: "0 16px",
+              border: "1px solid #ddd",
+              padding: "0 18px",
               fontSize: "14px",
-              color: "#111",
-              background: "#fff",
+              outline: "none",
             }}
           />
 
           <button
             onClick={handleSearch}
             style={{
-              width: "70px",
-              height: "44px",
+              width: "74px",
+              height: "46px",
               borderRadius: "999px",
-              background: "#050505",
+              background: "#111",
               color: "#fff",
-              fontSize: "14px",
-              fontWeight: 900,
+              border: "none",
+              fontWeight: 700,
+              cursor: "pointer",
             }}
           >
             검색
           </button>
         </div>
 
+        {/* 하단 메뉴 */}
         <div
           style={{
-            marginTop: "16px",
             display: "flex",
             justifyContent: "center",
-            gap: "18px",
+            gap: "28px",
+            marginTop: "18px",
           }}
         >
           <a
             href="/login"
             style={{
-              color: "#111",
               textDecoration: "none",
+              color: "#111",
               fontSize: "13px",
-              fontWeight: 900,
-              letterSpacing: "3px",
+              fontWeight: 700,
             }}
           >
-            LOGIN
+            로그인
           </a>
 
           <a
             href="/cart"
             style={{
-              color: "#111",
               textDecoration: "none",
+              color: "#111",
               fontSize: "13px",
-              fontWeight: 900,
-              letterSpacing: "3px",
+              fontWeight: 700,
             }}
           >
-            CART
+            장바구니
           </a>
         </div>
       </div>
