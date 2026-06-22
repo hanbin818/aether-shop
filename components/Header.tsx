@@ -21,50 +21,20 @@ export default function Header() {
     >
       <div
         style={{
-          background: "#050505",
-          color: "#d8b46a",
-          textAlign: "center",
-          padding: "10px 12px",
-          fontSize: "13px",
-          letterSpacing: "1px",
-          fontWeight: 700,
-        }}
-      >
-        신규 회원 가입 시 10% 쿠폰 증정 &nbsp; | &nbsp; 무료배송 & 무료반품
-      </div>
-
-      <div
-        style={{
-          padding: "26px 18px 18px",
+          padding: "18px 18px 18px",
         }}
       >
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "14px",
+            textAlign: "center",
           }}
         >
-          <button
-            onClick={() => (window.location.href = "/")}
-            style={{
-              background: "transparent",
-              color: "#111",
-              fontSize: "28px",
-              padding: 0,
-              lineHeight: 1,
-            }}
-          >
-            ☰
-          </button>
-
           <a
             href="/"
             style={{
               color: "#111",
               textDecoration: "none",
-              fontSize: "36px",
+              fontSize: "38px",
               fontWeight: 900,
               letterSpacing: "10px",
               lineHeight: 1,
@@ -72,36 +42,23 @@ export default function Header() {
           >
             AETHER
           </a>
-
-          <a
-            href="/cart"
-            style={{
-              color: "#111",
-              textDecoration: "none",
-              fontSize: "24px",
-              position: "relative",
-            }}
-          >
-            🛍️
-          </a>
         </div>
 
         <nav
           style={{
-            marginTop: "26px",
+            marginTop: "24px",
             display: "grid",
             gridTemplateColumns: "repeat(4, 1fr)",
             textAlign: "center",
-            gap: "0",
             borderTop: "1px solid #eee",
             borderBottom: "1px solid #eee",
-            padding: "16px 0",
+            padding: "15px 0",
           }}
         >
           {[
+            ["SHOP", "/products"],
             ["MEN", "/men"],
             ["WOMEN", "/women"],
-            ["SHOP", "/products"],
             ["ORDER", "/order"],
           ].map(([label, href]) => (
             <a
@@ -110,7 +67,7 @@ export default function Header() {
               style={{
                 color: "#111",
                 textDecoration: "none",
-                fontSize: "14px",
+                fontSize: "13px",
                 fontWeight: 900,
                 letterSpacing: "3px",
               }}
@@ -122,52 +79,41 @@ export default function Header() {
 
         <div
           style={{
-            marginTop: "22px",
+            marginTop: "20px",
             display: "flex",
             alignItems: "center",
-            gap: "10px",
+            gap: "8px",
           }}
         >
-          <div
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSearch();
+            }}
+            placeholder="상품 검색"
             style={{
               flex: 1,
-              height: "48px",
+              height: "44px",
               border: "1px solid #ddd",
+              outline: "none",
               borderRadius: "999px",
-              display: "flex",
-              alignItems: "center",
-              overflow: "hidden",
+              padding: "0 16px",
+              fontSize: "14px",
+              color: "#111",
               background: "#fff",
             }}
-          >
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSearch();
-              }}
-              placeholder="상품 검색"
-              style={{
-                flex: 1,
-                height: "100%",
-                border: "none",
-                outline: "none",
-                padding: "0 18px",
-                fontSize: "15px",
-                color: "#111",
-              }}
-            />
-          </div>
+          />
 
           <button
             onClick={handleSearch}
             style={{
-              width: "78px",
-              height: "48px",
+              width: "70px",
+              height: "44px",
               borderRadius: "999px",
               background: "#050505",
               color: "#fff",
-              fontSize: "15px",
+              fontSize: "14px",
               fontWeight: 900,
             }}
           >
@@ -177,10 +123,10 @@ export default function Header() {
 
         <div
           style={{
-            marginTop: "18px",
+            marginTop: "16px",
             display: "flex",
             justifyContent: "center",
-            gap: "20px",
+            gap: "18px",
           }}
         >
           <a
@@ -188,7 +134,7 @@ export default function Header() {
             style={{
               color: "#111",
               textDecoration: "none",
-              fontSize: "14px",
+              fontSize: "13px",
               fontWeight: 900,
               letterSpacing: "3px",
             }}
@@ -201,7 +147,7 @@ export default function Header() {
             style={{
               color: "#111",
               textDecoration: "none",
-              fontSize: "14px",
+              fontSize: "13px",
               fontWeight: 900,
               letterSpacing: "3px",
             }}
