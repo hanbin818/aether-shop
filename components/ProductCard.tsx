@@ -15,7 +15,8 @@ export default function ProductCard({
   href,
   stockStatus = "available",
 }: ProductCardProps) {
-  const isSoldOut = stockStatus === "soldout";
+  const normalizedStock = stockStatus.toLowerCase().replace(/[_-]/g, "");
+  const isSoldOut = normalizedStock === "soldout";
 
   return (
     <a href={href} style={cardStyle}>
@@ -25,7 +26,7 @@ export default function ProductCard({
           alt={name}
           style={{
             ...imageStyle,
-            opacity: isSoldOut ? 0.45 : 1,
+            opacity: isSoldOut ? 0.42 : 1,
           }}
         />
 
@@ -77,7 +78,7 @@ const soldOutStyle = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  background: "rgba(0,0,0,0.82)",
+  background: "rgba(0,0,0,0.86)",
   color: "#fff",
   padding: "10px 16px",
   borderRadius: "999px",
