@@ -24,6 +24,8 @@ export default function CheckoutPage() {
   const [depositorName, setDepositorName] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const openChatUrl = "#";
+
   useEffect(() => {
     const savedCart = localStorage.getItem("aether-cart");
     setCart(savedCart ? JSON.parse(savedCart) : []);
@@ -41,6 +43,7 @@ export default function CheckoutPage() {
 
   const createOrderNumber = () => {
     const now = new Date();
+
     return `AETHER-${now.getFullYear()}${String(now.getMonth() + 1).padStart(
       2,
       "0"
@@ -73,8 +76,8 @@ export default function CheckoutPage() {
         customer_phone: customerPhone,
         customer_address: customerAddress,
         depositor_name: depositorName,
-        payment_method: "무통장입금",
-        status: "입금대기",
+        payment_method: "오픈채팅 계좌이체",
+        status: "상담대기",
         total_price: finalTotalPrice,
         items: cart,
       },
@@ -91,7 +94,7 @@ export default function CheckoutPage() {
     localStorage.removeItem("aether-cart");
     localStorage.setItem("aether-last-order-number", orderNumber);
 
-    alert("주문이 접수되었습니다. 입금 확인 후 배송이 시작됩니다.");
+    alert("주문이 접수되었습니다. 오픈채팅으로 주문번호를 보내주세요.");
     window.location.href = "/order-complete";
   };
 
@@ -130,15 +133,13 @@ export default function CheckoutPage() {
               <h2>결제 방법</h2>
 
               <p>
-                현재 AETHER는 <strong>무통장입금 / 계좌이체</strong> 주문
-                방식으로 운영됩니다.
+                현재 AETHER는 <strong>카카오톡 오픈채팅 상담 후 계좌이체</strong>
+                방식으로 주문이 진행됩니다.
               </p>
 
-              <div className="bank-info">
-                <strong>입금 계좌</strong>
-                <span>국민은행 000000-00-000000</span>
-                <span>예금주: AETHER</span>
-              </div>
+              <a href={openChatUrl} target="_blank" className="open-chat">
+                오픈채팅으로 결제 문의하기
+              </a>
 
               <input
                 placeholder="입금자명"
@@ -147,8 +148,8 @@ export default function CheckoutPage() {
               />
 
               <p className="notice">
-                주문 완료 후 위 계좌로 입금해 주세요. 입금 확인 후 배송 준비가
-                시작됩니다.
+                주문 접수 후 오픈채팅으로 주문번호를 보내주세요. 상담 확인 후
+                입금 계좌와 배송 안내를 도와드립니다.
               </p>
             </div>
           </section>
@@ -194,7 +195,7 @@ export default function CheckoutPage() {
 
             <hr />
 
-            <p className="total-label">총 입금금액</p>
+            <p className="total-label">총 결제 예정 금액</p>
             <strong className="total-price">
               ₩{finalTotalPrice.toLocaleString()}
             </strong>
@@ -272,22 +273,26 @@ export default function CheckoutPage() {
 
         .bank-box p {
           color: #555;
-          line-height: 1.7;
+          line-height: 1.8;
+          font-size: 16px;
         }
 
-        .bank-info {
-          margin: 16px 0 18px;
+        .open-chat {
+          display: block;
+          margin: 18px 0;
           padding: 18px;
           background: #111;
           color: #fff;
-          border-radius: 14px;
-          display: grid;
-          gap: 8px;
+          border-radius: 999px;
+          text-align: center;
+          text-decoration: none;
+          font-size: 17px;
+          font-weight: 900;
         }
 
         .notice {
           color: #777 !important;
-          font-size: 14px;
+          font-size: 14px !important;
         }
 
         .item-list {
@@ -307,6 +312,11 @@ export default function CheckoutPage() {
         .summary-item span {
           max-width: 60%;
           line-height: 1.4;
+        }
+
+        .summary-item strong,
+        .summary-row strong {
+          white-space: nowrap;
         }
 
         hr {
@@ -382,10 +392,6 @@ export default function CheckoutPage() {
 
           .summary-item {
             align-items: flex-start;
-          }
-
-          .summary-item strong {
-            white-space: nowrap;
           }
 
           .total-price {
