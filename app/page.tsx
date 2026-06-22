@@ -1,10 +1,11 @@
-import GenderBanners from "../components/GenderBanners";
 import Footer from "../components/Footer";
-import NewArrivals from "../components/NewArrivals";
-import BrandSection from "../components/BrandSection";
+import Header from "../components/Header";
 import Hero from "../components/Hero";
 import CategoryIcons from "../components/CategoryIcons";
+import BrandSection from "../components/BrandSection";
+import NewArrivals from "../components/NewArrivals";
 import BestItems from "../components/BestItems";
+import GenderBanners from "../components/GenderBanners";
 
 export default function Home() {
   return (
