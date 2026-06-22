@@ -27,6 +27,7 @@ export default function ProductDetail() {
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
     checkMobile();
+
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
@@ -52,7 +53,11 @@ export default function ProductDetail() {
     fetchProduct();
   }, [id]);
 
-  const isSoldOut = product?.stock_status === "soldout";
+  const normalizedStock = product?.stock_status
+    ?.toLowerCase()
+    .replace(/[_-]/g, "");
+
+  const isSoldOut = normalizedStock === "soldout";
 
   const addToCart = () => {
     if (!product) return;
@@ -84,6 +89,8 @@ export default function ProductDetail() {
   };
 
   const buyNow = () => {
+    if (!product) return;
+
     if (isSoldOut) {
       alert("품절 상품은 구매할 수 없습니다.");
       return;
@@ -256,7 +263,7 @@ export default function ProductDetail() {
                   cursor: isSoldOut ? "not-allowed" : "pointer",
                 }}
               >
-                {isSoldOut ? "품절 상품" : "장바구니 담기"}
+                {isSoldOut ? "품절된 상품입니다" : "장바구니 담기"}
               </button>
 
               <button
@@ -330,7 +337,7 @@ const cartButtonStyle = {
   borderRadius: "999px",
   background: "#fff",
   color: "#111",
-  fontSize: "24px",
+  fontSize: "22px",
   fontWeight: "900",
 };
 
@@ -341,6 +348,6 @@ const buyButtonStyle = {
   borderRadius: "999px",
   background: "#111",
   color: "#fff",
-  fontSize: "24px",
+  fontSize: "22px",
   fontWeight: "900",
 };
