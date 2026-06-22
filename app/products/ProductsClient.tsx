@@ -267,11 +267,13 @@ export default function ProductsClient() {
               gap: "18px",
             }}
           >
-            {filteredProducts.map((product) => {
+            {filteredProducts.map((product, index) => {
               const stock = product.stock_status
                 ?.toLowerCase()
                 .replace(/[_-]/g, "");
+
               const isSoldOut = stock === "soldout";
+              const isNew = !isSoldOut && index < 4;
 
               return (
                 <a
@@ -308,6 +310,25 @@ export default function ProductsClient() {
                         opacity: isSoldOut ? 0.4 : 1,
                       }}
                     />
+
+                    {isNew && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "12px",
+                          left: "12px",
+                          background: "#111",
+                          color: "#fff",
+                          padding: "7px 10px",
+                          borderRadius: "999px",
+                          fontSize: "11px",
+                          fontWeight: 900,
+                          letterSpacing: "1px",
+                        }}
+                      >
+                        NEW
+                      </div>
+                    )}
 
                     {isSoldOut && (
                       <div
