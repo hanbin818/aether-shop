@@ -11,32 +11,134 @@ export default function Header() {
   };
 
   return (
-    <header className="site-header">
-      <div className="header-top">
-        <a href="/" className="header-logo">
+    <header
+      style={{
+        width: "100%",
+        background: "rgba(255,255,255,0.96)",
+        backdropFilter: "blur(14px)",
+        borderBottom: "1px solid #eee",
+        position: "sticky",
+        top: 0,
+        zIndex: 1000,
+        padding: "14px 18px",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: "1320px",
+          margin: "0 auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "14px",
+          flexWrap: "wrap",
+        }}
+      >
+        <a
+          href="/"
+          style={{
+            color: "#111",
+            fontSize: "28px",
+            fontWeight: 900,
+            letterSpacing: "6px",
+            textDecoration: "none",
+          }}
+        >
           AETHER
         </a>
 
-        <nav className="header-nav">
-          <a href="/">홈</a>
-          <a href="/products">스토어</a>
-          <a href="/order-status">주문확인</a>
-          <a href="/cart">장바구니</a>
-          <a href="/login">로그인</a>
-        </nav>
-      </div>
-
-      <div className="header-search">
-        <input
-          placeholder="상품 검색"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSearch();
+        <nav
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "14px",
+            flexWrap: "wrap",
           }}
-        />
-        <button onClick={handleSearch}>검색</button>
+        >
+          <a href="/men" style={navLinkStyle}>
+            남성
+          </a>
+          <a href="/women" style={navLinkStyle}>
+            여성
+          </a>
+          <a href="/products" style={navLinkStyle}>
+            전체상품
+          </a>
+          <a href="/order-status" style={navLinkStyle}>
+            주문조회
+          </a>
+        </nav>
+
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            gap: "8px",
+            alignItems: "center",
+          }}
+        >
+          <input
+            type="text"
+            placeholder="브랜드 또는 상품 검색"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSearch();
+            }}
+            style={{
+              flex: 1,
+              height: "42px",
+              borderRadius: "999px",
+              border: "1px solid #ddd",
+              padding: "0 16px",
+              outline: "none",
+              fontSize: "14px",
+              color: "#111",
+              background: "#fff",
+            }}
+          />
+
+          <button
+            onClick={handleSearch}
+            style={{
+              width: "64px",
+              height: "42px",
+              borderRadius: "999px",
+              border: "none",
+              background: "#111",
+              color: "#fff",
+              fontSize: "14px",
+              fontWeight: 900,
+              cursor: "pointer",
+            }}
+          >
+            검색
+          </button>
+
+          <a href="/cart" style={cartStyle}>
+            장바구니
+          </a>
+        </div>
       </div>
     </header>
   );
 }
+
+const navLinkStyle = {
+  color: "#111",
+  textDecoration: "none",
+  fontSize: "13px",
+  fontWeight: 900,
+  letterSpacing: "1px",
+};
+
+const cartStyle = {
+  color: "#111",
+  textDecoration: "none",
+  fontSize: "13px",
+  fontWeight: 900,
+  border: "1.5px solid #111",
+  padding: "12px 14px",
+  borderRadius: "999px",
+  whiteSpace: "nowrap" as const,
+};
