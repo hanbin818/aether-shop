@@ -1,13 +1,10 @@
-import Header from "./components/Header";
-import Hero from "./components/Hero";
+import Hero from "../components/Hero";
 import CategoryIcons from "../components/CategoryIcons";
 import BestItems from "../components/BestItems";
 
 export default function Home() {
   return (
     <main>
-      <Header />
-
       <Hero />
 
       <CategoryIcons />
