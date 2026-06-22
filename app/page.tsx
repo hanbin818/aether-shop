@@ -1,3 +1,4 @@
+import NewArrivals from "../components/NewArrivals";
 import BrandSection from "../components/BrandSection";
 import Hero from "../components/Hero";
 import CategoryIcons from "../components/CategoryIcons";
@@ -8,9 +9,11 @@ export default function Home() {
     <main>
       <Hero />
 
+      <CategoryIcons />
+
       <BrandSection />
 
-      <CategoryIcons />
+      <NewArrivals />
 
       <BestItems />
 
