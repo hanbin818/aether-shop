@@ -1,3 +1,4 @@
+import Footer from "../components/Footer";
 import NewArrivals from "../components/NewArrivals";
 import BrandSection from "../components/BrandSection";
 import Hero from "../components/Hero";
@@ -97,6 +98,7 @@ export default function Home() {
           </a>
         </div>
       </section>
+      <Footer />
     </main>
   );
 }
