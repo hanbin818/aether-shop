@@ -1,14 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [search, setSearch] = useState("");
+  const router = useRouter();
 
   const handleSearch = () => {
-    if (!search.trim()) return;
+    const keyword = search.trim();
 
-    window.location.href = `/products?search=${encodeURIComponent(search)}`;
+    if (!keyword) {
+      router.push("/products");
+      return;
+    }
+
+    router.push(`/products?search=${encodeURIComponent(keyword)}`);
   };
 
   return (
@@ -50,21 +57,10 @@ export default function Header() {
           flexWrap: "wrap",
         }}
       >
-        <a href="/men" style={navLinkStyle}>
-          MEN
-        </a>
-
-        <a href="/women" style={navLinkStyle}>
-          WOMEN
-        </a>
-
-        <a href="/products" style={navLinkStyle}>
-          SHOP
-        </a>
-
-        <a href="/order-status" style={navLinkStyle}>
-          ORDER
-        </a>
+        <a href="/men" style={navLinkStyle}>MEN</a>
+        <a href="/women" style={navLinkStyle}>WOMEN</a>
+        <a href="/products" style={navLinkStyle}>SHOP</a>
+        <a href="/order-status" style={navLinkStyle}>ORDER</a>
       </nav>
 
       <div
@@ -77,13 +73,11 @@ export default function Header() {
       >
         <input
           type="text"
-          placeholder="검색..."
+          placeholder="상품 검색"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSearch();
-            }
+            if (e.key === "Enter") handleSearch();
           }}
           style={{
             width: "180px",
@@ -110,13 +104,8 @@ export default function Header() {
           검색
         </button>
 
-        <a href="/login" style={navLinkStyle}>
-          LOGIN
-        </a>
-
-        <a href="/cart" style={cartLinkStyle}>
-          CART
-        </a>
+        <a href="/login" style={navLinkStyle}>LOGIN</a>
+        <a href="/cart" style={cartLinkStyle}>CART</a>
       </div>
     </header>
   );

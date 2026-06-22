@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
 
 export default function ProductsClient() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
 
@@ -38,6 +39,17 @@ export default function ProductsClient() {
 
     fetchProducts();
   }, []);
+
+  const handleSearchSubmit = () => {
+    const keyword = search.trim();
+
+    if (!keyword) {
+      router.push("/products");
+      return;
+    }
+
+    router.push(`/products?search=${encodeURIComponent(keyword)}`);
+  };
 
   const filteredProducts = products.filter((product) => {
     const keyword = search.trim().toLowerCase();
@@ -166,25 +178,49 @@ export default function ProductsClient() {
             ))}
           </div>
 
-          <input
-            placeholder="브랜드, 상품명, 카테고리 검색"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+          <div
             style={{
               width: "100%",
               maxWidth: "560px",
               margin: "0 auto",
-              display: "block",
-              padding: "16px 20px",
-              borderRadius: "999px",
-              border: "1px solid #ddd",
-              background: "#fafafa",
-              color: "#111",
-              fontSize: "15px",
-              outline: "none",
-              textAlign: "center",
+              display: "flex",
+              gap: "8px",
             }}
-          />
+          >
+            <input
+              placeholder="브랜드, 상품명, 카테고리 검색"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearchSubmit();
+              }}
+              style={{
+                flex: 1,
+                padding: "16px 20px",
+                borderRadius: "999px",
+                border: "1px solid #ddd",
+                background: "#fafafa",
+                color: "#111",
+                fontSize: "15px",
+                outline: "none",
+                textAlign: "center",
+              }}
+            />
+
+            <button
+              onClick={handleSearchSubmit}
+              style={{
+                padding: "0 22px",
+                borderRadius: "999px",
+                background: "#111",
+                color: "#fff",
+                fontWeight: 900,
+                cursor: "pointer",
+              }}
+            >
+              검색
+            </button>
+          </div>
 
           <p
             style={{
