@@ -1,3 +1,4 @@
+import GenderBanners from "../components/GenderBanners";
 import Footer from "../components/Footer";
 import NewArrivals from "../components/NewArrivals";
 import BrandSection from "../components/BrandSection";
@@ -17,6 +18,8 @@ export default function Home() {
       <NewArrivals />
 
       <BestItems />
+
+      <GenderBanners />
 
       <section className="gender-section">
         <a href="/men" className="gender-card">
