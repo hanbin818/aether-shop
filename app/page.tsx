@@ -1,3 +1,4 @@
+import BrandSection from "../components/BrandSection";
 import Hero from "../components/Hero";
 import CategoryIcons from "../components/CategoryIcons";
 import BestItems from "../components/BestItems";
@@ -6,6 +7,8 @@ export default function Home() {
   return (
     <main>
       <Hero />
+
+      <BrandSection />
 
       <CategoryIcons />
 
