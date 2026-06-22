@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
-import ProductCard from "@/app/components/ProductCard";
 
-function ProductsClient() {
+export default function ProductsClient() {
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
 
@@ -81,30 +80,30 @@ function ProductsClient() {
       style={{
         minHeight: "100vh",
         background: "#0b0b0f",
-        padding: "60px 40px",
+        padding: "34px 16px 60px",
         color: "white",
       }}
     >
       <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
         <h1
           style={{
-            fontSize: "44px",
+            fontSize: "38px",
             letterSpacing: "2px",
-            marginBottom: "12px",
+            marginBottom: "10px",
           }}
         >
           SHOP
         </h1>
 
-        <p style={{ color: "#aaa", marginBottom: "28px" }}>
+        <p style={{ color: "#aaa", marginBottom: "24px", fontSize: "14px" }}>
           AETHER의 남성·여성 럭셔리 상품을 만나보세요.
         </p>
 
         <div
           style={{
             display: "flex",
-            gap: "12px",
-            marginBottom: "24px",
+            gap: "10px",
+            marginBottom: "18px",
             flexWrap: "wrap",
           }}
         >
@@ -113,7 +112,7 @@ function ProductsClient() {
               key={filter}
               onClick={() => setGenderFilter(filter)}
               style={{
-                padding: "10px 22px",
+                padding: "10px 20px",
                 borderRadius: "999px",
                 border:
                   genderFilter === filter
@@ -137,8 +136,7 @@ function ProductsClient() {
           onChange={(e) => setSearch(e.target.value)}
           style={{
             width: "100%",
-            maxWidth: "520px",
-            padding: "16px 18px",
+            padding: "15px 16px",
             borderRadius: "14px",
             border: "1px solid #333",
             background: "#151515",
@@ -148,15 +146,15 @@ function ProductsClient() {
           }}
         />
 
-        <p style={{ color: "#aaa", marginTop: "18px" }}>
+        <p style={{ color: "#aaa", marginTop: "16px", fontSize: "14px" }}>
           {filteredProducts.length}개 상품
         </p>
 
         {filteredProducts.length === 0 ? (
           <div
             style={{
-              marginTop: "34px",
-              padding: "50px",
+              marginTop: "28px",
+              padding: "42px 20px",
               background: "#151515",
               borderRadius: "20px",
               textAlign: "center",
@@ -168,23 +166,73 @@ function ProductsClient() {
         ) : (
           <div
             style={{
-              display: "flex",
-              gap: "24px",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              marginTop: "34px",
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: "20px 14px",
+              marginTop: "28px",
             }}
           >
             {filteredProducts.map((product) => (
-              <ProductCard
+              <a
                 key={product.id}
-                brand={product.brand}
-                name={product.name}
-                price={`₩${Number(product.price).toLocaleString()}`}
-                image={product.image}
                 href={`/product/${product.id}`}
-                stockStatus={product.stock_status}
-              />
+                style={{
+                  background: "#fff",
+                  color: "#111",
+                  textDecoration: "none",
+                  borderRadius: "14px",
+                  overflow: "hidden",
+                }}
+              >
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  style={{
+                    width: "100%",
+                    height: "170px",
+                    objectFit: "cover",
+                    background: "#f5f5f5",
+                  }}
+                />
+
+                <div style={{ padding: "12px 6px 14px" }}>
+                  <p
+                    style={{
+                      color: "#888",
+                      fontSize: "11px",
+                      fontWeight: 900,
+                      letterSpacing: "1px",
+                      textAlign: "center",
+                      marginBottom: "7px",
+                    }}
+                  >
+                    {product.brand}
+                  </p>
+
+                  <h3
+                    style={{
+                      color: "#111",
+                      fontSize: "13px",
+                      lineHeight: "1.35",
+                      textAlign: "center",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    {product.name}
+                  </h3>
+
+                  <p
+                    style={{
+                      color: "#111",
+                      fontSize: "14px",
+                      fontWeight: 900,
+                      textAlign: "center",
+                    }}
+                  >
+                    ₩{Number(product.price).toLocaleString()}
+                  </p>
+                </div>
+              </a>
             ))}
           </div>
         )}
@@ -192,5 +240,3 @@ function ProductsClient() {
     </main>
   );
 }
-
-export default ProductsClient;
