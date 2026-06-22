@@ -1,3 +1,4 @@
+import TopButton from "../components/TopButton";
 import Footer from "../components/Footer";
 import Hero from "../components/Hero";
 import CategoryIcons from "../components/CategoryIcons";
@@ -22,6 +23,8 @@ export default function Home() {
       <GenderBanners />
 
       <Footer />
+
+      <TopButton />
     </main>
   );
 }
