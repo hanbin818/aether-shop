@@ -51,22 +51,33 @@ export default function ProductsClient() {
     router.push(`/products?search=${encodeURIComponent(keyword)}`);
   };
 
-  const filteredProducts = products.filter((product) => {
-    const keyword = search.trim().toLowerCase();
+  const filteredProducts = products
+    .filter((product) => {
+      const keyword = search.trim().toLowerCase();
 
-    const matchesSearch =
-      keyword === "" ||
-      product.name?.toLowerCase().includes(keyword) ||
-      product.brand?.toLowerCase().includes(keyword) ||
-      product.category?.toLowerCase().includes(keyword) ||
-      product.gender?.toLowerCase().includes(keyword);
+      const matchesSearch =
+        keyword === "" ||
+        product.name?.toLowerCase().includes(keyword) ||
+        product.brand?.toLowerCase().includes(keyword) ||
+        product.category?.toLowerCase().includes(keyword) ||
+        product.gender?.toLowerCase().includes(keyword);
 
-    const matchesGender =
-      genderFilter === "ALL" ||
-      product.gender?.toUpperCase() === genderFilter;
+      const matchesGender =
+        genderFilter === "ALL" ||
+        product.gender?.toUpperCase() === genderFilter;
 
-    return matchesSearch && matchesGender;
-  });
+      return matchesSearch && matchesGender;
+    })
+    .sort((a, b) => {
+      const aStock = a.stock_status?.toLowerCase().replace(/[_-]/g, "");
+      const bStock = b.stock_status?.toLowerCase().replace(/[_-]/g, "");
+
+      const aSoldOut = aStock === "soldout";
+      const bSoldOut = bStock === "soldout";
+
+      if (aSoldOut === bSoldOut) return 0;
+      return aSoldOut ? 1 : -1;
+    });
 
   if (loading) {
     return (
@@ -256,80 +267,124 @@ export default function ProductsClient() {
               gap: "18px",
             }}
           >
-            {filteredProducts.map((product) => (
-              <a
-                key={product.id}
-                href={`/product/${product.id}`}
-                style={{
-                  background: "#fff",
-                  color: "#111",
-                  textDecoration: "none",
-                  borderRadius: "22px",
-                  overflow: "hidden",
-                  border: "1px solid #eee",
-                  boxShadow: "0 12px 30px rgba(0,0,0,0.06)",
-                }}
-              >
-                <div
+            {filteredProducts.map((product) => {
+              const stock = product.stock_status
+                ?.toLowerCase()
+                .replace(/[_-]/g, "");
+              const isSoldOut = stock === "soldout";
+
+              return (
+                <a
+                  key={product.id}
+                  href={`/product/${product.id}`}
                   style={{
-                    width: "100%",
-                    height: "230px",
-                    background: "#f6f6f6",
+                    background: "#fff",
+                    color: "#111",
+                    textDecoration: "none",
+                    borderRadius: "22px",
                     overflow: "hidden",
+                    border: "1px solid #eee",
+                    boxShadow: "0 12px 30px rgba(0,0,0,0.06)",
+                    position: "relative",
                   }}
                 >
-                  <img
-                    src={product.image}
-                    alt={product.name}
+                  <div
                     style={{
                       width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                  />
-                </div>
-
-                <div style={{ padding: "18px 12px 22px" }}>
-                  <p
-                    style={{
-                      color: "#999",
-                      fontSize: "12px",
-                      fontWeight: 900,
-                      letterSpacing: "2px",
-                      textAlign: "center",
-                      marginBottom: "9px",
+                      height: "230px",
+                      background: "#f6f6f6",
+                      overflow: "hidden",
+                      position: "relative",
                     }}
                   >
-                    {product.brand}
-                  </p>
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                        opacity: isSoldOut ? 0.4 : 1,
+                      }}
+                    />
 
-                  <h3
-                    style={{
-                      color: "#111",
-                      fontSize: "15px",
-                      lineHeight: "1.4",
-                      textAlign: "center",
-                      marginBottom: "12px",
-                      fontWeight: 800,
-                    }}
-                  >
-                    {product.name}
-                  </h3>
+                    {isSoldOut && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
+                          background: "rgba(0,0,0,0.82)",
+                          color: "#fff",
+                          padding: "10px 16px",
+                          borderRadius: "999px",
+                          fontSize: "13px",
+                          fontWeight: 900,
+                          letterSpacing: "1px",
+                        }}
+                      >
+                        SOLD OUT
+                      </div>
+                    )}
+                  </div>
 
-                  <p
-                    style={{
-                      color: "#111",
-                      fontSize: "16px",
-                      fontWeight: 900,
-                      textAlign: "center",
-                    }}
-                  >
-                    ₩{Number(product.price).toLocaleString()}
-                  </p>
-                </div>
-              </a>
-            ))}
+                  <div style={{ padding: "18px 12px 22px" }}>
+                    <p
+                      style={{
+                        color: "#999",
+                        fontSize: "12px",
+                        fontWeight: 900,
+                        letterSpacing: "2px",
+                        textAlign: "center",
+                        marginBottom: "9px",
+                      }}
+                    >
+                      {product.brand}
+                    </p>
+
+                    <h3
+                      style={{
+                        color: "#111",
+                        fontSize: "15px",
+                        lineHeight: "1.4",
+                        textAlign: "center",
+                        marginBottom: "12px",
+                        fontWeight: 800,
+                      }}
+                    >
+                      {product.name}
+                    </h3>
+
+                    <p
+                      style={{
+                        color: "#111",
+                        fontSize: "16px",
+                        fontWeight: 900,
+                        textAlign: "center",
+                      }}
+                    >
+                      ₩{Number(product.price).toLocaleString()}
+                    </p>
+
+                    {isSoldOut && (
+                      <p
+                        style={{
+                          marginTop: "8px",
+                          color: "#d93025",
+                          fontSize: "12px",
+                          fontWeight: 900,
+                          textAlign: "center",
+                        }}
+                      >
+                        품절
+                      </p>
+                    )}
+                  </div>
+                </a>
+              );
+            })}
           </div>
         )}
       </div>
