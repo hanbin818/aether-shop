@@ -1,12 +1,12 @@
 const categories = [
-  { icon: "👜", name: "가방", href: "/products" },
-  { icon: "👛", name: "지갑", href: "/products" },
-  { icon: "👠", name: "신발", href: "/products" },
-  { icon: "💍", name: "액세서리", href: "/products" },
-  { icon: "⌚", name: "시계", href: "/products" },
-  { icon: "🏆", name: "베스트", href: "/products" },
-  { icon: "👍", name: "리뷰", href: "/products" },
-  { icon: "🔍", name: "검수", href: "/products" },
+  { icon: "BAG", name: "가방", href: "/products?search=가방" },
+  { icon: "WAL", name: "지갑", href: "/products?search=지갑" },
+  { icon: "SHO", name: "신발", href: "/products?search=신발" },
+  { icon: "ACC", name: "액세서리", href: "/products?search=액세서리" },
+  { icon: "WAT", name: "시계", href: "/products?search=시계" },
+  { icon: "BEST", name: "베스트", href: "/products" },
+  { icon: "REV", name: "리뷰", href: "/products" },
+  { icon: "AUTH", name: "검수", href: "/products" },
 ];
 
 export default function CategoryIcons() {
@@ -14,16 +14,18 @@ export default function CategoryIcons() {
     <section
       style={{
         background: "#fff",
-        padding: "22px 14px 18px",
+        color: "#111",
+        padding: "42px 16px",
       }}
     >
       <div
         style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "14px 8px",
-          maxWidth: "520px",
-          margin: "0 auto",
+          gap: "18px 12px",
+          textAlign: "center",
         }}
       >
         {categories.map((category) => (
@@ -31,25 +33,26 @@ export default function CategoryIcons() {
             key={category.name}
             href={category.href}
             style={{
-              textDecoration: "none",
               color: "#111",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "7px",
+              textDecoration: "none",
             }}
           >
             <div
               style={{
-                width: "54px",
-                height: "54px",
-                borderRadius: "50%",
-                background: "#f3f3f3",
+                width: "62px",
+                height: "62px",
+                margin: "0 auto 10px",
+                borderRadius: "18px",
+                background:
+                  "linear-gradient(145deg, #ffffff, #f3f3f3)",
+                border: "1px solid #ececec",
+                boxShadow: "0 10px 24px rgba(0,0,0,0.06)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "24px",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+                fontSize: "11px",
+                fontWeight: 900,
+                letterSpacing: "1px",
               }}
             >
               {category.icon}
@@ -57,10 +60,8 @@ export default function CategoryIcons() {
 
             <p
               style={{
-                margin: 0,
-                fontSize: "12px",
-                fontWeight: 700,
-                color: "#222",
+                fontSize: "13px",
+                fontWeight: 900,
               }}
             >
               {category.name}
