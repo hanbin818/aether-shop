@@ -325,22 +325,22 @@ const soldOutOverlayStyle = {
 
 const cartButtonStyle = {
   flex: 1,
-  height: "58px",
-  border: "1.5px solid #111",
+  height: "66px",
+  border: "2px solid #111",
   borderRadius: "999px",
   background: "#fff",
   color: "#111",
-  fontSize: "16px",
+  fontSize: "24px",
   fontWeight: "900",
 };
 
 const buyButtonStyle = {
   flex: 1,
-  height: "58px",
+  height: "66px",
   border: "none",
   borderRadius: "999px",
   background: "#111",
   color: "#fff",
-  fontSize: "16px",
+  fontSize: "24px",
   fontWeight: "900",
 };
