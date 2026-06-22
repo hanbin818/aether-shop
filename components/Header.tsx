@@ -1,128 +1,215 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [search, setSearch] = useState("");
-  const router = useRouter();
 
   const handleSearch = () => {
-    const keyword = search.trim();
-
-    if (!keyword) {
-      router.push("/products");
-      return;
-    }
-
-    router.push(`/products?search=${encodeURIComponent(keyword)}`);
+    if (!search.trim()) return;
+    window.location.href = `/products?search=${encodeURIComponent(search)}`;
   };
 
   return (
     <header
       style={{
-        minHeight: "82px",
-        background: "rgba(255,255,255,0.96)",
-        backdropFilter: "blur(10px)",
-        borderBottom: "1px solid #ececec",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "16px 40px",
-        position: "sticky",
-        top: 0,
-        zIndex: 1000,
-        flexWrap: "wrap",
-        gap: "16px",
+        width: "100%",
+        background: "#fff",
+        color: "#111",
+        borderBottom: "1px solid #eee",
       }}
     >
-      <a
-        href="/"
+      <div
         style={{
-          textDecoration: "none",
-          color: "#111",
-          fontSize: "36px",
-          fontWeight: "900",
-          letterSpacing: "8px",
+          background: "#050505",
+          color: "#d8b46a",
+          textAlign: "center",
+          padding: "10px 12px",
+          fontSize: "13px",
+          letterSpacing: "1px",
+          fontWeight: 700,
         }}
       >
-        AETHER
-      </a>
-
-      <nav
-        style={{
-          display: "flex",
-          gap: "28px",
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
-        <a href="/men" style={navLinkStyle}>MEN</a>
-        <a href="/women" style={navLinkStyle}>WOMEN</a>
-        <a href="/products" style={navLinkStyle}>SHOP</a>
-        <a href="/order-status" style={navLinkStyle}>ORDER</a>
-      </nav>
+        신규 회원 가입 시 10% 쿠폰 증정 &nbsp; | &nbsp; 무료배송 & 무료반품
+      </div>
 
       <div
         style={{
-          display: "flex",
-          gap: "12px",
-          alignItems: "center",
-          flexWrap: "wrap",
+          padding: "26px 18px 18px",
         }}
       >
-        <input
-          type="text"
-          placeholder="상품 검색"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSearch();
-          }}
+        <div
           style={{
-            width: "180px",
-            padding: "10px 14px",
-            borderRadius: "999px",
-            border: "1px solid #ddd",
-            outline: "none",
-            fontSize: "14px",
-          }}
-        />
-
-        <button
-          onClick={handleSearch}
-          style={{
-            border: "none",
-            background: "#111",
-            color: "#fff",
-            padding: "10px 16px",
-            borderRadius: "999px",
-            cursor: "pointer",
-            fontWeight: "700",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "14px",
           }}
         >
-          검색
-        </button>
+          <button
+            onClick={() => (window.location.href = "/")}
+            style={{
+              background: "transparent",
+              color: "#111",
+              fontSize: "28px",
+              padding: 0,
+              lineHeight: 1,
+            }}
+          >
+            ☰
+          </button>
 
-        <a href="/login" style={navLinkStyle}>LOGIN</a>
-        <a href="/cart" style={cartLinkStyle}>CART</a>
+          <a
+            href="/"
+            style={{
+              color: "#111",
+              textDecoration: "none",
+              fontSize: "36px",
+              fontWeight: 900,
+              letterSpacing: "10px",
+              lineHeight: 1,
+            }}
+          >
+            AETHER
+          </a>
+
+          <a
+            href="/cart"
+            style={{
+              color: "#111",
+              textDecoration: "none",
+              fontSize: "24px",
+              position: "relative",
+            }}
+          >
+            🛍️
+          </a>
+        </div>
+
+        <nav
+          style={{
+            marginTop: "26px",
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            textAlign: "center",
+            gap: "0",
+            borderTop: "1px solid #eee",
+            borderBottom: "1px solid #eee",
+            padding: "16px 0",
+          }}
+        >
+          {[
+            ["MEN", "/men"],
+            ["WOMEN", "/women"],
+            ["SHOP", "/products"],
+            ["ORDER", "/order"],
+          ].map(([label, href]) => (
+            <a
+              key={label}
+              href={href}
+              style={{
+                color: "#111",
+                textDecoration: "none",
+                fontSize: "14px",
+                fontWeight: 900,
+                letterSpacing: "3px",
+              }}
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
+
+        <div
+          style={{
+            marginTop: "22px",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
+          <div
+            style={{
+              flex: 1,
+              height: "48px",
+              border: "1px solid #ddd",
+              borderRadius: "999px",
+              display: "flex",
+              alignItems: "center",
+              overflow: "hidden",
+              background: "#fff",
+            }}
+          >
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearch();
+              }}
+              placeholder="상품 검색"
+              style={{
+                flex: 1,
+                height: "100%",
+                border: "none",
+                outline: "none",
+                padding: "0 18px",
+                fontSize: "15px",
+                color: "#111",
+              }}
+            />
+          </div>
+
+          <button
+            onClick={handleSearch}
+            style={{
+              width: "78px",
+              height: "48px",
+              borderRadius: "999px",
+              background: "#050505",
+              color: "#fff",
+              fontSize: "15px",
+              fontWeight: 900,
+            }}
+          >
+            검색
+          </button>
+        </div>
+
+        <div
+          style={{
+            marginTop: "18px",
+            display: "flex",
+            justifyContent: "center",
+            gap: "20px",
+          }}
+        >
+          <a
+            href="/login"
+            style={{
+              color: "#111",
+              textDecoration: "none",
+              fontSize: "14px",
+              fontWeight: 900,
+              letterSpacing: "3px",
+            }}
+          >
+            LOGIN
+          </a>
+
+          <a
+            href="/cart"
+            style={{
+              color: "#111",
+              textDecoration: "none",
+              fontSize: "14px",
+              fontWeight: 900,
+              letterSpacing: "3px",
+            }}
+          >
+            CART
+          </a>
+        </div>
       </div>
     </header>
   );
 }
-
-const navLinkStyle = {
-  textDecoration: "none",
-  color: "#111",
-  fontSize: "13px",
-  fontWeight: "800",
-  letterSpacing: "2px",
-  textTransform: "uppercase" as const,
-};
-
-const cartLinkStyle = {
-  ...navLinkStyle,
-  border: "1.5px solid #111",
-  padding: "11px 18px",
-  borderRadius: "999px",
-};
