@@ -18,87 +18,95 @@ export default function Home() {
 
       <BestItems />
 
-      <section
-        style={{
-          padding: "50px 20px",
-          background: "#fff",
-        }}
-      >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "16px",
-            maxWidth: "1100px",
-            margin: "0 auto",
-          }}
-        >
-          <a
-            href="/men"
-            style={{
-              height: "220px",
-              borderRadius: "24px",
-              overflow: "hidden",
-              position: "relative",
-              textDecoration: "none",
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1516257984-b1b4d707412e?q=80&w=1200&auto=format&fit=crop')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: "rgba(0,0,0,0.35)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-                fontSize: "34px",
-                fontWeight: 900,
-                letterSpacing: "4px",
-              }}
-            >
-              MEN
-            </div>
-          </a>
+      <section className="gender-section">
+        <a href="/men" className="gender-card">
+          <img
+            src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f"
+            alt="MEN"
+            className="gender-image"
+          />
 
-          <a
-            href="/women"
-            style={{
-              height: "220px",
-              borderRadius: "24px",
-              overflow: "hidden",
-              position: "relative",
-              textDecoration: "none",
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1200&auto=format&fit=crop')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: "rgba(0,0,0,0.35)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-                fontSize: "34px",
-                fontWeight: 900,
-                letterSpacing: "4px",
-              }}
-            >
-              WOMEN
-            </div>
-          </a>
-        </div>
+          <div className="gender-overlay">
+            <h2>MEN</h2>
+          </div>
+        </a>
+
+        <a href="/women" className="gender-card">
+          <img
+            src="https://images.unsplash.com/photo-1496747611176-843222e1e57c"
+            alt="WOMEN"
+            className="gender-image"
+          />
+
+          <div className="gender-overlay">
+            <h2>WOMEN</h2>
+          </div>
+        </a>
       </section>
+
       <Footer />
+
+      <style>{`
+        .gender-section {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          width: 100%;
+          margin-top: 40px;
+        }
+
+        .gender-card {
+          text-decoration: none;
+          position: relative;
+          height: 520px;
+          overflow: hidden;
+          display: block;
+        }
+
+        .gender-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          transition: transform 0.5s ease;
+        }
+
+        .gender-card:hover .gender-image {
+          transform: scale(1.05);
+        }
+
+        .gender-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.28);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .gender-overlay h2 {
+          color: #fff;
+          font-size: 48px;
+          letter-spacing: 8px;
+          font-weight: 700;
+          margin: 0;
+        }
+
+        @media (max-width: 768px) {
+          .gender-section {
+            grid-template-columns: 1fr;
+            margin-top: 28px;
+          }
+
+          .gender-card {
+            height: 320px;
+          }
+
+          .gender-overlay h2 {
+            font-size: 36px;
+            letter-spacing: 6px;
+          }
+        }
+      `}</style>
     </main>
   );
 }
