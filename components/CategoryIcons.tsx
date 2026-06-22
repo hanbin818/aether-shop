@@ -14,17 +14,16 @@ export default function CategoryIcons() {
     <section
       style={{
         background: "#fff",
-        padding: "50px 20px",
+        padding: "22px 14px 18px",
       }}
     >
       <div
         style={{
-          maxWidth: "900px",
-          margin: "0 auto",
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "24px",
-          textAlign: "center",
+          gap: "14px 8px",
+          maxWidth: "520px",
+          margin: "0 auto",
         }}
       >
         {categories.map((category) => (
@@ -33,21 +32,24 @@ export default function CategoryIcons() {
             href={category.href}
             style={{
               textDecoration: "none",
+              color: "#111",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "7px",
             }}
           >
             <div
               style={{
-                width: "78px",
-                height: "78px",
-                margin: "0 auto 12px",
-                borderRadius: "20px",
+                width: "54px",
+                height: "54px",
+                borderRadius: "50%",
                 background: "#f3f3f3",
-                border: "1px solid #e5e5e5",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "34px",
-                boxShadow: "0 6px 14px rgba(0,0,0,0.08)",
+                fontSize: "24px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
               }}
             >
               {category.icon}
@@ -56,9 +58,9 @@ export default function CategoryIcons() {
             <p
               style={{
                 margin: 0,
-                fontSize: "14px",
-                fontWeight: "800",
-                color: "#111",
+                fontSize: "12px",
+                fontWeight: 700,
+                color: "#222",
               }}
             >
               {category.name}
