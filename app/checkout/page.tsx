@@ -29,7 +29,27 @@ export default function CheckoutPage() {
   useEffect(() => {
     const savedCart = localStorage.getItem("aether-cart");
     setCart(savedCart ? JSON.parse(savedCart) : []);
+
+    loadProfile();
   }, []);
+
+  const loadProfile = async () => {
+    const { data: userData } = await supabase.auth.getUser();
+
+    if (!userData.user) return;
+
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userData.user.id)
+      .maybeSingle();
+
+    if (data) {
+      setCustomerName(data.name || "");
+      setCustomerPhone(data.phone || "");
+      setCustomerAddress(data.address || "");
+    }
+  };
 
   const productTotalPrice = cart.reduce(
     (total, item) => total + Number(item.price) * item.quantity,
@@ -109,7 +129,17 @@ export default function CheckoutPage() {
 
         <div className="checkout-grid">
           <section className="checkout-card">
-            <h2>배송 정보</h2>
+            <div className="section-title-row">
+              <h2>배송 정보</h2>
+
+              <button
+                type="button"
+                onClick={() => (window.location.href = "/profile")}
+                className="profile-button"
+              >
+                회원정보 수정
+              </button>
+            </div>
 
             <input
               placeholder="주문자 이름"
@@ -128,6 +158,10 @@ export default function CheckoutPage() {
               value={customerAddress}
               onChange={(e) => setCustomerAddress(e.target.value)}
             />
+
+            <p className="profile-notice">
+              저장된 회원정보가 있으면 이름, 연락처, 배송지가 자동으로 입력됩니다.
+            </p>
 
             <div className="bank-box">
               <h2>결제 방법</h2>
@@ -210,7 +244,7 @@ export default function CheckoutPage() {
       <style>{`
         .checkout-page {
           min-height: 100vh;
-          background: #f7f7f7;
+          background: linear-gradient(180deg, #fff 0%, #f7f1e8 100%);
           color: #111;
           padding: 60px 20px;
         }
@@ -221,16 +255,17 @@ export default function CheckoutPage() {
         }
 
         .back-link {
-          color: #777;
+          color: #9b8b73;
           text-decoration: none;
           font-size: 15px;
-          font-weight: 700;
+          font-weight: 900;
         }
 
         h1 {
           font-size: 44px;
           margin: 38px 0 30px;
-          font-weight: 900;
+          font-weight: 950;
+          letter-spacing: -1.4px;
         }
 
         .checkout-grid {
@@ -240,27 +275,63 @@ export default function CheckoutPage() {
         }
 
         .checkout-card {
-          background: #fff;
-          border-radius: 24px;
+          background: rgba(255,255,255,0.96);
+          border-radius: 28px;
           padding: 32px;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+          border: 1px solid rgba(0,0,0,0.06);
+          box-shadow: 0 24px 70px rgba(0,0,0,0.08);
         }
 
         .checkout-card h2 {
           margin: 0 0 24px;
           font-size: 28px;
+          font-weight: 950;
+          letter-spacing: -0.8px;
+        }
+
+        .section-title-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 14px;
+          margin-bottom: 22px;
+        }
+
+        .section-title-row h2 {
+          margin: 0;
+        }
+
+        .profile-button {
+          border: none;
+          background: #111;
+          color: #fff;
+          padding: 10px 15px;
+          border-radius: 999px;
+          cursor: pointer;
+          font-size: 13px;
           font-weight: 900;
+          white-space: nowrap;
         }
 
         input {
           width: 100%;
           padding: 17px 18px;
           margin-bottom: 14px;
-          border-radius: 14px;
+          border-radius: 16px;
           border: 1px solid #ddd;
           font-size: 16px;
           box-sizing: border-box;
           outline: none;
+          color: #111;
+          background: #fff;
+        }
+
+        .profile-notice {
+          margin: 0 0 20px;
+          color: #9b8b73;
+          font-size: 13px;
+          font-weight: 800;
+          line-height: 1.6;
         }
 
         .bank-box {
@@ -268,7 +339,7 @@ export default function CheckoutPage() {
           padding: 24px;
           background: #fafafa;
           border: 1px solid #eee;
-          border-radius: 18px;
+          border-radius: 22px;
         }
 
         .bank-box p {
@@ -340,7 +411,7 @@ export default function CheckoutPage() {
         .total-price {
           display: block;
           font-size: 32px;
-          font-weight: 900;
+          font-weight: 950;
         }
 
         .summary-card button {
@@ -352,7 +423,7 @@ export default function CheckoutPage() {
           border: none;
           border-radius: 999px;
           font-size: 20px;
-          font-weight: 900;
+          font-weight: 950;
           cursor: pointer;
         }
 
@@ -378,11 +449,21 @@ export default function CheckoutPage() {
 
           .checkout-card {
             padding: 24px 18px;
-            border-radius: 22px;
+            border-radius: 24px;
           }
 
           .checkout-card h2 {
             font-size: 26px;
+          }
+
+          .section-title-row {
+            align-items: flex-start;
+            flex-direction: column;
+          }
+
+          .profile-button {
+            width: 100%;
+            padding: 13px 15px;
           }
 
           .summary-item,
