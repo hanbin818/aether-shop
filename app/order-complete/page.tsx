@@ -35,7 +35,7 @@ export default function OrderCompletePage() {
         <p style={descStyle}>
           주문이 정상적으로 접수되었습니다.
           <br />
-          오픈채팅으로 주문번호를 보내주시면 상담 후 결제 안내를 도와드립니다.
+          주문번호를 복사한 뒤 카카오톡 상담창에 보내주세요.
         </p>
 
         <div style={orderBoxStyle}>
@@ -45,7 +45,7 @@ export default function OrderCompletePage() {
             {orderNumber || "주문번호를 불러오는 중입니다"}
           </h2>
 
-          <button onClick={copyOrderNumber} style={copyButtonStyle}>
+          <button type="button" onClick={copyOrderNumber} style={copyButtonStyle}>
             주문번호 복사
           </button>
         </div>
@@ -54,7 +54,7 @@ export default function OrderCompletePage() {
           <strong>안내사항</strong>
           <p>
             현재 AETHER는 카카오톡 오픈채팅 상담 후 계좌이체 방식으로 주문이
-            진행됩니다. 주문번호를 복사한 뒤 상담창에 보내주세요.
+            진행됩니다. 상담 확인 후 입금 계좌와 배송 안내를 도와드립니다.
           </p>
         </div>
 
@@ -95,7 +95,7 @@ const cardStyle = {
   maxWidth: "640px",
   background: "rgba(255,255,255,0.96)",
   borderRadius: "34px",
-  padding: "40px 24px",
+  padding: "42px 24px",
   textAlign: "center" as const,
   border: "1px solid rgba(0,0,0,0.06)",
   boxShadow: "0 28px 90px rgba(0,0,0,0.1)",
