@@ -58,11 +58,11 @@ export default function MyPage() {
             <p style={menuTextStyle}>주문 상태를 확인하세요.</p>
           </a>
 
-          <div style={menuCardStyle}>
+          <a href="/wishlist" style={menuCardStyle}>
             <span style={iconStyle}>❤️</span>
             <strong style={menuTitleStyle}>찜한 상품</strong>
-            <p style={menuTextStyle}>곧 추가될 예정입니다.</p>
-          </div>
+            <p style={menuTextStyle}>저장한 상품을 확인하세요.</p>
+          </a>
 
           <div style={menuCardStyle}>
             <span style={iconStyle}>🕒</span>
