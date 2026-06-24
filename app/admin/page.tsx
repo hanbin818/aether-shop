@@ -14,6 +14,7 @@ type Product = {
   gender?: string;
   description?: string;
   stock_status?: string;
+  stock_quantity?: number;
 };
 
 type Order = {
@@ -37,6 +38,7 @@ export default function AdminPage() {
   const [gender, setGender] = useState("MEN");
   const [description, setDescription] = useState("");
   const [stockStatus, setStockStatus] = useState("available");
+  const [stockQuantity, setStockQuantity] = useState(1);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -91,24 +93,20 @@ export default function AdminPage() {
   );
 
   const soldOutCount = products.filter(
-    (product) => product.stock_status === "soldout"
+    (product) => product.stock_status === "soldout" || Number(product.stock_quantity || 0) <= 0
   ).length;
 
   const waitingOrders = orders.filter(
     (order) => (order.status || "입금대기") === "입금대기"
   ).length;
 
-  const paidOrders = orders.filter(
-    (order) => order.status === "입금확인"
-  ).length;
+  const paidOrders = orders.filter((order) => order.status === "입금확인").length;
 
   const preparingOrders = orders.filter(
     (order) => order.status === "배송준비중"
   ).length;
 
-  const shippingOrders = orders.filter(
-    (order) => order.status === "배송중"
-  ).length;
+  const shippingOrders = orders.filter((order) => order.status === "배송중").length;
 
   const completedOrders = orders.filter(
     (order) => order.status === "배송완료"
@@ -123,6 +121,7 @@ export default function AdminPage() {
     setGender("MEN");
     setDescription("");
     setStockStatus("available");
+    setStockQuantity(1);
     setSelectedFile(null);
     setEditingProduct(null);
   };
@@ -158,6 +157,11 @@ export default function AdminPage() {
     alert("이미지 업로드 완료!");
   };
 
+  const getAutoStockStatus = () => {
+    if (stockQuantity <= 0) return "soldout";
+    return stockStatus === "soldout" ? "soldout" : "available";
+  };
+
   const addProduct = async () => {
     if (!name || !brand || !price || !imageUrl || !category || !gender) {
       alert("상품명, 브랜드, 가격, 이미지, 카테고리, 성별은 꼭 입력해줘!");
@@ -173,7 +177,8 @@ export default function AdminPage() {
         category,
         gender,
         description,
-        stock_status: stockStatus,
+        stock_status: getAutoStockStatus(),
+        stock_quantity: stockQuantity,
       },
     ]);
 
@@ -206,7 +211,8 @@ export default function AdminPage() {
         category,
         gender,
         description,
-        stock_status: stockStatus,
+        stock_status: getAutoStockStatus(),
+        stock_quantity: stockQuantity,
       })
       .eq("id", editingProduct.id);
 
@@ -247,6 +253,7 @@ export default function AdminPage() {
     setGender(product.gender || "MEN");
     setDescription(product.description || "");
     setStockStatus(product.stock_status || "available");
+    setStockQuantity(product.stock_quantity ?? 1);
     setSelectedFile(null);
 
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -303,9 +310,7 @@ export default function AdminPage() {
 
         <div style={dashboardCardStyle}>
           <p style={dashboardLabelStyle}>총 매출</p>
-          <strong style={dashboardNumberStyle}>
-            ₩{totalSales.toLocaleString()}
-          </strong>
+          <strong style={dashboardNumberStyle}>₩{totalSales.toLocaleString()}</strong>
         </div>
 
         <div style={dashboardCardStyle}>
@@ -383,14 +388,34 @@ export default function AdminPage() {
           </select>
         </div>
 
-        <select
-          value={stockStatus}
-          onChange={(e) => setStockStatus(e.target.value)}
-          style={inputStyle}
-        >
-          <option value="available">판매중</option>
-          <option value="soldout">품절</option>
-        </select>
+        <div style={twoColumnStyle}>
+          <input
+            type="number"
+            placeholder="재고 수량"
+            value={stockQuantity}
+            min={0}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              setStockQuantity(value);
+
+              if (value <= 0) {
+                setStockStatus("soldout");
+              } else if (stockStatus === "soldout") {
+                setStockStatus("available");
+              }
+            }}
+            style={inputStyle}
+          />
+
+          <select
+            value={stockStatus}
+            onChange={(e) => setStockStatus(e.target.value)}
+            style={inputStyle}
+          >
+            <option value="available">판매중</option>
+            <option value="soldout">품절</option>
+          </select>
+        </div>
 
         <textarea
           placeholder="상품 설명 ex) 고급스러운 디자인과 실용성을 모두 갖춘 프리미엄 아이템입니다."
@@ -471,7 +496,9 @@ export default function AdminPage() {
 
         <div style={productGridStyle}>
           {products.map((product) => {
-            const isSoldOut = product.stock_status === "soldout";
+            const quantity = product.stock_quantity ?? 0;
+            const isSoldOut =
+              product.stock_status === "soldout" || Number(quantity) <= 0;
 
             return (
               <div key={product.id} style={productCardStyle}>
@@ -501,6 +528,8 @@ export default function AdminPage() {
                 >
                   {isSoldOut ? "품절" : "판매중"}
                 </p>
+
+                <p style={quantityStyle}>재고 : {quantity}개</p>
 
                 <h3>{product.name}</h3>
                 <p>{product.brand}</p>
@@ -715,6 +744,13 @@ const stockBadgeStyle = {
   borderRadius: "999px",
   fontSize: "12px",
   fontWeight: "800",
+};
+
+const quantityStyle = {
+  margin: "10px 0 0",
+  color: "#666",
+  fontSize: "13px",
+  fontWeight: "900",
 };
 
 const editButtonStyle = {
