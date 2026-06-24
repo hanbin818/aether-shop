@@ -70,11 +70,11 @@ export default function MyPage() {
             <p style={menuTextStyle}>최근 확인한 상품을 보세요.</p>
           </a>
 
-          <div style={menuCardStyle}>
+          <a href="/profile" style={menuCardStyle}>
             <span style={iconStyle}>⚙️</span>
             <strong style={menuTitleStyle}>회원정보</strong>
-            <p style={menuTextStyle}>{email}</p>
-          </div>
+            <p style={menuTextStyle}>회원정보를 수정하세요.</p>
+          </a>
         </div>
 
         <button onClick={logout} style={logoutButtonStyle}>
