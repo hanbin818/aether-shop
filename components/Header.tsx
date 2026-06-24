@@ -1,15 +1,40 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { supabase } from "../app/lib/supabase";
 
 export default function Header() {
   const [search, setSearch] = useState("");
   const [scrolled, setScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleSearch = () => {
     if (!search.trim()) return;
     window.location.href = `/products?search=${encodeURIComponent(search)}`;
   };
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    alert("로그아웃되었습니다.");
+    window.location.href = "/";
+  };
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setIsLoggedIn(!!data.user);
+    };
+
+    checkUser();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+      checkUser();
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -74,7 +99,6 @@ export default function Header() {
                 color: "#111",
                 fontWeight: 850,
                 fontSize: "14px",
-                letterSpacing: "-0.2px",
               }}
             >
               {label}
@@ -125,16 +149,36 @@ export default function Header() {
           style={{
             display: "flex",
             justifyContent: "center",
-            gap: "30px",
+            gap: "28px",
             marginTop: "18px",
+            flexWrap: "wrap",
           }}
         >
-          <a href="/login" style={bottomLinkStyle}>
-            로그인
-          </a>
-          <a href="/cart" style={bottomLinkStyle}>
-            장바구니
-          </a>
+          {isLoggedIn ? (
+            <>
+              <a href="/mypage" style={bottomLinkStyle}>
+                마이페이지
+              </a>
+
+              <a href="/cart" style={bottomLinkStyle}>
+                장바구니
+              </a>
+
+              <button onClick={logout} style={logoutButtonStyle}>
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <>
+              <a href="/login" style={bottomLinkStyle}>
+                로그인
+              </a>
+
+              <a href="/cart" style={bottomLinkStyle}>
+                장바구니
+              </a>
+            </>
+          )}
         </div>
       </div>
     </header>
@@ -146,4 +190,13 @@ const bottomLinkStyle = {
   color: "#111",
   fontSize: "13px",
   fontWeight: 850,
+};
+
+const logoutButtonStyle = {
+  background: "none",
+  border: "none",
+  color: "#111",
+  fontSize: "13px",
+  fontWeight: 850,
+  cursor: "pointer",
 };
