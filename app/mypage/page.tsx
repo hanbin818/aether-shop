@@ -64,11 +64,11 @@ export default function MyPage() {
             <p style={menuTextStyle}>저장한 상품을 확인하세요.</p>
           </a>
 
-          <div style={menuCardStyle}>
+          <a href="/recent" style={menuCardStyle}>
             <span style={iconStyle}>🕒</span>
             <strong style={menuTitleStyle}>최근 본 상품</strong>
-            <p style={menuTextStyle}>곧 추가될 예정입니다.</p>
-          </div>
+            <p style={menuTextStyle}>최근 확인한 상품을 보세요.</p>
+          </a>
 
           <div style={menuCardStyle}>
             <span style={iconStyle}>⚙️</span>
