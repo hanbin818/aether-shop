@@ -1,17 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "../app/lib/supabase";
+import { supabase } from "@/app/lib/supabase";
 
-export default function Header() {
-  const [search, setSearch] = useState("");
-  const [scrolled, setScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+export default function MyPage() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const handleSearch = () => {
-    if (!search.trim()) return;
-    window.location.href = `/products?search=${encodeURIComponent(search)}`;
-  };
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getUser();
+
+      if (!data.user) {
+        alert("로그인이 필요한 페이지입니다.");
+        window.location.href = "/login";
+        return;
+      }
+
+      setEmail(data.user.email || "");
+      setLoading(false);
+    };
+
+    checkUser();
+  }, []);
 
   const logout = async () => {
     await supabase.auth.signOut();
@@ -19,184 +30,150 @@ export default function Header() {
     window.location.href = "/";
   };
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setIsLoggedIn(!!data.user);
-    };
-
-    checkUser();
-
-    const { data: listener } = supabase.auth.onAuthStateChange(() => {
-      checkUser();
-    });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    handleScroll();
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  if (loading) {
+    return <main style={centerStyle}>회원정보 확인 중...</main>;
+  }
 
   return (
-    <header
+    <main
       style={{
-        width: "100%",
-        position: "sticky",
-        top: 0,
-        zIndex: 999,
-        background: scrolled ? "rgba(255,255,255,0.9)" : "#fff",
-        backdropFilter: scrolled ? "blur(18px)" : "none",
-        borderBottom: "1px solid rgba(0,0,0,0.08)",
-        boxShadow: scrolled ? "0 12px 40px rgba(0,0,0,0.08)" : "none",
+        minHeight: "100vh",
+        background: "linear-gradient(180deg, #fff 0%, #f8f3eb 100%)",
+        color: "#111",
+        padding: "70px 18px",
       }}
     >
-      <div style={{ maxWidth: "1180px", margin: "0 auto", padding: "18px 16px" }}>
-        <div style={{ textAlign: "center", marginBottom: "18px" }}>
-          <a
-            href="/"
-            style={{
-              textDecoration: "none",
-              color: "#111",
-              fontSize: "36px",
-              fontWeight: 950,
-              letterSpacing: "9px",
-            }}
-          >
-            AETHER
+      <div
+        style={{
+          maxWidth: "720px",
+          margin: "0 auto",
+          background: "#fff",
+          borderRadius: "30px",
+          padding: "38px 24px",
+          border: "1px solid rgba(0,0,0,0.06)",
+          boxShadow: "0 24px 70px rgba(0,0,0,0.08)",
+        }}
+      >
+        <a href="/" style={backStyle}>
+          ← 홈으로 돌아가기
+        </a>
+
+        <p style={labelStyle}>AETHER MEMBERS</p>
+
+        <h1 style={titleStyle}>마이페이지</h1>
+
+        <p style={descStyle}>
+          안녕하세요.
+          <br />
+          <strong>{email}</strong> 님의 회원 공간입니다.
+        </p>
+
+        <div style={menuGridStyle}>
+          <a href="/order" style={menuCardStyle}>
+            <span style={iconStyle}>📦</span>
+            <strong>주문조회</strong>
+            <p>주문 상태를 확인하세요.</p>
           </a>
+
+          <div style={menuCardStyle}>
+            <span style={iconStyle}>❤️</span>
+            <strong>찜한 상품</strong>
+            <p>곧 추가될 예정입니다.</p>
+          </div>
+
+          <div style={menuCardStyle}>
+            <span style={iconStyle}>🕒</span>
+            <strong>최근 본 상품</strong>
+            <p>곧 추가될 예정입니다.</p>
+          </div>
+
+          <div style={menuCardStyle}>
+            <span style={iconStyle}>⚙️</span>
+            <strong>회원정보</strong>
+            <p>{email}</p>
+          </div>
         </div>
 
-        <nav
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: "6px",
-            borderTop: "1px solid #eee",
-            borderBottom: "1px solid #eee",
-            padding: "14px 0",
-            textAlign: "center",
-            marginBottom: "16px",
-          }}
-        >
-          {[
-            ["전체상품", "/products"],
-            ["남성", "/men"],
-            ["여성", "/women"],
-            ["주문조회", "/order"],
-          ].map(([label, href]) => (
-            <a
-              key={href}
-              href={href}
-              style={{
-                textDecoration: "none",
-                color: "#111",
-                fontWeight: 850,
-                fontSize: "14px",
-              }}
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
-
-        <div style={{ display: "flex", gap: "10px" }}>
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSearch();
-            }}
-            placeholder="브랜드 또는 상품명을 검색하세요"
-            style={{
-              flex: 1,
-              height: "48px",
-              borderRadius: "999px",
-              border: "1px solid #ddd",
-              padding: "0 18px",
-              fontSize: "14px",
-              outline: "none",
-              background: "#fafafa",
-              color: "#111",
-              fontWeight: 700,
-            }}
-          />
-
-          <button
-            onClick={handleSearch}
-            style={{
-              width: "78px",
-              height: "48px",
-              borderRadius: "999px",
-              background: "#111",
-              color: "#fff",
-              border: "none",
-              fontWeight: 900,
-              cursor: "pointer",
-            }}
-          >
-            검색
-          </button>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "28px",
-            marginTop: "18px",
-            flexWrap: "wrap",
-          }}
-        >
-          {isLoggedIn ? (
-            <>
-              <a href="/mypage" style={bottomLinkStyle}>
-                마이페이지
-              </a>
-
-              <a href="/cart" style={bottomLinkStyle}>
-                장바구니
-              </a>
-
-              <button onClick={logout} style={logoutButtonStyle}>
-                로그아웃
-              </button>
-            </>
-          ) : (
-            <>
-              <a href="/login" style={bottomLinkStyle}>
-                로그인
-              </a>
-
-              <a href="/cart" style={bottomLinkStyle}>
-                장바구니
-              </a>
-            </>
-          )}
-        </div>
+        <button onClick={logout} style={logoutButtonStyle}>
+          로그아웃
+        </button>
       </div>
-    </header>
+    </main>
   );
 }
 
-const bottomLinkStyle = {
-  textDecoration: "none",
+const centerStyle = {
+  minHeight: "100vh",
+  background: "#fff",
   color: "#111",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontWeight: 900,
+};
+
+const backStyle = {
+  color: "#9b8b73",
+  textDecoration: "none",
   fontSize: "13px",
-  fontWeight: 850,
+  fontWeight: 900,
+};
+
+const labelStyle = {
+  marginTop: "34px",
+  marginBottom: "12px",
+  color: "#9b8b73",
+  fontSize: "12px",
+  fontWeight: 900,
+  letterSpacing: "5px",
+};
+
+const titleStyle = {
+  fontSize: "42px",
+  margin: 0,
+  marginBottom: "16px",
+  fontWeight: 950,
+  letterSpacing: "-1.5px",
+};
+
+const descStyle = {
+  color: "#666",
+  fontSize: "15px",
+  lineHeight: "1.8",
+  marginBottom: "30px",
+};
+
+const menuGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(2, 1fr)",
+  gap: "14px",
+  marginBottom: "28px",
+};
+
+const menuCardStyle = {
+  minHeight: "130px",
+  padding: "20px",
+  borderRadius: "22px",
+  background: "#fafafa",
+  border: "1px solid #eee",
+  color: "#111",
+  textDecoration: "none",
+};
+
+const iconStyle = {
+  display: "block",
+  fontSize: "28px",
+  marginBottom: "12px",
 };
 
 const logoutButtonStyle = {
-  background: "none",
+  width: "100%",
+  height: "58px",
+  borderRadius: "999px",
   border: "none",
-  color: "#111",
-  fontSize: "13px",
-  fontWeight: 850,
+  background: "#111",
+  color: "#fff",
+  fontSize: "16px",
+  fontWeight: 950,
   cursor: "pointer",
 };
