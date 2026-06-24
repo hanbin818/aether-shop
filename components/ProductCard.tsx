@@ -1,3 +1,8 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { supabase } from "@/app/lib/supabase";
+
 type ProductCardProps = {
   brand: string;
   name: string;
@@ -15,12 +20,84 @@ export default function ProductCard({
   href,
   stockStatus = "available",
 }: ProductCardProps) {
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+
   const normalizedStock = stockStatus.toLowerCase().replace(/[_-]/g, "");
   const isSoldOut = normalizedStock === "soldout";
+
+  const productId = Number(href.split("/").pop());
+
+  useEffect(() => {
+    const checkWishlist = async () => {
+      const { data } = await supabase.auth.getUser();
+
+      if (!data.user || !productId) return;
+
+      setUserId(data.user.id);
+
+      const { data: wishlistData } = await supabase
+        .from("wishlists")
+        .select("id")
+        .eq("user_id", data.user.id)
+        .eq("product_id", productId)
+        .maybeSingle();
+
+      setIsWishlisted(!!wishlistData);
+    };
+
+    checkWishlist();
+  }, [productId]);
+
+  const toggleWishlist = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const { data } = await supabase.auth.getUser();
+
+    if (!data.user) {
+      alert("로그인 후 찜할 수 있습니다.");
+      window.location.href = "/login";
+      return;
+    }
+
+    const currentUserId = userId || data.user.id;
+    setUserId(currentUserId);
+
+    if (isWishlisted) {
+      await supabase
+        .from("wishlists")
+        .delete()
+        .eq("user_id", currentUserId)
+        .eq("product_id", productId);
+
+      setIsWishlisted(false);
+      return;
+    }
+
+    await supabase.from("wishlists").insert({
+      user_id: currentUserId,
+      product_id: productId,
+    });
+
+    setIsWishlisted(true);
+  };
 
   return (
     <a href={href} style={cardStyle}>
       <div style={imageBoxStyle}>
+        <button
+          type="button"
+          onClick={toggleWishlist}
+          style={{
+            ...heartButtonStyle,
+            background: isWishlisted ? "#111" : "rgba(255,255,255,0.92)",
+            color: isWishlisted ? "#fff" : "#111",
+          }}
+        >
+          {isWishlisted ? "♥" : "♡"}
+        </button>
+
         <img
           src={image}
           alt={name}
@@ -49,9 +126,10 @@ const cardStyle = {
   textDecoration: "none",
   color: "#111",
   background: "#fff",
-  borderRadius: "14px",
+  borderRadius: "16px",
   overflow: "hidden",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+  position: "relative" as const,
 };
 
 const imageBoxStyle = {
@@ -63,6 +141,21 @@ const imageBoxStyle = {
   justifyContent: "center",
   overflow: "hidden",
   position: "relative" as const,
+};
+
+const heartButtonStyle = {
+  position: "absolute" as const,
+  top: "12px",
+  right: "12px",
+  zIndex: 5,
+  width: "38px",
+  height: "38px",
+  borderRadius: "999px",
+  border: "1px solid rgba(0,0,0,0.08)",
+  fontSize: "22px",
+  fontWeight: 900,
+  cursor: "pointer",
+  boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
 };
 
 const imageStyle = {
