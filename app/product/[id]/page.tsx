@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "@/app/lib/supabase";
 
 type Product = {
   id: number;
@@ -23,6 +23,7 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [isWished, setIsWished] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -52,6 +53,66 @@ export default function ProductDetail() {
 
     fetchProduct();
   }, [id]);
+
+  useEffect(() => {
+    const checkWishlist = async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData.user;
+
+      if (!user) return;
+
+      const { data } = await supabase
+        .from("wishlist")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("product_id", Number(id))
+        .maybeSingle();
+
+      setIsWished(!!data);
+    };
+
+    checkWishlist();
+  }, [id]);
+
+  const toggleWishlist = async () => {
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData.user;
+
+    if (!user) {
+      alert("로그인 후 찜할 수 있습니다.");
+      window.location.href = "/login";
+      return;
+    }
+
+    if (isWished) {
+      const { error } = await supabase
+        .from("wishlist")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("product_id", Number(id));
+
+      if (error) {
+        alert("찜 해제 중 오류가 발생했습니다.");
+        return;
+      }
+
+      setIsWished(false);
+      alert("찜 목록에서 삭제되었습니다.");
+    } else {
+      const { error } = await supabase.from("wishlist").insert({
+        user_id: user.id,
+        product_id: Number(id),
+      });
+
+      if (error) {
+        alert("찜 추가 중 오류가 발생했습니다.");
+        return;
+      }
+
+      setIsWished(true);
+      alert("찜 목록에 추가되었습니다.");
+    }
+  };
 
   const normalizedStock = product?.stock_status
     ?.toLowerCase()
@@ -100,198 +161,69 @@ export default function ProductDetail() {
     window.location.href = "/cart";
   };
 
-  if (loading) {
-    return <main style={centerStyle}>상품 불러오는 중...</main>;
-  }
-
-  if (!product) {
-    return <main style={centerStyle}>상품을 찾을 수 없습니다.</main>;
-  }
+  if (loading) return <main style={centerStyle}>상품 불러오는 중...</main>;
+  if (!product) return <main style={centerStyle}>상품을 찾을 수 없습니다.</main>;
 
   return (
     <main
       style={{
         minHeight: "100vh",
-        background:
-          "linear-gradient(180deg, #ffffff 0%, #fafafa 48%, #f4f1eb 100%)",
+        background: "linear-gradient(180deg, #ffffff 0%, #fafafa 48%, #f4f1eb 100%)",
         color: "#111",
         padding: isMobile ? "22px 16px 70px" : "56px 40px 100px",
       }}
     >
       <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
-        <a
-          href="/products"
-          style={{
-            display: "inline-block",
-            marginBottom: isMobile ? "22px" : "32px",
-            color: "#777",
-            textDecoration: "none",
-            fontSize: "14px",
-            fontWeight: 800,
-          }}
-        >
+        <a href="/products" style={{ display: "inline-block", marginBottom: "32px", color: "#777", textDecoration: "none", fontSize: "14px", fontWeight: 800 }}>
           ← 전체상품으로 돌아가기
         </a>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1.05fr 0.95fr",
-            gap: isMobile ? "28px" : "72px",
-            alignItems: "start",
-          }}
-        >
-          <div
-            style={{
-              background:
-                "linear-gradient(145deg, #ffffff 0%, #f4f4f4 100%)",
-              borderRadius: isMobile ? "24px" : "34px",
-              minHeight: isMobile ? "390px" : "650px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-              position: "relative",
-              border: "1px solid rgba(0,0,0,0.06)",
-              boxShadow: "0 28px 80px rgba(0,0,0,0.08)",
-            }}
-          >
-            <img
-              src={product.image}
-              alt={product.name}
-              style={{
-                width: "100%",
-                height: "100%",
-                maxHeight: isMobile ? "390px" : "650px",
-                objectFit: "contain",
-                display: "block",
-                padding: isMobile ? "18px" : "34px",
-                opacity: isSoldOut ? 0.34 : 1,
-              }}
-            />
-
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.05fr 0.95fr", gap: isMobile ? "28px" : "72px" }}>
+          <div style={{ background: "linear-gradient(145deg, #ffffff 0%, #f4f4f4 100%)", borderRadius: isMobile ? "24px" : "34px", minHeight: isMobile ? "390px" : "650px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 28px 80px rgba(0,0,0,0.08)" }}>
+            <img src={product.image} alt={product.name} style={{ width: "100%", height: "100%", maxHeight: isMobile ? "390px" : "650px", objectFit: "contain", padding: isMobile ? "18px" : "34px", opacity: isSoldOut ? 0.34 : 1 }} />
             {isSoldOut && <div style={soldOutOverlayStyle}>SOLD OUT</div>}
           </div>
 
-          <section
-            style={{
-              background: "rgba(255,255,255,0.78)",
-              border: "1px solid rgba(0,0,0,0.06)",
-              borderRadius: isMobile ? "24px" : "32px",
-              padding: isMobile ? "24px 20px" : "38px",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.06)",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "13px",
-                fontWeight: 900,
-                letterSpacing: "4px",
-                color: "#9b8b73",
-                marginBottom: "14px",
-              }}
-            >
+          <section style={{ background: "rgba(255,255,255,0.78)", border: "1px solid rgba(0,0,0,0.06)", borderRadius: isMobile ? "24px" : "32px", padding: isMobile ? "24px 20px" : "38px", boxShadow: "0 20px 60px rgba(0,0,0,0.06)" }}>
+            <p style={{ fontSize: "13px", fontWeight: 900, letterSpacing: "4px", color: "#9b8b73", marginBottom: "14px" }}>
               {product.brand}
             </p>
 
-            <h1
-              style={{
-                fontSize: isMobile ? "31px" : "46px",
-                lineHeight: "1.14",
-                marginBottom: "18px",
-                fontWeight: 950,
-                letterSpacing: "-1.5px",
-              }}
-            >
+            <h1 style={{ fontSize: isMobile ? "31px" : "46px", lineHeight: "1.14", marginBottom: "18px", fontWeight: 950, letterSpacing: "-1.5px" }}>
               {product.name}
             </h1>
 
-            {isSoldOut && <span style={soldOutBadgeStyle}>품절</span>}
+            <button onClick={toggleWishlist} style={wishButtonStyle}>
+              {isWished ? "❤️ 찜한 상품" : "🤍 찜하기"}
+            </button>
 
-            <div
-              style={{
-                display: "flex",
-                gap: "8px",
-                flexWrap: "wrap",
-                margin: "22px 0",
-              }}
-            >
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", margin: "22px 0" }}>
               {product.gender && <span style={badgeStyle}>{product.gender}</span>}
               <span style={badgeStyle}>{product.category}</span>
               <span style={badgeStyle}>AETHER SELECT</span>
             </div>
 
-            <h2
-              style={{
-                fontSize: isMobile ? "28px" : "32px",
-                marginBottom: "28px",
-                fontWeight: 950,
-                letterSpacing: "-0.8px",
-              }}
-            >
+            <h2 style={{ fontSize: isMobile ? "28px" : "32px", marginBottom: "28px", fontWeight: 950 }}>
               ₩{Number(product.price).toLocaleString()}
             </h2>
 
-            <p
-              style={{
-                color: "#5f5f5f",
-                lineHeight: "1.9",
-                fontSize: "15px",
-                marginBottom: "32px",
-                wordBreak: "keep-all",
-              }}
-            >
-              {product.description ||
-                "AETHER가 엄선한 프리미엄 패션 아이템입니다. 세련된 실루엣과 고급스러운 무드로 데일리 룩부터 특별한 스타일까지 완성해줍니다."}
+            <p style={{ color: "#5f5f5f", lineHeight: "1.9", fontSize: "15px", marginBottom: "32px", wordBreak: "keep-all" }}>
+              {product.description || "AETHER가 엄선한 프리미엄 패션 아이템입니다. 세련된 실루엣과 고급스러운 무드로 데일리 룩부터 특별한 스타일까지 완성해줍니다."}
             </p>
 
-            <div
-              style={{
-                borderTop: "1px solid #eee",
-                borderBottom: "1px solid #eee",
-                padding: "22px 0",
-                marginBottom: "28px",
-                display: "grid",
-                gap: "13px",
-                color: "#444",
-                fontSize: "14px",
-                fontWeight: 800,
-              }}
-            >
+            <div style={{ borderTop: "1px solid #eee", borderBottom: "1px solid #eee", padding: "22px 0", marginBottom: "28px", display: "grid", gap: "13px", color: "#444", fontSize: "14px", fontWeight: 800 }}>
               <p style={{ margin: 0 }}>✓ 100,000원 이상 무료 배송</p>
               <p style={{ margin: 0 }}>✓ 프리미엄 패키징 제공</p>
               <p style={{ margin: 0 }}>✓ 주문 후 카카오 오픈채팅 상담 진행</p>
               <p style={{ margin: 0 }}>✓ 교환 및 반품 정책 적용</p>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                gap: "12px",
-                flexDirection: isMobile ? "column" : "row",
-              }}
-            >
-              <button
-                onClick={addToCart}
-                disabled={isSoldOut}
-                style={{
-                  ...cartButtonStyle,
-                  opacity: isSoldOut ? 0.45 : 1,
-                  cursor: isSoldOut ? "not-allowed" : "pointer",
-                }}
-              >
+            <div style={{ display: "flex", gap: "12px", flexDirection: isMobile ? "column" : "row" }}>
+              <button onClick={addToCart} disabled={isSoldOut} style={{ ...cartButtonStyle, opacity: isSoldOut ? 0.45 : 1 }}>
                 {isSoldOut ? "품절된 상품입니다" : "장바구니 담기"}
               </button>
 
-              <button
-                onClick={buyNow}
-                disabled={isSoldOut}
-                style={{
-                  ...buyButtonStyle,
-                  opacity: isSoldOut ? 0.45 : 1,
-                  cursor: isSoldOut ? "not-allowed" : "pointer",
-                }}
-              >
+              <button onClick={buyNow} disabled={isSoldOut} style={{ ...buyButtonStyle, opacity: isSoldOut ? 0.45 : 1 }}>
                 {isSoldOut ? "구매 불가" : "바로 구매"}
               </button>
             </div>
@@ -323,14 +255,16 @@ const badgeStyle = {
   textTransform: "uppercase" as const,
 };
 
-const soldOutBadgeStyle = {
-  display: "inline-block",
-  padding: "8px 14px",
+const wishButtonStyle = {
+  width: "100%",
+  height: "54px",
   borderRadius: "999px",
-  background: "#111",
-  color: "#fff",
-  fontSize: "13px",
-  fontWeight: "900",
+  border: "1px solid #ddd",
+  background: "#fff",
+  color: "#111",
+  fontSize: "16px",
+  fontWeight: 950,
+  cursor: "pointer",
 };
 
 const soldOutOverlayStyle = {
@@ -356,6 +290,7 @@ const cartButtonStyle = {
   color: "#111",
   fontSize: "19px",
   fontWeight: "950",
+  cursor: "pointer",
 };
 
 const buyButtonStyle = {
@@ -367,4 +302,5 @@ const buyButtonStyle = {
   color: "#fff",
   fontSize: "19px",
   fontWeight: "950",
+  cursor: "pointer",
 };
