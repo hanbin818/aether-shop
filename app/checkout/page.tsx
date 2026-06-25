@@ -86,6 +86,10 @@ export default function CheckoutPage() {
 
     setLoading(true);
 
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     const ids = cart.map((item) => item.id);
 
     const { data: stockData, error: stockError } = await supabase
@@ -134,6 +138,7 @@ export default function CheckoutPage() {
         customer_name: customerName,
         customer_phone: customerPhone,
         customer_address: customerAddress,
+        customer_email: user?.email || null,
         depositor_name: depositorName,
         payment_method: "오픈채팅 계좌이체",
         status: "상담대기",
