@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "../app/lib/supabase";
 
 export default function BestItems() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchBestItems = async () => {
@@ -14,7 +15,7 @@ export default function BestItems() {
         .select("*")
         .eq("stock_status", "available")
         .order("id", { ascending: false })
-        .limit(4);
+        .limit(10);
 
       if (error) {
         console.error(error);
@@ -29,13 +30,29 @@ export default function BestItems() {
     fetchBestItems();
   }, []);
 
+  const moveSlide = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+
+    scrollRef.current.scrollBy({
+      left: direction === "left" ? -320 : 320,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <section className="best-section">
       <div className="best-inner">
-        <div className="best-title">
-          <p>BEST SELLER</p>
-          <h2>가장 사랑받는 상품</h2>
-          <span>AETHER가 추천하는 프리미엄 인기 셀렉션</span>
+        <div className="title-row">
+          <div>
+            <p>BEST SELLER</p>
+            <h2>가장 사랑받는 상품</h2>
+            <span>AETHER가 추천하는 프리미엄 인기 셀렉션</span>
+          </div>
+
+          <div className="arrow-wrap">
+            <button onClick={() => moveSlide("left")}>‹</button>
+            <button onClick={() => moveSlide("right")}>›</button>
+          </div>
         </div>
 
         {loading ? (
@@ -43,7 +60,7 @@ export default function BestItems() {
         ) : products.length === 0 ? (
           <p className="section-empty-text">등록된 판매 상품이 없습니다.</p>
         ) : (
-          <div className="best-grid">
+          <div ref={scrollRef} className="best-slider">
             {products.map((product, index) => (
               <a
                 key={product.id}
@@ -52,6 +69,18 @@ export default function BestItems() {
               >
                 <div className="image-box">
                   <span className="rank-badge">BEST {index + 1}</span>
+                  <button
+                    type="button"
+                    className="wish-button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      alert("상품 상세페이지에서 찜할 수 있습니다.");
+                    }}
+                  >
+                    ♡
+                  </button>
+
                   <img
                     src={product.image}
                     alt={product.name}
@@ -65,6 +94,7 @@ export default function BestItems() {
                   <p className="best-price">
                     ₩{Number(product.price).toLocaleString()}
                   </p>
+                  <span className="shop-label">바로 보기</span>
                 </div>
               </a>
             ))}
@@ -81,60 +111,99 @@ export default function BestItems() {
       <style jsx>{`
         .best-section {
           background:
-            radial-gradient(circle at top, rgba(201, 168, 106, 0.14), transparent 34%),
+            radial-gradient(circle at top left, rgba(216, 195, 159, 0.18), transparent 34%),
+            radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.08), transparent 28%),
             #111;
           color: #fff;
-          padding: 100px 40px;
+          padding: 104px 0;
+          overflow: hidden;
         }
 
         .best-inner {
           max-width: 1180px;
           margin: 0 auto;
+          padding: 0 24px;
         }
 
-        .best-title {
-          text-align: center;
-          margin-bottom: 58px;
+        .title-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 24px;
+          margin-bottom: 42px;
         }
 
-        .best-title p {
+        .title-row p {
           color: #d8c39f;
           font-size: 12px;
           font-weight: 950;
           letter-spacing: 5px;
-          margin-bottom: 14px;
+          margin: 0 0 14px;
         }
 
-        .best-title h2 {
-          font-size: 58px;
+        .title-row h2 {
+          font-size: clamp(38px, 6vw, 62px);
           font-weight: 950;
           letter-spacing: -1.8px;
           margin: 0;
         }
 
-        .best-title span {
+        .title-row span {
           display: block;
-          margin-top: 16px;
+          margin-top: 14px;
           color: rgba(255, 255, 255, 0.68);
           font-size: 16px;
           line-height: 1.7;
         }
 
-        .best-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 28px;
-          width: 100%;
+        .arrow-wrap {
+          display: flex;
+          gap: 10px;
+        }
+
+        .arrow-wrap button {
+          width: 48px;
+          height: 48px;
+          border-radius: 999px;
+          border: 1px solid rgba(255,255,255,0.25);
+          background: rgba(255,255,255,0.08);
+          color: #fff;
+          font-size: 32px;
+          cursor: pointer;
+          line-height: 1;
+          transition: 0.25s ease;
+        }
+
+        .arrow-wrap button:hover {
+          background: #fff;
+          color: #111;
+        }
+
+        .best-slider {
+          display: flex;
+          gap: 24px;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          padding: 8px 2px 28px;
+        }
+
+        .best-slider::-webkit-scrollbar {
+          height: 6px;
+        }
+
+        .best-slider::-webkit-scrollbar-thumb {
+          background: rgba(255,255,255,0.35);
+          border-radius: 999px;
         }
 
         .best-card {
-          width: 100%;
+          flex: 0 0 276px;
+          scroll-snap-align: start;
           background: #fff;
           color: #111;
           text-decoration: none;
           border-radius: 30px;
           overflow: hidden;
-          border: 1px solid rgba(255, 255, 255, 0.12);
           box-shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
           transition: 0.35s ease;
         }
@@ -163,9 +232,26 @@ export default function BestItems() {
           letter-spacing: 1px;
         }
 
+        .wish-button {
+          position: absolute;
+          top: 13px;
+          right: 13px;
+          z-index: 2;
+          width: 38px;
+          height: 38px;
+          border-radius: 999px;
+          border: none;
+          background: rgba(255,255,255,0.92);
+          color: #111;
+          font-size: 22px;
+          font-weight: 950;
+          cursor: pointer;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
         .best-image {
           width: 100%;
-          height: 286px;
+          height: 330px;
           object-fit: cover;
           background: #f5f5f5;
           display: block;
@@ -173,11 +259,12 @@ export default function BestItems() {
         }
 
         .best-card:hover .best-image {
-          transform: scale(1.05);
+          transform: scale(1.06);
         }
 
         .best-info {
-          padding: 22px 18px 26px;
+          padding: 22px 18px 24px;
+          text-align: center;
         }
 
         .best-brand {
@@ -185,16 +272,15 @@ export default function BestItems() {
           color: #9b8b73;
           font-weight: 950;
           letter-spacing: 2px;
-          margin-bottom: 8px;
-          text-align: center;
+          margin: 0 0 8px;
+          text-transform: uppercase;
         }
 
         .best-name {
           font-size: 16px;
           line-height: 1.45;
           color: #111;
-          margin-bottom: 12px;
-          text-align: center;
+          margin: 0 0 12px;
           min-height: 46px;
           font-weight: 900;
           word-break: keep-all;
@@ -204,7 +290,20 @@ export default function BestItems() {
           font-size: 17px;
           font-weight: 950;
           color: #111;
-          text-align: center;
+          margin: 0 0 14px;
+        }
+
+        .shop-label {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          height: 36px;
+          padding: 0 18px;
+          border-radius: 999px;
+          background: #111;
+          color: #fff;
+          font-size: 12px;
+          font-weight: 950;
         }
 
         .section-empty-text {
@@ -215,7 +314,7 @@ export default function BestItems() {
 
         .more-wrap {
           text-align: center;
-          margin-top: 44px;
+          margin-top: 34px;
         }
 
         .more-button {
@@ -234,49 +333,56 @@ export default function BestItems() {
 
         @media (max-width: 768px) {
           .best-section {
-            padding: 64px 16px;
+            padding: 72px 0;
           }
 
-          .best-title {
-            margin-bottom: 36px;
+          .best-inner {
+            padding: 0 16px;
           }
 
-          .best-title h2 {
+          .title-row {
+            display: block;
+            text-align: center;
+            margin-bottom: 34px;
+          }
+
+          .title-row h2 {
             font-size: 38px;
           }
 
-          .best-title span {
+          .title-row span {
             font-size: 14px;
           }
 
-          .best-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px 12px;
+          .arrow-wrap {
+            justify-content: center;
+            margin-top: 24px;
+          }
+
+          .best-slider {
+            gap: 16px;
+            padding-bottom: 22px;
           }
 
           .best-card {
-            border-radius: 22px;
+            flex-basis: 238px;
+            border-radius: 24px;
           }
 
           .best-image {
-            height: 178px;
+            height: 270px;
           }
 
           .best-info {
-            padding: 16px 10px 20px;
-          }
-
-          .best-brand {
-            font-size: 11px;
+            padding: 18px 12px 22px;
           }
 
           .best-name {
-            font-size: 13px;
-            min-height: 38px;
+            font-size: 14px;
           }
 
           .best-price {
-            font-size: 14px;
+            font-size: 15px;
           }
         }
       `}</style>
