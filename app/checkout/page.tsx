@@ -29,7 +29,6 @@ export default function CheckoutPage() {
   useEffect(() => {
     const savedCart = localStorage.getItem("aether-cart");
     setCart(savedCart ? JSON.parse(savedCart) : []);
-
     loadProfile();
   }, []);
 
@@ -86,6 +85,46 @@ export default function CheckoutPage() {
     }
 
     setLoading(true);
+
+    const ids = cart.map((item) => item.id);
+
+    const { data: stockData, error: stockError } = await supabase
+      .from("products")
+      .select("id, stock_status, stock_quantity")
+      .in("id", ids);
+
+    if (stockError) {
+      console.error(stockError);
+      setLoading(false);
+      alert("재고 확인 중 오류가 발생했습니다.");
+      return;
+    }
+
+    const unavailableItem = cart.find((cartItem) => {
+      const product = stockData?.find((p) => p.id === cartItem.id);
+
+      if (!product) return true;
+
+      const stockStatus = product.stock_status
+        ?.toLowerCase()
+        .replace(/[_-\s]/g, "");
+
+      const isSoldOut =
+        stockStatus === "soldout" || Number(product.stock_quantity || 0) <= 0;
+
+      const isOverQuantity =
+        cartItem.quantity > Number(product.stock_quantity || 0);
+
+      return isSoldOut || isOverQuantity;
+    });
+
+    if (unavailableItem) {
+      setLoading(false);
+      alert(
+        `"${unavailableItem.name}" 상품은 품절되었거나 재고가 부족합니다. 장바구니를 다시 확인해주세요.`
+      );
+      return;
+    }
 
     const orderNumber = createOrderNumber();
 
@@ -235,7 +274,7 @@ export default function CheckoutPage() {
             </strong>
 
             <button onClick={submitOrder} disabled={loading}>
-              {loading ? "주문 접수 중..." : "주문 접수하기"}
+              {loading ? "재고 확인 및 주문 접수 중..." : "주문 접수하기"}
             </button>
           </section>
         </div>
