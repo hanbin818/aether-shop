@@ -60,76 +60,40 @@ export default function LoginPage() {
     window.location.href = "/";
   };
 
+  const findId = () => {
+    alert("아이디는 가입하신 이메일 주소입니다.");
+  };
+
+  const findPassword = async () => {
+    if (!email) {
+      alert("비밀번호를 찾으려면 이메일을 먼저 입력해주세요.");
+      return;
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/login`,
+    });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    alert("비밀번호 재설정 메일을 발송했습니다. 이메일을 확인해주세요.");
+  };
+
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        background:
-          "linear-gradient(135deg, #050505 0%, #111 45%, #2a2114 100%)",
-        color: "#fff",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "36px 18px",
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "440px",
-          background: "rgba(255,255,255,0.06)",
-          padding: "42px 28px",
-          borderRadius: "30px",
-          border: "1px solid rgba(255,255,255,0.12)",
-          boxShadow: "0 30px 90px rgba(0,0,0,0.4)",
-          backdropFilter: "blur(18px)",
-        }}
-      >
-        <a
-          href="/"
-          style={{
-            color: "#b99b63",
-            textDecoration: "none",
-            fontSize: "13px",
-            fontWeight: 900,
-          }}
-        >
+    <main className="login-page">
+      <div className="login-card">
+        <a href="/" className="back-link">
           ← 홈으로 돌아가기
         </a>
 
-        <p
-          style={{
-            marginTop: "34px",
-            marginBottom: "12px",
-            color: "#b99b63",
-            fontSize: "12px",
-            fontWeight: 900,
-            letterSpacing: "5px",
-          }}
-        >
-          AETHER MEMBERS
-        </p>
+        <p className="label">AETHER MEMBERS</p>
 
-        <h1
-          style={{
-            fontSize: "42px",
-            margin: 0,
-            marginBottom: "14px",
-            fontWeight: 950,
-            letterSpacing: "-1.5px",
-          }}
-        >
-          {mode === "login" ? "로그인" : "회원가입"}
-        </h1>
+        <h1>{mode === "login" ? "로그인" : "회원가입"}</h1>
 
-        <p
-          style={{
-            color: "rgba(255,255,255,0.68)",
-            fontSize: "14px",
-            lineHeight: "1.8",
-            marginBottom: "30px",
-          }}
-        >
+        <p className="description">
           AETHER 회원 전용 서비스를 이용해보세요.
         </p>
 
@@ -138,13 +102,12 @@ export default function LoginPage() {
             e.preventDefault();
             mode === "login" ? signIn() : signUp();
           }}
-          style={{ display: "grid", gap: "14px" }}
+          className="login-form"
         >
           <input
-            placeholder="이메일"
+            placeholder="아이디"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={inputStyle}
           />
 
           <input
@@ -152,59 +115,195 @@ export default function LoginPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={inputStyle}
           />
 
-          <button type="submit" style={buttonStyle}>
+          {mode === "login" && (
+            <label className="keep-login">
+              <input type="checkbox" />
+              <span>로그인 상태 유지</span>
+            </label>
+          )}
+
+          <button type="submit" className="main-button">
             {mode === "login" ? "로그인" : "회원가입"}
           </button>
 
-          <button
-            type="button"
-            onClick={() => setMode(mode === "login" ? "signup" : "login")}
-            style={subButtonStyle}
-          >
-            {mode === "login"
-              ? "아직 회원이 아니신가요?"
-              : "이미 계정이 있으신가요?"}
-          </button>
+          {mode === "login" && (
+            <div className="login-links">
+              <button type="button" onClick={findId}>
+                아이디 찾기
+              </button>
+              <span>|</span>
+              <button type="button" onClick={findPassword}>
+                비밀번호 찾기
+              </button>
+              <span>|</span>
+              <button type="button" onClick={() => setMode("signup")}>
+                회원가입
+              </button>
+            </div>
+          )}
+
+          {mode === "signup" && (
+            <button
+              type="button"
+              onClick={() => setMode("login")}
+              className="sub-button"
+            >
+              이미 계정이 있으신가요? 로그인하기
+            </button>
+          )}
         </form>
       </div>
+
+      <style>{`
+        .login-page {
+          min-height: 100vh;
+          background: #fff;
+          color: #111;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 36px 18px;
+        }
+
+        .login-card {
+          width: 100%;
+          max-width: 460px;
+          padding: 20px;
+          text-align: center;
+        }
+
+        .back-link {
+          display: inline-block;
+          margin-bottom: 56px;
+          color: #777;
+          text-decoration: none;
+          font-size: 13px;
+          font-weight: 800;
+        }
+
+        .label {
+          margin: 0 0 12px;
+          color: #8b7b66;
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 4px;
+        }
+
+        h1 {
+          margin: 0 0 12px;
+          font-size: 24px;
+          font-weight: 950;
+        }
+
+        .description {
+          margin: 0 0 48px;
+          color: #777;
+          font-size: 14px;
+          line-height: 1.7;
+        }
+
+        .login-form {
+          display: grid;
+          gap: 22px;
+        }
+
+        .login-form input[type="text"],
+        .login-form input[type="password"],
+        .login-form > input {
+          width: 100%;
+          height: 54px;
+          border: none;
+          border-bottom: 1px solid #ddd;
+          background: transparent;
+          color: #111;
+          font-size: 15px;
+          outline: none;
+          box-sizing: border-box;
+          font-weight: 700;
+        }
+
+        .login-form input::placeholder {
+          color: #aaa;
+          font-weight: 700;
+        }
+
+        .keep-login {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: #666;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          text-align: left;
+        }
+
+        .keep-login input {
+          width: 15px;
+          height: 15px;
+          accent-color: #111;
+        }
+
+        .main-button {
+          height: 58px;
+          border-radius: 4px;
+          background: #111;
+          color: #fff;
+          border: none;
+          font-size: 16px;
+          font-weight: 950;
+          cursor: pointer;
+          margin-top: 4px;
+        }
+
+        .login-links {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 14px;
+          color: #bbb;
+          font-size: 13px;
+          margin-top: 10px;
+        }
+
+        .login-links button {
+          background: transparent;
+          border: none;
+          color: #777;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          padding: 0;
+        }
+
+        .sub-button {
+          height: 54px;
+          border-radius: 999px;
+          background: transparent;
+          color: #111;
+          border: 1px solid #ddd;
+          font-size: 14px;
+          font-weight: 900;
+          cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+          .login-page {
+            align-items: flex-start;
+            padding-top: 70px;
+          }
+
+          .back-link {
+            margin-bottom: 44px;
+          }
+
+          .description {
+            margin-bottom: 40px;
+          }
+        }
+      `}</style>
     </main>
   );
 }
-
-const inputStyle = {
-  height: "56px",
-  borderRadius: "999px",
-  border: "1px solid rgba(255,255,255,0.14)",
-  background: "rgba(0,0,0,0.35)",
-  color: "#fff",
-  fontSize: "15px",
-  padding: "0 20px",
-  outline: "none",
-  fontWeight: 700,
-};
-
-const buttonStyle = {
-  height: "58px",
-  borderRadius: "999px",
-  background: "#fff",
-  color: "#111",
-  border: "none",
-  fontSize: "16px",
-  fontWeight: 950,
-  cursor: "pointer",
-  marginTop: "8px",
-};
-
-const subButtonStyle = {
-  height: "54px",
-  borderRadius: "999px",
-  background: "transparent",
-  color: "#b99b63",
-  border: "1px solid rgba(185,155,99,0.45)",
-  fontSize: "14px",
-  fontWeight: 900,
-  cursor: "pointer",
-};
