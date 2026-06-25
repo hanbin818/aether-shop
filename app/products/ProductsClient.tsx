@@ -13,7 +13,7 @@ const categoryTabs = [
   { label: "BAG", value: "bag" },
   { label: "WALLET", value: "wallet" },
   { label: "SHOES", value: "shoes" },
-  { label: "ACCESSORY", value: "accessory" },
+  { label: "ACC", value: "accessory" },
   { label: "CLOTHES", value: "clothes" },
 ];
 
@@ -126,6 +126,10 @@ export default function ProductsClient() {
   return (
     <main className="products-page">
       <section className="shop-hero">
+        <a href="/home" className="home-button">
+          ← 메인으로
+        </a>
+
         <p>AETHER COLLECTION</p>
         <h1>SHOP</h1>
         <span>엄선된 프리미엄 명품 셀렉션을 만나보세요.</span>
@@ -199,6 +203,7 @@ export default function ProductsClient() {
           background: linear-gradient(180deg, #fff 0%, #f7f2ea 100%);
           color: #111;
           padding-bottom: 90px;
+          overflow-x: hidden;
         }
 
         .loading-page {
@@ -213,8 +218,9 @@ export default function ProductsClient() {
         }
 
         .shop-hero {
-          min-height: 360px;
-          padding: 80px 20px;
+          position: relative;
+          min-height: 320px;
+          padding: 72px 20px;
           background:
             linear-gradient(rgba(0,0,0,0.58), rgba(0,0,0,0.76)),
             url("https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=90");
@@ -228,8 +234,22 @@ export default function ProductsClient() {
           text-align: center;
         }
 
+        .home-button {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          color: #111;
+          background: rgba(255,255,255,0.92);
+          text-decoration: none;
+          padding: 10px 16px;
+          border-radius: 999px;
+          font-size: 13px;
+          font-weight: 950;
+          box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+        }
+
         .shop-hero p {
-          margin: 0 0 16px;
+          margin: 0 0 14px;
           color: #d8c39f;
           font-size: 12px;
           font-weight: 950;
@@ -238,39 +258,39 @@ export default function ProductsClient() {
 
         .shop-hero h1 {
           margin: 0;
-          font-size: clamp(56px, 10vw, 112px);
+          font-size: clamp(52px, 10vw, 100px);
           font-weight: 950;
-          letter-spacing: 14px;
+          letter-spacing: 12px;
           line-height: 0.9;
         }
 
         .shop-hero span {
           display: block;
-          margin-top: 26px;
+          margin-top: 24px;
           color: rgba(255,255,255,0.78);
-          font-size: 16px;
+          font-size: 15px;
           line-height: 1.8;
           word-break: keep-all;
         }
 
         .shop-control {
-          max-width: 1200px;
-          margin: -42px auto 36px;
-          background: rgba(255,255,255,0.94);
+          max-width: 1180px;
+          margin: -38px auto 28px;
+          background: rgba(255,255,255,0.96);
           border: 1px solid rgba(0,0,0,0.06);
-          border-radius: 32px;
-          padding: 26px;
-          box-shadow: 0 24px 70px rgba(0,0,0,0.1);
+          border-radius: 28px;
+          padding: 22px;
+          box-shadow: 0 22px 58px rgba(0,0,0,0.09);
           position: relative;
           z-index: 2;
         }
 
         .tab-row {
           display: flex;
-          gap: 10px;
+          gap: 8px;
           overflow-x: auto;
-          padding-bottom: 14px;
-          margin-bottom: 18px;
+          padding-bottom: 12px;
+          margin-bottom: 16px;
           border-bottom: 1px solid #eee;
         }
 
@@ -280,27 +300,25 @@ export default function ProductsClient() {
 
         .tab-row button {
           flex: 0 0 auto;
-          padding: 12px 22px;
+          padding: 10px 18px;
           border-radius: 999px;
           border: 1px solid #ddd;
           background: #fff;
           color: #111;
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 950;
-          letter-spacing: 1.5px;
+          letter-spacing: 1.3px;
           cursor: pointer;
-          transition: 0.25s ease;
         }
 
-        .tab-row button.active,
-        .tab-row button:hover {
+        .tab-row button.active {
           background: #111;
           color: #fff;
           border-color: #111;
         }
 
         .search-row {
-          max-width: 640px;
+          max-width: 600px;
           margin: 0 auto;
           display: flex;
           gap: 8px;
@@ -308,21 +326,21 @@ export default function ProductsClient() {
 
         .search-row input {
           flex: 1;
-          height: 52px;
+          height: 48px;
           border-radius: 999px;
           border: 1px solid #ddd;
           background: #fafafa;
           color: #111;
-          padding: 0 20px;
-          font-size: 15px;
+          padding: 0 18px;
+          font-size: 14px;
           font-weight: 800;
           outline: none;
           text-align: center;
         }
 
         .search-row button {
-          width: 88px;
-          height: 52px;
+          width: 80px;
+          height: 48px;
           border-radius: 999px;
           background: #111;
           color: #fff;
@@ -333,9 +351,9 @@ export default function ProductsClient() {
         }
 
         .result-row {
-          margin-top: 20px;
+          margin-top: 18px;
           display: flex;
-          justify-content: space-between;
+          justify-content: center;
           align-items: center;
           gap: 14px;
           flex-wrap: wrap;
@@ -353,28 +371,28 @@ export default function ProductsClient() {
         }
 
         .result-row select {
-          height: 44px;
+          height: 42px;
           border-radius: 999px;
           border: 1px solid #ddd;
           background: #fff;
           color: #111;
-          padding: 0 16px;
+          padding: 0 15px;
           font-size: 13px;
           font-weight: 900;
           outline: none;
         }
 
         .product-section {
-          max-width: 1200px;
+          max-width: 1180px;
           margin: 0 auto;
           padding: 0 18px;
         }
 
         .product-grid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 26px;
-          justify-items: center;
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+          gap: 18px;
+          align-items: start;
         }
 
         .empty-box {
@@ -390,60 +408,85 @@ export default function ProductsClient() {
           box-shadow: 0 18px 50px rgba(0,0,0,0.06);
         }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1180px) {
           .product-grid {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+          }
+        }
+
+        @media (max-width: 900px) {
+          .product-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
           }
         }
 
         @media (max-width: 768px) {
           .shop-hero {
-            min-height: 300px;
-            padding: 64px 18px;
+            min-height: 250px;
+            padding: 54px 18px 64px;
           }
 
-          .shop-hero h1 {
-            font-size: 58px;
-            letter-spacing: 9px;
-          }
-
-          .shop-hero span {
-            font-size: 14px;
-          }
-
-          .shop-control {
-            margin: -34px 14px 30px;
-            padding: 20px 14px;
-            border-radius: 26px;
-          }
-
-          .tab-row {
-            gap: 8px;
-          }
-
-          .tab-row button {
-            padding: 10px 16px;
+          .home-button {
+            top: 14px;
+            left: 14px;
+            padding: 9px 13px;
             font-size: 12px;
           }
 
-          .search-row input {
-            height: 48px;
+          .shop-hero p {
+            font-size: 11px;
+            letter-spacing: 4px;
+          }
+
+          .shop-hero h1 {
+            font-size: 50px;
+            letter-spacing: 8px;
+          }
+
+          .shop-hero span {
             font-size: 13px;
-            padding: 0 14px;
+            margin-top: 20px;
+          }
+
+          .shop-control {
+            margin: -36px 12px 24px;
+            padding: 18px 12px;
+            border-radius: 24px;
+          }
+
+          .tab-row {
+            gap: 7px;
+          }
+
+          .tab-row button {
+            padding: 9px 14px;
+            font-size: 11px;
+            letter-spacing: 1px;
+          }
+
+          .search-row input {
+            height: 44px;
+            font-size: 12px;
+            padding: 0 12px;
           }
 
           .search-row button {
-            width: 72px;
-            height: 48px;
+            width: 66px;
+            height: 44px;
+            font-size: 13px;
           }
 
           .result-row {
-            justify-content: center;
+            margin-top: 16px;
+          }
+
+          .product-section {
+            padding: 0 10px;
           }
 
           .product-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px 10px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px 9px;
           }
         }
       `}</style>
