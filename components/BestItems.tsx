@@ -70,13 +70,21 @@ export default function BestItems() {
             ))}
           </div>
         )}
+
+        <div className="more-wrap">
+          <a href="/products" className="more-button">
+            베스트 상품 더 보기
+          </a>
+        </div>
       </div>
 
       <style jsx>{`
         .best-section {
-          background: #111;
+          background:
+            radial-gradient(circle at top, rgba(201, 168, 106, 0.14), transparent 34%),
+            #111;
           color: #fff;
-          padding: 90px 40px;
+          padding: 100px 40px;
         }
 
         .best-inner {
@@ -86,35 +94,36 @@ export default function BestItems() {
 
         .best-title {
           text-align: center;
-          margin-bottom: 54px;
+          margin-bottom: 58px;
         }
 
         .best-title p {
           color: #d8c39f;
-          font-size: 13px;
-          font-weight: 900;
+          font-size: 12px;
+          font-weight: 950;
           letter-spacing: 5px;
           margin-bottom: 14px;
         }
 
         .best-title h2 {
-          font-size: 50px;
+          font-size: 58px;
           font-weight: 950;
-          letter-spacing: -1.6px;
+          letter-spacing: -1.8px;
           margin: 0;
         }
 
         .best-title span {
           display: block;
-          margin-top: 14px;
+          margin-top: 16px;
           color: rgba(255, 255, 255, 0.68);
           font-size: 16px;
+          line-height: 1.7;
         }
 
         .best-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 26px;
+          gap: 28px;
           width: 100%;
         }
 
@@ -123,10 +132,15 @@ export default function BestItems() {
           background: #fff;
           color: #111;
           text-decoration: none;
-          border-radius: 28px;
+          border-radius: 30px;
           overflow: hidden;
           border: 1px solid rgba(255, 255, 255, 0.12);
-          box-shadow: 0 22px 60px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
+          transition: 0.35s ease;
+        }
+
+        .best-card:hover {
+          transform: translateY(-8px);
         }
 
         .image-box {
@@ -137,13 +151,13 @@ export default function BestItems() {
 
         .rank-badge {
           position: absolute;
-          top: 13px;
-          left: 13px;
+          top: 14px;
+          left: 14px;
           z-index: 2;
           background: #111;
           color: #fff;
           border-radius: 999px;
-          padding: 7px 12px;
+          padding: 8px 13px;
           font-size: 10px;
           font-weight: 950;
           letter-spacing: 1px;
@@ -151,7 +165,7 @@ export default function BestItems() {
 
         .best-image {
           width: 100%;
-          height: 270px;
+          height: 286px;
           object-fit: cover;
           background: #f5f5f5;
           display: block;
@@ -159,11 +173,11 @@ export default function BestItems() {
         }
 
         .best-card:hover .best-image {
-          transform: scale(1.04);
+          transform: scale(1.05);
         }
 
         .best-info {
-          padding: 20px 16px 24px;
+          padding: 22px 18px 26px;
         }
 
         .best-brand {
@@ -176,17 +190,18 @@ export default function BestItems() {
         }
 
         .best-name {
-          font-size: 15px;
+          font-size: 16px;
           line-height: 1.45;
           color: #111;
           margin-bottom: 12px;
           text-align: center;
-          min-height: 44px;
-          font-weight: 800;
+          min-height: 46px;
+          font-weight: 900;
+          word-break: keep-all;
         }
 
         .best-price {
-          font-size: 16px;
+          font-size: 17px;
           font-weight: 950;
           color: #111;
           text-align: center;
@@ -198,17 +213,36 @@ export default function BestItems() {
           font-weight: 800;
         }
 
+        .more-wrap {
+          text-align: center;
+          margin-top: 44px;
+        }
+
+        .more-button {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          height: 56px;
+          padding: 0 34px;
+          border-radius: 999px;
+          background: #fff;
+          color: #111;
+          text-decoration: none;
+          font-size: 15px;
+          font-weight: 950;
+        }
+
         @media (max-width: 768px) {
           .best-section {
-            padding: 58px 16px;
+            padding: 64px 16px;
           }
 
           .best-title {
-            margin-bottom: 34px;
+            margin-bottom: 36px;
           }
 
           .best-title h2 {
-            font-size: 34px;
+            font-size: 38px;
           }
 
           .best-title span {
@@ -221,15 +255,15 @@ export default function BestItems() {
           }
 
           .best-card {
-            border-radius: 20px;
+            border-radius: 22px;
           }
 
           .best-image {
-            height: 170px;
+            height: 178px;
           }
 
           .best-info {
-            padding: 14px 8px 18px;
+            padding: 16px 10px 20px;
           }
 
           .best-brand {
