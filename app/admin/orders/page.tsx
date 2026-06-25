@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 
 const ORDER_STATUSES = [
+  "상담대기",
   "입금대기",
   "입금확인",
   "배송준비중",
@@ -16,8 +17,11 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [search, setSearch] = useState("");
 
   const fetchOrders = async () => {
+    setLoading(true);
+
     const { data, error } = await supabase
       .from("orders")
       .select("*")
@@ -25,6 +29,7 @@ export default function AdminOrdersPage() {
 
     if (error) {
       console.error(error);
+      alert("주문을 불러오지 못했습니다.");
       setLoading(false);
       return;
     }
@@ -40,7 +45,10 @@ export default function AdminOrdersPage() {
   const updateStatus = async (id: number, status: string) => {
     setUpdatingId(id);
 
-    const { error } = await supabase.from("orders").update({ status }).eq("id", id);
+    const { error } = await supabase
+      .from("orders")
+      .update({ status })
+      .eq("id", id);
 
     if (error) {
       console.error(error);
@@ -62,8 +70,34 @@ export default function AdminOrdersPage() {
     if (status === "배송준비중") return { background: "#fff4df", color: "#9a5a00" };
     if (status === "입금확인") return { background: "#eef8ff", color: "#0069a8" };
     if (status === "주문취소") return { background: "#ffecec", color: "#c62828" };
-    return { background: "#111", color: "#fff" };
+    if (status === "상담대기") return { background: "#111", color: "#fff" };
+    return { background: "#f1f1f1", color: "#333" };
   };
+
+  const getNextStatus = (status: string) => {
+    if (status === "상담대기") return "입금대기";
+    if (status === "입금대기") return "입금확인";
+    if (status === "입금확인") return "배송준비중";
+    if (status === "배송준비중") return "배송중";
+    if (status === "배송중") return "배송완료";
+    return "";
+  };
+
+  const filteredOrders = orders.filter((order) => {
+    const keyword = search.trim().toLowerCase();
+
+    if (!keyword) return true;
+
+    return (
+      order.order_number?.toLowerCase().includes(keyword) ||
+      order.customer_name?.toLowerCase().includes(keyword) ||
+      order.customer_phone?.toLowerCase().includes(keyword) ||
+      order.depositor_name?.toLowerCase().includes(keyword)
+    );
+  });
+
+  const countByStatus = (status: string) =>
+    orders.filter((order) => (order.status || "상담대기") === status).length;
 
   return (
     <main style={pageStyle}>
@@ -72,21 +106,43 @@ export default function AdminOrdersPage() {
       </a>
 
       <p style={labelStyle}>AETHER ADMIN</p>
-
       <h1 style={titleStyle}>주문 관리</h1>
 
       <p style={descStyle}>
-        고객 주문 정보를 확인하고 주문 상태를 변경할 수 있습니다.
+        고객 주문 정보를 확인하고 주문 상태를 빠르게 변경할 수 있습니다.
       </p>
+
+      <div style={summaryGridStyle}>
+        {ORDER_STATUSES.map((status) => (
+          <div key={status} style={summaryCardStyle}>
+            <p style={summaryLabelStyle}>{status}</p>
+            <strong style={summaryNumberStyle}>{countByStatus(status)}건</strong>
+          </div>
+        ))}
+      </div>
+
+      <div style={toolBoxStyle}>
+        <input
+          placeholder="주문번호, 주문자, 연락처, 입금자명 검색"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={searchInputStyle}
+        />
+
+        <button onClick={fetchOrders} style={refreshButtonStyle}>
+          새로고침
+        </button>
+      </div>
 
       {loading ? (
         <p style={noticeStyle}>주문 불러오는 중...</p>
-      ) : orders.length === 0 ? (
-        <p style={noticeStyle}>아직 주문이 없습니다.</p>
+      ) : filteredOrders.length === 0 ? (
+        <p style={noticeStyle}>검색된 주문이 없습니다.</p>
       ) : (
         <div style={listStyle}>
-          {orders.map((order) => {
-            const currentStatus = order.status || "입금대기";
+          {filteredOrders.map((order) => {
+            const currentStatus = order.status || "상담대기";
+            const nextStatus = getNextStatus(currentStatus);
             const displayOrderNumber =
               order.order_number || `주문번호 #${order.id}`;
 
@@ -95,14 +151,13 @@ export default function AdminOrdersPage() {
                 <div style={topAreaStyle}>
                   <div>
                     <p style={smallLabelStyle}>주문번호</p>
-
                     <h3 style={orderNumberStyle}>{displayOrderNumber}</h3>
-
                     <p style={dbIdStyle}>DB ID #{order.id}</p>
 
                     {order.created_at && (
                       <p style={dateStyle}>
-                        주문일시: {new Date(order.created_at).toLocaleString("ko-KR")}
+                        주문일시:{" "}
+                        {new Date(order.created_at).toLocaleString("ko-KR")}
                       </p>
                     )}
                   </div>
@@ -132,6 +187,26 @@ export default function AdminOrdersPage() {
                       </option>
                     ))}
                   </select>
+
+                  <div style={quickButtonWrapStyle}>
+                    {nextStatus && (
+                      <button
+                        disabled={updatingId === order.id}
+                        onClick={() => updateStatus(order.id, nextStatus)}
+                        style={quickButtonStyle}
+                      >
+                        다음 단계: {nextStatus}
+                      </button>
+                    )}
+
+                    <button
+                      disabled={updatingId === order.id}
+                      onClick={() => updateStatus(order.id, "주문취소")}
+                      style={cancelOrderButtonStyle}
+                    >
+                      주문취소
+                    </button>
+                  </div>
 
                   {updatingId === order.id && (
                     <p style={updatingTextStyle}>상태 변경 중...</p>
@@ -183,11 +258,15 @@ export default function AdminOrdersPage() {
                   order.items.map((item: any, index: number) => (
                     <div key={index} style={itemRowStyle}>
                       <div>
-                        <strong>{item.brand ? `${item.brand} · ` : ""}{item.name}</strong>
+                        <strong>
+                          {item.brand ? `${item.brand} · ` : ""}
+                          {item.name}
+                        </strong>
                       </div>
 
                       <div style={{ color: "#666", fontWeight: 800 }}>
-                        {item.quantity}개 × ₩{Number(item.price).toLocaleString()}
+                        {item.quantity}개 × ₩
+                        {Number(item.price).toLocaleString()}
                       </div>
                     </div>
                   ))
@@ -238,10 +317,68 @@ const titleStyle = {
 
 const descStyle = {
   maxWidth: "1100px",
-  margin: "0 auto 34px",
+  margin: "0 auto 28px",
   color: "#666",
   lineHeight: "1.7",
   fontSize: "15px",
+};
+
+const summaryGridStyle = {
+  maxWidth: "1100px",
+  margin: "0 auto 24px",
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
+  gap: "12px",
+};
+
+const summaryCardStyle = {
+  background: "#fff",
+  borderRadius: "18px",
+  padding: "18px",
+  border: "1px solid rgba(0,0,0,0.06)",
+  boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
+};
+
+const summaryLabelStyle = {
+  margin: 0,
+  color: "#777",
+  fontSize: "13px",
+  fontWeight: 900,
+};
+
+const summaryNumberStyle = {
+  display: "block",
+  marginTop: "8px",
+  fontSize: "24px",
+  fontWeight: 950,
+};
+
+const toolBoxStyle = {
+  maxWidth: "1100px",
+  margin: "0 auto 24px",
+  display: "flex",
+  gap: "10px",
+};
+
+const searchInputStyle = {
+  flex: 1,
+  height: "52px",
+  borderRadius: "999px",
+  border: "1px solid #ddd",
+  padding: "0 18px",
+  fontSize: "15px",
+  fontWeight: 800,
+};
+
+const refreshButtonStyle = {
+  height: "52px",
+  padding: "0 22px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#111",
+  color: "#fff",
+  fontWeight: 900,
+  cursor: "pointer",
 };
 
 const noticeStyle = {
@@ -340,6 +477,37 @@ const selectStyle = {
   color: "#111",
   padding: "0 18px",
   fontSize: "15px",
+  fontWeight: 900,
+  cursor: "pointer",
+};
+
+const quickButtonWrapStyle = {
+  display: "flex",
+  gap: "10px",
+  flexWrap: "wrap" as const,
+  marginTop: "12px",
+};
+
+const quickButtonStyle = {
+  flex: 1,
+  minWidth: "180px",
+  height: "48px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#111",
+  color: "#fff",
+  fontWeight: 900,
+  cursor: "pointer",
+};
+
+const cancelOrderButtonStyle = {
+  flex: 1,
+  minWidth: "140px",
+  height: "48px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#d93025",
+  color: "#fff",
   fontWeight: 900,
   cursor: "pointer",
 };
