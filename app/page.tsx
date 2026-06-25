@@ -1,101 +1,110 @@
-import Header from "../components/Header";
-import TopButton from "../components/TopButton";
-import Footer from "../components/Footer";
-import Hero from "../components/Hero";
-import CategoryIcons from "../components/CategoryIcons";
-import BrandSection from "../components/BrandSection";
-import NewArrivals from "../components/NewArrivals";
-import BestItems from "../components/BestItems";
-import GenderBanners from "../components/GenderBanners";
-
-export default function Home() {
+export default function LandingPage() {
   return (
-    <main className="home-page">
-      <Header />
+    <main style={pageStyle}>
+      <div style={cardStyle}>
+        <div style={logoStyle}>
+          <h1 style={logoTextStyle}>A</h1>
+        </div>
 
-      <Hero />
+        <p style={brandStyle}>AETHER</p>
 
-      <CategoryIcons />
-
-      <NewArrivals />
-
-      <BestItems />
-
-      <GenderBanners />
-
-      <BrandSection />
-
-      <section className="intro-section">
-        <p className="section-label">LUXURY SELECT SHOP</p>
-        <h1>
-          감각적인 명품 셀렉션을
+        <h2 style={titleStyle}>
+          프리미엄 명품 셀렉트샵
           <br />
-          한 곳에서 만나보세요
-        </h1>
-        <p>
-          AETHER는 남성·여성 프리미엄 패션 아이템을 엄선해 소개하는
-          럭셔리 셀렉트샵입니다.
+          AETHER
+        </h2>
+
+        <p style={descStyle}>
+          상품 문의는 오픈채팅으로,
+          <br />
+          쇼핑은 공식 웹사이트에서 이용해주세요.
         </p>
-      </section>
 
-      <Footer />
+        <a
+          style={{ ...buttonStyle, ...kakaoButtonStyle }}
+          href="https://open.kakao.com/o/여기에_오픈채팅주소"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          오픈채팅 주문 / 제품문의
+        </a>
 
-      <TopButton />
-
-      <style>{`
-        .home-page {
-          background: #fff;
-          color: #111;
-          min-height: 100vh;
-          overflow-x: hidden;
-        }
-
-        .intro-section {
-          padding: 64px 20px 58px;
-          text-align: center;
-          background: linear-gradient(180deg, #fff 0%, #faf7f1 100%);
-        }
-
-        .section-label {
-          margin: 0 0 14px;
-          color: #9b8b73;
-          font-size: 12px;
-          font-weight: 950;
-          letter-spacing: 5px;
-        }
-
-        .intro-section h1 {
-          margin: 0 0 18px;
-          font-size: clamp(34px, 6vw, 58px);
-          line-height: 1.14;
-          font-weight: 950;
-          letter-spacing: -2px;
-        }
-
-        .intro-section p:last-child {
-          max-width: 660px;
-          margin: 0 auto;
-          color: #666;
-          font-size: 16px;
-          line-height: 1.9;
-          word-break: keep-all;
-        }
-
-        @media (max-width: 768px) {
-          .intro-section {
-            padding: 46px 18px 42px;
-          }
-
-          .intro-section h1 {
-            font-size: 32px;
-            letter-spacing: -1.3px;
-          }
-
-          .intro-section p:last-child {
-            font-size: 14px;
-          }
-        }
-      `}</style>
+        <a style={{ ...buttonStyle, ...websiteButtonStyle }} href="/home">
+          공식 웹사이트
+        </a>
+      </div>
     </main>
   );
 }
+
+const pageStyle = {
+  minHeight: "100vh",
+  background: "linear-gradient(180deg, #f5c2b0 0%, #efb19e 100%)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: "20px",
+} as const;
+
+const cardStyle = {
+  width: "100%",
+  maxWidth: "500px",
+  textAlign: "center",
+} as const;
+
+const logoStyle = {
+  width: "130px",
+  height: "130px",
+  margin: "0 auto 24px",
+  borderRadius: "50%",
+  background: "#7b2738",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+} as const;
+
+const logoTextStyle = {
+  color: "white",
+  fontSize: "70px",
+  margin: 0,
+  fontFamily: "serif",
+} as const;
+
+const brandStyle = {
+  fontSize: "14px",
+  letterSpacing: "6px",
+  fontWeight: 700,
+  marginBottom: "10px",
+} as const;
+
+const titleStyle = {
+  fontSize: "30px",
+  marginBottom: "16px",
+  lineHeight: 1.4,
+} as const;
+
+const descStyle = {
+  color: "#444",
+  marginBottom: "40px",
+  lineHeight: 1.8,
+} as const;
+
+const buttonStyle = {
+  display: "block",
+  textDecoration: "none",
+  color: "#111",
+  marginBottom: "18px",
+  padding: "22px",
+  borderRadius: "18px",
+  fontSize: "18px",
+  fontWeight: 700,
+  boxShadow: "0 10px 25px rgba(0, 0, 0, 0.12)",
+} as const;
+
+const kakaoButtonStyle = {
+  background: "#fee500",
+} as const;
+
+const websiteButtonStyle = {
+  background: "white",
+} as const;
