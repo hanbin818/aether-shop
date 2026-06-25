@@ -92,12 +92,13 @@ export default function AdminPage() {
     0
   );
 
-  const soldOutCount = products.filter(
-    (product) => product.stock_status === "soldout" || Number(product.stock_quantity || 0) <= 0
-  ).length;
+  const soldOutCount = products.filter((product) => {
+    const status = product.stock_status?.toLowerCase().replace(/[_-\s]/g, "");
+    return status === "soldout" || Number(product.stock_quantity || 0) <= 0;
+  }).length;
 
   const waitingOrders = orders.filter(
-    (order) => (order.status || "입금대기") === "입금대기"
+    (order) => (order.status || "상담대기") === "상담대기"
   ).length;
 
   const paidOrders = orders.filter((order) => order.status === "입금확인").length;
@@ -243,6 +244,27 @@ export default function AdminPage() {
     fetchProducts();
   };
 
+  const changeStock = async (id: number, quantity: number) => {
+    const safeQuantity = Math.max(Number(quantity || 0), 0);
+    const status = safeQuantity <= 0 ? "soldout" : "available";
+
+    const { error } = await supabase
+      .from("products")
+      .update({
+        stock_quantity: safeQuantity,
+        stock_status: status,
+      })
+      .eq("id", id);
+
+    if (error) {
+      console.error(error);
+      alert("재고 변경 실패 ㅠㅠ");
+      return;
+    }
+
+    fetchProducts();
+  };
+
   const startEditProduct = (product: Product) => {
     setEditingProduct(product);
     setName(product.name);
@@ -314,7 +336,7 @@ export default function AdminPage() {
         </div>
 
         <div style={dashboardCardStyle}>
-          <p style={dashboardLabelStyle}>입금대기</p>
+          <p style={dashboardLabelStyle}>상담대기</p>
           <strong style={dashboardNumberStyle}>{waitingOrders}건</strong>
         </div>
 
@@ -497,8 +519,12 @@ export default function AdminPage() {
         <div style={productGridStyle}>
           {products.map((product) => {
             const quantity = product.stock_quantity ?? 0;
+            const normalizedStock = product.stock_status
+              ?.toLowerCase()
+              .replace(/[_-\s]/g, "");
+
             const isSoldOut =
-              product.stock_status === "soldout" || Number(quantity) <= 0;
+              normalizedStock === "soldout" || Number(quantity) <= 0;
 
             return (
               <div key={product.id} style={productCardStyle}>
@@ -542,19 +568,49 @@ export default function AdminPage() {
 
                 <strong>{Number(product.price).toLocaleString()}원</strong>
 
-                <button
-                  onClick={() => startEditProduct(product)}
-                  style={editButtonStyle}
-                >
-                  수정
-                </button>
+                <div style={stockControlWrapStyle}>
+                  <button
+                    onClick={() => startEditProduct(product)}
+                    style={editButtonStyle}
+                  >
+                    수정
+                  </button>
 
-                <button
-                  onClick={() => deleteProduct(product.id)}
-                  style={deleteButtonStyle}
-                >
-                  삭제
-                </button>
+                  <button
+                    onClick={() => changeStock(product.id, quantity + 1)}
+                    style={stockButtonStyle}
+                  >
+                    재고 +1
+                  </button>
+
+                  <button
+                    onClick={() => changeStock(product.id, quantity - 1)}
+                    style={stockButtonStyle}
+                  >
+                    재고 -1
+                  </button>
+
+                  <button
+                    onClick={() => changeStock(product.id, 0)}
+                    style={soldOutButtonStyle}
+                  >
+                    품절 처리
+                  </button>
+
+                  <button
+                    onClick={() => changeStock(product.id, 1)}
+                    style={restoreButtonStyle}
+                  >
+                    재고 복구
+                  </button>
+
+                  <button
+                    onClick={() => deleteProduct(product.id)}
+                    style={deleteButtonStyle}
+                  >
+                    삭제
+                  </button>
+                </div>
               </div>
             );
           })}
@@ -753,9 +809,14 @@ const quantityStyle = {
   fontWeight: "900",
 };
 
+const stockControlWrapStyle = {
+  display: "grid",
+  gap: "8px",
+  marginTop: "16px",
+};
+
 const editButtonStyle = {
   width: "100%",
-  marginTop: "16px",
   padding: "12px",
   background: "#111",
   color: "#fff",
@@ -764,9 +825,38 @@ const editButtonStyle = {
   cursor: "pointer",
 };
 
+const stockButtonStyle = {
+  width: "100%",
+  padding: "12px",
+  background: "#1b5e20",
+  color: "#fff",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer",
+};
+
+const soldOutButtonStyle = {
+  width: "100%",
+  padding: "12px",
+  background: "#111",
+  color: "#fff",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer",
+};
+
+const restoreButtonStyle = {
+  width: "100%",
+  padding: "12px",
+  background: "#1565c0",
+  color: "#fff",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer",
+};
+
 const deleteButtonStyle = {
   width: "100%",
-  marginTop: "8px",
   padding: "12px",
   background: "#d93025",
   color: "#fff",

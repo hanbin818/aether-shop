@@ -10,6 +10,7 @@ type ProductCardProps = {
   image: string;
   href: string;
   stockStatus?: string;
+  stockQuantity?: number;
 };
 
 export default function ProductCard({
@@ -19,12 +20,14 @@ export default function ProductCard({
   image,
   href,
   stockStatus = "available",
+  stockQuantity,
 }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
-  const normalizedStock = stockStatus.toLowerCase().replace(/[_-]/g, "");
-  const isSoldOut = normalizedStock === "soldout";
+  const normalizedStock = stockStatus.toLowerCase().replace(/[_-\s]/g, "");
+  const isSoldOut =
+    normalizedStock === "soldout" || Number(stockQuantity || 0) <= 0;
 
   const productId = Number(href.split("/").pop());
 
@@ -103,7 +106,7 @@ export default function ProductCard({
           alt={name}
           style={{
             ...imageStyle,
-            opacity: isSoldOut ? 0.42 : 1,
+            opacity: isSoldOut ? 0.38 : 1,
           }}
         />
 
@@ -115,7 +118,11 @@ export default function ProductCard({
         <p style={nameStyle}>{name}</p>
         <p style={priceStyle}>{price}</p>
 
-        {isSoldOut && <p style={soldOutTextStyle}>품절</p>}
+        {isSoldOut ? (
+          <p style={soldOutTextStyle}>품절</p>
+        ) : (
+          <p style={availableTextStyle}>구매 가능</p>
+        )}
       </div>
     </a>
   );
@@ -171,13 +178,13 @@ const soldOutStyle = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  background: "rgba(0,0,0,0.86)",
+  background: "rgba(0,0,0,0.88)",
   color: "#fff",
-  padding: "10px 16px",
+  padding: "11px 18px",
   borderRadius: "999px",
   fontSize: "13px",
   fontWeight: "900",
-  letterSpacing: "1px",
+  letterSpacing: "1.2px",
 };
 
 const textBoxStyle = {
@@ -216,4 +223,11 @@ const soldOutTextStyle = {
   fontSize: "12px",
   fontWeight: "900",
   color: "#d93025",
+};
+
+const availableTextStyle = {
+  margin: "8px 0 0",
+  fontSize: "12px",
+  fontWeight: "900",
+  color: "#167a3a",
 };
