@@ -5,13 +5,11 @@ import { supabase } from "@/app/lib/supabase";
 
 type Order = {
   id: number;
-  order_number: string;
+  order_number?: string;
   customer_email?: string;
   total_price?: number;
-  payment_method?: string;
   status?: string;
-  items?: any;
-  created_at: string;
+  created_at?: string;
 };
 
 export default function MyPage() {
@@ -21,27 +19,24 @@ export default function MyPage() {
 
   useEffect(() => {
     const loadMyPage = async () => {
-      const { data: userData } = await supabase.auth.getUser();
+      const { data } = await supabase.auth.getUser();
 
-      if (!userData.user) {
+      if (!data.user) {
         alert("로그인이 필요한 페이지입니다.");
         window.location.href = "/login";
         return;
       }
 
-      const userEmail = userData.user.email || "";
+      const userEmail = data.user.email || "";
       setEmail(userEmail);
 
-      const { data, error } = await supabase
+      const { data: orderData } = await supabase
         .from("orders")
         .select("*")
         .eq("customer_email", userEmail)
         .order("created_at", { ascending: false });
 
-      if (!error && data) {
-        setOrders(data);
-      }
-
+      setOrders(orderData || []);
       setLoading(false);
     };
 
@@ -54,25 +49,6 @@ export default function MyPage() {
     window.location.href = "/";
   };
 
-  const formatPrice = (price?: number) => {
-    if (!price) return "0원";
-    return `${price.toLocaleString()}원`;
-  };
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("ko-KR");
-  };
-
-  const getItemNames = (items: any) => {
-    if (!items) return "상품 정보 없음";
-
-    if (Array.isArray(items)) {
-      return items.map((item) => item.name).join(", ");
-    }
-
-    return "상품 정보 있음";
-  };
-
   if (loading) {
     return <main style={centerStyle}>회원정보 확인 중...</main>;
   }
@@ -80,59 +56,56 @@ export default function MyPage() {
   return (
     <main style={pageStyle}>
       <section style={cardStyle}>
-        <p style={subTitleStyle}>MY PAGE</p>
         <h1 style={titleStyle}>마이페이지</h1>
 
         <div style={infoBoxStyle}>
-          <p style={labelStyle}>이메일</p>
-          <p style={valueStyle}>{email}</p>
+          <p style={labelStyle}>로그인 계정</p>
+          <p style={emailStyle}>{email}</p>
         </div>
 
-        <div style={sectionHeaderStyle}>
-          <h2 style={orderTitleStyle}>내 주문내역</h2>
-          <p style={orderDescStyle}>최근 주문한 상품을 확인할 수 있습니다.</p>
-        </div>
+        <section style={orderSectionStyle}>
+          <h2 style={sectionTitleStyle}>내 주문내역</h2>
 
-        {orders.length === 0 ? (
-          <div style={emptyStyle}>아직 주문내역이 없습니다.</div>
-        ) : (
-          <div style={orderListStyle}>
-            {orders.map((order) => (
-              <div key={order.id} style={orderCardStyle}>
-                <div style={rowStyle}>
-                  <span style={smallLabelStyle}>주문번호</span>
-                  <strong style={orderNumberStyle}>
-                    {order.order_number || "-"}
-                  </strong>
-                </div>
+          {orders.length === 0 ? (
+            <p style={emptyStyle}>아직 주문내역이 없습니다.</p>
+          ) : (
+            <div style={orderListStyle}>
+              {orders.map((order) => (
+                <div key={order.id} style={orderCardStyle}>
+                  <div>
+                    <p style={orderLabelStyle}>주문번호</p>
+                    <p style={orderNumberStyle}>
+                      {order.order_number || `AETHER-${order.id}`}
+                    </p>
+                  </div>
 
-                <div style={rowStyle}>
-                  <span style={smallLabelStyle}>주문일</span>
-                  <span>{formatDate(order.created_at)}</span>
-                </div>
+                  <div>
+                    <p style={orderLabelStyle}>주문일</p>
+                    <p style={orderTextStyle}>
+                      {order.created_at
+                        ? new Date(order.created_at).toLocaleDateString("ko-KR")
+                        : "-"}
+                    </p>
+                  </div>
 
-                <div style={rowStyle}>
-                  <span style={smallLabelStyle}>상품</span>
-                  <span>{getItemNames(order.items)}</span>
-                </div>
+                  <div>
+                    <p style={orderLabelStyle}>결제금액</p>
+                    <p style={orderTextStyle}>
+                      ₩{(order.total_price || 0).toLocaleString()}
+                    </p>
+                  </div>
 
-                <div style={rowStyle}>
-                  <span style={smallLabelStyle}>결제방식</span>
-                  <span>{order.payment_method || "오픈채팅 상담"}</span>
+                  <div>
+                    <p style={orderLabelStyle}>주문상태</p>
+                    <span style={statusStyle}>
+                      {order.status || "주문접수"}
+                    </span>
+                  </div>
                 </div>
-
-                <div style={rowStyle}>
-                  <span style={smallLabelStyle}>총 금액</span>
-                  <strong>{formatPrice(order.total_price)}</strong>
-                </div>
-
-                <div style={statusStyle}>
-                  {order.status || "상담대기"}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </section>
 
         <button onClick={logout} style={logoutButtonStyle}>
           로그아웃
@@ -141,6 +114,13 @@ export default function MyPage() {
     </main>
   );
 }
+
+const pageStyle: React.CSSProperties = {
+  minHeight: "100vh",
+  background: "#0b0b0f",
+  color: "white",
+  padding: "120px 20px 60px",
+};
 
 const centerStyle: React.CSSProperties = {
   minHeight: "100vh",
@@ -151,124 +131,102 @@ const centerStyle: React.CSSProperties = {
   justifyContent: "center",
 };
 
-const pageStyle: React.CSSProperties = {
-  minHeight: "100vh",
-  background: "#0b0b0f",
-  color: "white",
-  padding: "90px 20px",
-};
-
 const cardStyle: React.CSSProperties = {
-  maxWidth: "820px",
+  maxWidth: "900px",
   margin: "0 auto",
   background: "#15151d",
   borderRadius: "28px",
-  padding: "42px 24px",
+  padding: "36px 24px",
   border: "1px solid rgba(255,255,255,0.08)",
 };
 
-const subTitleStyle: React.CSSProperties = {
-  textAlign: "center",
-  letterSpacing: "5px",
-  fontSize: "12px",
-  color: "#c9a86a",
-  marginBottom: "12px",
-};
-
 const titleStyle: React.CSSProperties = {
+  fontSize: "32px",
+  marginBottom: "28px",
   textAlign: "center",
-  fontSize: "34px",
-  marginBottom: "32px",
 };
 
 const infoBoxStyle: React.CSSProperties = {
   background: "#0f0f15",
   borderRadius: "18px",
-  padding: "20px",
+  padding: "22px",
   marginBottom: "36px",
 };
 
 const labelStyle: React.CSSProperties = {
   color: "#aaa",
-  fontSize: "13px",
+  fontSize: "14px",
   marginBottom: "8px",
 };
 
-const valueStyle: React.CSSProperties = {
-  fontSize: "16px",
+const emailStyle: React.CSSProperties = {
+  fontSize: "17px",
   fontWeight: 700,
 };
 
-const sectionHeaderStyle: React.CSSProperties = {
+const orderSectionStyle: React.CSSProperties = {
+  marginTop: "20px",
+};
+
+const sectionTitleStyle: React.CSSProperties = {
+  fontSize: "24px",
   marginBottom: "18px",
 };
 
-const orderTitleStyle: React.CSSProperties = {
-  fontSize: "24px",
-  marginBottom: "8px",
-};
-
-const orderDescStyle: React.CSSProperties = {
-  color: "#aaa",
-  fontSize: "14px",
-};
-
 const emptyStyle: React.CSSProperties = {
-  background: "#0f0f15",
-  borderRadius: "18px",
-  padding: "40px 20px",
-  textAlign: "center",
   color: "#aaa",
+  textAlign: "center",
+  padding: "40px 0",
 };
 
 const orderListStyle: React.CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
+  display: "grid",
   gap: "16px",
 };
 
 const orderCardStyle: React.CSSProperties = {
   background: "#0f0f15",
-  borderRadius: "20px",
-  padding: "22px",
+  borderRadius: "18px",
+  padding: "20px",
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+  gap: "18px",
   border: "1px solid rgba(255,255,255,0.08)",
 };
 
-const rowStyle: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  gap: "16px",
-  marginBottom: "12px",
-  fontSize: "14px",
-};
-
-const smallLabelStyle: React.CSSProperties = {
-  color: "#aaa",
-  minWidth: "80px",
+const orderLabelStyle: React.CSSProperties = {
+  color: "#888",
+  fontSize: "13px",
+  marginBottom: "6px",
 };
 
 const orderNumberStyle: React.CSSProperties = {
-  color: "#c9a86a",
-  textAlign: "right",
+  fontSize: "15px",
+  fontWeight: 800,
+};
+
+const orderTextStyle: React.CSSProperties = {
+  fontSize: "15px",
+  fontWeight: 600,
 };
 
 const statusStyle: React.CSSProperties = {
-  marginTop: "14px",
-  padding: "10px 14px",
+  display: "inline-block",
+  background: "rgba(255,255,255,0.12)",
+  color: "#fff",
+  padding: "7px 12px",
   borderRadius: "999px",
-  background: "rgba(201,168,106,0.14)",
-  color: "#c9a86a",
-  textAlign: "center",
+  fontSize: "13px",
   fontWeight: 700,
 };
 
 const logoutButtonStyle: React.CSSProperties = {
   width: "100%",
-  marginTop: "34px",
-  padding: "16px",
+  marginTop: "36px",
+  padding: "15px",
   borderRadius: "999px",
   border: "none",
-  background: "#ffffff",
+  background: "white",
   color: "#111",
   fontSize: "15px",
   fontWeight: 800,
