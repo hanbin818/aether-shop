@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
+import ProductCard from "@/components/ProductCard";
 
 type Product = {
   id: number;
@@ -14,6 +15,7 @@ type Product = {
   gender?: string;
   description?: string;
   stock_status?: string;
+  stock_quantity?: number;
 };
 
 export default function ProductDetail() {
@@ -21,6 +23,7 @@ export default function ProductDetail() {
   const id = params.id as string;
 
   const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isWished, setIsWished] = useState(false);
@@ -53,6 +56,29 @@ export default function ProductDetail() {
 
     fetchProduct();
   }, [id]);
+
+  useEffect(() => {
+    const fetchRelatedProducts = async () => {
+      if (!product) return;
+
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .neq("id", product.id)
+        .or(`brand.eq.${product.brand},category.eq.${product.category}`)
+        .order("created_at", { ascending: false })
+        .limit(4);
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      setRelatedProducts(data || []);
+    };
+
+    fetchRelatedProducts();
+  }, [product]);
 
   useEffect(() => {
     const saveRecentView = async () => {
@@ -140,7 +166,8 @@ export default function ProductDetail() {
     ?.toLowerCase()
     .replace(/[_-\s]/g, "");
 
-  const isSoldOut = normalizedStock === "soldout";
+  const isSoldOut =
+    normalizedStock === "soldout" || Number(product?.stock_quantity || 0) <= 0;
 
   const addToCart = () => {
     if (!product) return;
@@ -187,162 +214,104 @@ export default function ProductDetail() {
   if (!product) return <main style={centerStyle}>상품을 찾을 수 없습니다.</main>;
 
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        background:
-          "linear-gradient(180deg, #ffffff 0%, #fafafa 48%, #f4f1eb 100%)",
-        color: "#111",
-        padding: isMobile ? "22px 16px 70px" : "56px 40px 100px",
-      }}
-    >
-      <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
-        <a
-          href="/products"
-          style={{
-            display: "inline-block",
-            marginBottom: "32px",
-            color: "#777",
-            textDecoration: "none",
-            fontSize: "14px",
-            fontWeight: 800,
-          }}
-        >
+    <main style={pageStyle}>
+      <div style={containerStyle}>
+        <a href="/products" style={backLinkStyle}>
           ← 전체상품으로 돌아가기
         </a>
 
         <div
           style={{
-            display: "grid",
+            ...detailGridStyle,
             gridTemplateColumns: isMobile ? "1fr" : "1.05fr 0.95fr",
             gap: isMobile ? "28px" : "72px",
           }}
         >
           <div
             style={{
-              background: "linear-gradient(145deg, #ffffff 0%, #f4f4f4 100%)",
+              ...imageBoxStyle,
               borderRadius: isMobile ? "24px" : "34px",
               minHeight: isMobile ? "390px" : "650px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-              position: "relative",
-              border: "1px solid rgba(0,0,0,0.06)",
-              boxShadow: "0 28px 80px rgba(0,0,0,0.08)",
             }}
           >
             <img
               src={product.image}
               alt={product.name}
               style={{
-                width: "100%",
-                height: "100%",
+                ...mainImageStyle,
                 maxHeight: isMobile ? "390px" : "650px",
-                objectFit: "contain",
                 padding: isMobile ? "18px" : "34px",
                 opacity: isSoldOut ? 0.34 : 1,
               }}
             />
+
             {isSoldOut && <div style={soldOutOverlayStyle}>SOLD OUT</div>}
           </div>
 
           <section
             style={{
-              background: "rgba(255,255,255,0.78)",
-              border: "1px solid rgba(0,0,0,0.06)",
+              ...infoCardStyle,
               borderRadius: isMobile ? "24px" : "32px",
               padding: isMobile ? "24px 20px" : "38px",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.06)",
             }}
           >
-            <p
-              style={{
-                fontSize: "13px",
-                fontWeight: 900,
-                letterSpacing: "4px",
-                color: "#9b8b73",
-                marginBottom: "14px",
-              }}
-            >
-              {product.brand}
-            </p>
+            <p style={brandLabelStyle}>{product.brand}</p>
 
             <h1
               style={{
+                ...titleStyle,
                 fontSize: isMobile ? "31px" : "46px",
-                lineHeight: "1.14",
-                marginBottom: "18px",
-                fontWeight: 950,
-                letterSpacing: "-1.5px",
               }}
             >
               {product.name}
             </h1>
 
+            <div style={reviewStyle}>★★★★★ AETHER SELECT</div>
+
             <button onClick={toggleWishlist} style={wishButtonStyle}>
               {isWished ? "❤️ 찜한 상품" : "🤍 찜하기"}
             </button>
 
-            <div
-              style={{
-                display: "flex",
-                gap: "8px",
-                flexWrap: "wrap",
-                margin: "22px 0",
-              }}
-            >
+            <div style={badgeWrapStyle}>
               {product.gender && <span style={badgeStyle}>{product.gender}</span>}
               <span style={badgeStyle}>{product.category}</span>
-              <span style={badgeStyle}>AETHER SELECT</span>
+              <span style={badgeStyle}>{isSoldOut ? "SOLD OUT" : "IN STOCK"}</span>
             </div>
 
             <h2
               style={{
-                fontSize: isMobile ? "28px" : "32px",
-                marginBottom: "28px",
-                fontWeight: 950,
+                ...priceStyle,
+                fontSize: isMobile ? "28px" : "34px",
               }}
             >
               ₩{Number(product.price).toLocaleString()}
             </h2>
 
-            <p
-              style={{
-                color: "#5f5f5f",
-                lineHeight: "1.9",
-                fontSize: "15px",
-                marginBottom: "32px",
-                wordBreak: "keep-all",
-              }}
-            >
+            <p style={descriptionStyle}>
               {product.description ||
                 "AETHER가 엄선한 프리미엄 패션 아이템입니다. 세련된 실루엣과 고급스러운 무드로 데일리 룩부터 특별한 스타일까지 완성해줍니다."}
             </p>
 
-            <div
-              style={{
-                borderTop: "1px solid #eee",
-                borderBottom: "1px solid #eee",
-                padding: "22px 0",
-                marginBottom: "28px",
-                display: "grid",
-                gap: "13px",
-                color: "#444",
-                fontSize: "14px",
-                fontWeight: 800,
-              }}
-            >
-              <p style={{ margin: 0 }}>✓ 100,000원 이상 무료 배송</p>
-              <p style={{ margin: 0 }}>✓ 프리미엄 패키징 제공</p>
-              <p style={{ margin: 0 }}>✓ 주문 후 카카오 오픈채팅 상담 진행</p>
-              <p style={{ margin: 0 }}>✓ 교환 및 반품 정책 적용</p>
+            <div style={serviceGridStyle}>
+              <div style={serviceCardStyle}>
+                <strong>무료배송</strong>
+                <span>100,000원 이상</span>
+              </div>
+
+              <div style={serviceCardStyle}>
+                <strong>프리미엄 패키징</strong>
+                <span>AETHER 감성 포장</span>
+              </div>
+
+              <div style={serviceCardStyle}>
+                <strong>상담 결제</strong>
+                <span>오픈채팅 안내</span>
+              </div>
             </div>
 
             <div
               style={{
-                display: "flex",
-                gap: "12px",
+                ...buttonWrapStyle,
                 flexDirection: isMobile ? "column" : "row",
               }}
             >
@@ -364,10 +333,46 @@ export default function ProductDetail() {
             </div>
           </section>
         </div>
+
+        {relatedProducts.length > 0 && (
+          <section style={relatedSectionStyle}>
+            <div style={relatedTitleStyle}>
+              <p style={brandLabelStyle}>YOU MAY ALSO LIKE</p>
+              <h2 style={relatedHeadingStyle}>함께 보면 좋은 상품</h2>
+            </div>
+
+            <div style={relatedGridStyle}>
+              {relatedProducts.map((item) => (
+                <ProductCard
+                  key={item.id}
+                  brand={item.brand}
+                  name={item.name}
+                  price={`₩${Number(item.price).toLocaleString()}`}
+                  image={item.image}
+                  href={`/product/${item.id}`}
+                  stockStatus={item.stock_status}
+                  stockQuantity={item.stock_quantity}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </main>
   );
 }
+
+const pageStyle = {
+  minHeight: "100vh",
+  background: "linear-gradient(180deg, #ffffff 0%, #fafafa 48%, #f4f1eb 100%)",
+  color: "#111",
+  padding: "56px 18px 100px",
+};
+
+const containerStyle = {
+  maxWidth: "1180px",
+  margin: "0 auto",
+};
 
 const centerStyle = {
   minHeight: "70vh",
@@ -377,6 +382,74 @@ const centerStyle = {
   alignItems: "center",
   justifyContent: "center",
   fontWeight: 800,
+};
+
+const backLinkStyle = {
+  display: "inline-block",
+  marginBottom: "32px",
+  color: "#777",
+  textDecoration: "none",
+  fontSize: "14px",
+  fontWeight: 800,
+};
+
+const detailGridStyle = {
+  display: "grid",
+};
+
+const imageBoxStyle = {
+  background: "linear-gradient(145deg, #ffffff 0%, #f4f4f4 100%)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  overflow: "hidden",
+  position: "relative" as const,
+  border: "1px solid rgba(0,0,0,0.06)",
+  boxShadow: "0 28px 80px rgba(0,0,0,0.08)",
+};
+
+const mainImageStyle = {
+  width: "100%",
+  height: "100%",
+  objectFit: "contain" as const,
+  transition: "0.45s ease",
+};
+
+const infoCardStyle = {
+  background: "rgba(255,255,255,0.82)",
+  border: "1px solid rgba(0,0,0,0.06)",
+  boxShadow: "0 20px 60px rgba(0,0,0,0.06)",
+  backdropFilter: "blur(18px)",
+};
+
+const brandLabelStyle = {
+  fontSize: "13px",
+  fontWeight: 950,
+  letterSpacing: "4px",
+  color: "#9b8b73",
+  marginBottom: "14px",
+};
+
+const titleStyle = {
+  lineHeight: "1.14",
+  marginBottom: "12px",
+  fontWeight: 950,
+  letterSpacing: "-1.5px",
+};
+
+const reviewStyle = {
+  color: "#9b8b73",
+  fontSize: "13px",
+  fontWeight: 900,
+  letterSpacing: "1px",
+  marginBottom: "18px",
+};
+
+const badgeWrapStyle = {
+  display: "flex",
+  gap: "8px",
+  flexWrap: "wrap" as const,
+  margin: "22px 0",
 };
 
 const badgeStyle = {
@@ -400,6 +473,40 @@ const wishButtonStyle = {
   fontSize: "16px",
   fontWeight: 950,
   cursor: "pointer",
+};
+
+const priceStyle = {
+  marginBottom: "28px",
+  fontWeight: 950,
+};
+
+const descriptionStyle = {
+  color: "#5f5f5f",
+  lineHeight: "1.9",
+  fontSize: "15px",
+  marginBottom: "28px",
+  wordBreak: "keep-all" as const,
+};
+
+const serviceGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+  gap: "12px",
+  marginBottom: "28px",
+};
+
+const serviceCardStyle = {
+  background: "#f7f2ea",
+  borderRadius: "18px",
+  padding: "18px",
+  display: "grid",
+  gap: "6px",
+  color: "#111",
+};
+
+const buttonWrapStyle = {
+  display: "flex",
+  gap: "12px",
 };
 
 const soldOutOverlayStyle = {
@@ -438,4 +545,27 @@ const buyButtonStyle = {
   fontSize: "19px",
   fontWeight: "950",
   cursor: "pointer",
+};
+
+const relatedSectionStyle = {
+  marginTop: "90px",
+};
+
+const relatedTitleStyle = {
+  textAlign: "center" as const,
+  marginBottom: "38px",
+};
+
+const relatedHeadingStyle = {
+  fontSize: "clamp(34px, 6vw, 58px)",
+  fontWeight: 950,
+  letterSpacing: "-1.8px",
+  margin: 0,
+};
+
+const relatedGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gap: "24px",
+  justifyItems: "center",
 };
