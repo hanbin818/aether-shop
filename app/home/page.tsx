@@ -7,11 +7,14 @@ import BrandSection from "../../components/BrandSection";
 import NewArrivals from "../../components/NewArrivals";
 import BestItems from "../../components/BestItems";
 import GenderBanners from "../../components/GenderBanners";
+import SummerPopup from "../../components/SummerPopup";
 
 export default function Home() {
   return (
     <main className="home-page">
       <Header />
+
+      <SummerPopup />
 
       <Hero />
 

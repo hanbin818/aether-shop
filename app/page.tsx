@@ -1,10 +1,6 @@
-import SummerPopup from "../components/SummerPopup";
-
 export default function LandingPage() {
   return (
     <main style={pageStyle}>
-      <SummerPopup />
-
       <div style={cardStyle}>
         <div style={logoStyle}>
           <h1 style={logoTextStyle}>A</h1>
