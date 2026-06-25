@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 const categories = [
   { icon: "👜", name: "가방", href: "/products?search=가방" },
   { icon: "👛", name: "지갑", href: "/products?search=지갑" },
@@ -10,139 +14,121 @@ const categories = [
 ];
 
 export default function CategoryIcons() {
-  return (
-    <section className="category-section">
-      <div className="category-inner">
-        <p className="category-label">SHOP BY CATEGORY</p>
-        <h2 className="category-title">카테고리</h2>
+  const [isMobile, setIsMobile] = useState(false);
 
-        <div className="category-scroll">
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  return (
+    <section
+      style={{
+        background: "#faf8f4",
+        padding: isMobile ? "46px 0" : "70px 18px",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: "1150px",
+          margin: "0 auto",
+        }}
+      >
+        <p
+          style={{
+            textAlign: "center",
+            color: "#9b8b73",
+            letterSpacing: "4px",
+            fontWeight: 900,
+            fontSize: "12px",
+            marginBottom: "12px",
+          }}
+        >
+          SHOP BY CATEGORY
+        </p>
+
+        <h2
+          style={{
+            textAlign: "center",
+            fontSize: isMobile ? "32px" : "42px",
+            fontWeight: 950,
+            marginBottom: isMobile ? "26px" : "54px",
+            letterSpacing: "-1px",
+          }}
+        >
+          카테고리
+        </h2>
+
+        <div
+          style={{
+            display: "flex",
+            gap: isMobile ? "12px" : "24px",
+            overflowX: isMobile ? "auto" : "visible",
+            padding: isMobile ? "0 18px 10px" : "0",
+            WebkitOverflowScrolling: "touch",
+          }}
+        >
           {categories.map((category) => (
-            <a key={category.name} href={category.href} className="category-link">
-              <div className="category-card">
-                <div className="category-icon">{category.icon}</div>
-                <p className="category-name">{category.name}</p>
+            <a
+              key={category.name}
+              href={category.href}
+              style={{
+                textDecoration: "none",
+                color: "#111",
+                flex: isMobile ? "0 0 auto" : "1 1 0",
+              }}
+            >
+              <div
+                style={{
+                  width: isMobile ? "92px" : "auto",
+                  height: isMobile ? "104px" : "auto",
+                  background: "#fff",
+                  borderRadius: isMobile ? "22px" : "28px",
+                  padding: isMobile ? "15px 10px" : "30px 18px",
+                  textAlign: "center",
+                  border: "1px solid rgba(0,0,0,.05)",
+                  boxShadow: "0 18px 45px rgba(0,0,0,.06)",
+                }}
+              >
+                <div
+                  style={{
+                    width: isMobile ? "46px" : "76px",
+                    height: isMobile ? "46px" : "76px",
+                    margin: isMobile ? "0 auto 10px" : "0 auto 18px",
+                    borderRadius: "50%",
+                    background: "linear-gradient(145deg,#ffffff,#f1f1f1)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: isMobile ? "24px" : "34px",
+                    boxShadow: "0 8px 25px rgba(0,0,0,.08)",
+                  }}
+                >
+                  {category.icon}
+                </div>
+
+                <p
+                  style={{
+                    margin: 0,
+                    fontWeight: 900,
+                    fontSize: isMobile ? "13px" : "15px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {category.name}
+                </p>
               </div>
             </a>
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        .category-section {
-          background: #faf8f4;
-          padding: 64px 18px;
-          overflow: hidden;
-        }
-
-        .category-inner {
-          max-width: 1150px;
-          margin: 0 auto;
-        }
-
-        .category-label {
-          text-align: center;
-          color: #9b8b73;
-          letter-spacing: 4px;
-          font-weight: 900;
-          font-size: 12px;
-          margin-bottom: 12px;
-        }
-
-        .category-title {
-          text-align: center;
-          font-size: 42px;
-          font-weight: 950;
-          margin-bottom: 44px;
-          letter-spacing: -1px;
-        }
-
-        .category-scroll {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-          gap: 24px;
-        }
-
-        .category-link {
-          text-decoration: none;
-          color: #111;
-        }
-
-        .category-card {
-          background: #fff;
-          border-radius: 28px;
-          padding: 30px 18px;
-          text-align: center;
-          border: 1px solid rgba(0, 0, 0, 0.05);
-          box-shadow: 0 18px 45px rgba(0, 0, 0, 0.06);
-        }
-
-        .category-icon {
-          width: 76px;
-          height: 76px;
-          margin: 0 auto 18px;
-          border-radius: 50%;
-          background: linear-gradient(145deg, #ffffff, #f1f1f1);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 34px;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-        }
-
-        .category-name {
-          margin: 0;
-          font-weight: 900;
-          font-size: 15px;
-        }
-
-        @media (max-width: 768px) {
-          .category-section {
-            padding: 46px 0 42px;
-          }
-
-          .category-title {
-            font-size: 32px;
-            margin-bottom: 24px;
-          }
-
-          .category-scroll {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding: 0 18px 8px;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-          }
-
-          .category-scroll::-webkit-scrollbar {
-            display: none;
-          }
-
-          .category-link {
-            flex: 0 0 auto;
-            scroll-snap-align: start;
-          }
-
-          .category-card {
-            width: 92px;
-            height: 104px;
-            border-radius: 22px;
-            padding: 16px 10px;
-          }
-
-          .category-icon {
-            width: 46px;
-            height: 46px;
-            margin-bottom: 10px;
-            font-size: 24px;
-          }
-
-          .category-name {
-            font-size: 13px;
-          }
-        }
-      `}</style>
     </section>
   );
 }
