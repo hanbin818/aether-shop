@@ -23,6 +23,7 @@ export default function ProductCard({
   stockQuantity,
 }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isHover, setIsHover] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
   const normalizedStock = stockStatus.toLowerCase().replace(/[_-\s]/g, "");
@@ -87,14 +88,25 @@ export default function ProductCard({
   };
 
   return (
-    <a href={href} style={cardStyle}>
+    <a
+      href={href}
+      style={{
+        ...cardStyle,
+        transform: isHover ? "translateY(-6px)" : "translateY(0)",
+        boxShadow: isHover
+          ? "0 22px 45px rgba(0,0,0,0.14)"
+          : "0 10px 28px rgba(0,0,0,0.07)",
+      }}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+    >
       <div style={imageBoxStyle}>
         <button
           type="button"
           onClick={toggleWishlist}
           style={{
             ...heartButtonStyle,
-            background: isWishlisted ? "#111" : "rgba(255,255,255,0.92)",
+            background: isWishlisted ? "#111" : "rgba(255,255,255,0.94)",
             color: isWishlisted ? "#fff" : "#111",
           }}
         >
@@ -106,11 +118,12 @@ export default function ProductCard({
           alt={name}
           style={{
             ...imageStyle,
-            opacity: isSoldOut ? 0.38 : 1,
+            opacity: isSoldOut ? 0.34 : 1,
+            transform: isHover ? "scale(1.08)" : "scale(1)",
           }}
         />
 
-        {isSoldOut && <div style={soldOutStyle}>SOLD OUT</div>}
+        {isSoldOut && <div style={soldOutStyle}>품절</div>}
       </div>
 
       <div style={textBoxStyle}>
@@ -118,11 +131,7 @@ export default function ProductCard({
         <p style={nameStyle}>{name}</p>
         <p style={priceStyle}>{price}</p>
 
-        {isSoldOut ? (
-          <p style={soldOutTextStyle}>품절</p>
-        ) : (
-          <p style={availableTextStyle}>구매 가능</p>
-        )}
+        <span style={moreStyle}>자세히 보기 →</span>
       </div>
     </a>
   );
@@ -130,19 +139,21 @@ export default function ProductCard({
 
 const cardStyle = {
   width: "220px",
+  minWidth: "180px",
   textDecoration: "none",
   color: "#111",
   background: "#fff",
-  borderRadius: "16px",
+  borderRadius: "24px",
   overflow: "hidden",
-  boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+  border: "1px solid rgba(0,0,0,0.06)",
   position: "relative" as const,
+  transition: "0.28s ease",
 };
 
 const imageBoxStyle = {
-  width: "220px",
-  height: "230px",
-  background: "#fafafa",
+  width: "100%",
+  height: "238px",
+  background: "linear-gradient(180deg, #fafafa 0%, #f4f1eb 100%)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -155,22 +166,26 @@ const heartButtonStyle = {
   top: "12px",
   right: "12px",
   zIndex: 5,
-  width: "38px",
-  height: "38px",
+  width: "34px",
+  height: "34px",
   borderRadius: "999px",
   border: "1px solid rgba(0,0,0,0.08)",
-  fontSize: "22px",
+  fontSize: "18px",
   fontWeight: 900,
   cursor: "pointer",
-  boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
+  boxShadow: "0 8px 18px rgba(0,0,0,0.1)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 };
 
 const imageStyle = {
-  width: "105%",
-  height: "105%",
+  width: "112%",
+  height: "112%",
   objectFit: "contain" as const,
   objectPosition: "center",
   display: "block",
+  transition: "0.35s ease",
 };
 
 const soldOutStyle = {
@@ -178,56 +193,50 @@ const soldOutStyle = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  background: "rgba(0,0,0,0.88)",
+  background: "rgba(0,0,0,0.86)",
   color: "#fff",
-  padding: "11px 18px",
+  padding: "10px 18px",
   borderRadius: "999px",
   fontSize: "13px",
-  fontWeight: "900",
-  letterSpacing: "1.2px",
+  fontWeight: "950",
+  letterSpacing: "1.5px",
 };
 
 const textBoxStyle = {
-  padding: "14px",
-  textAlign: "center" as const,
+  padding: "16px 15px 18px",
+  textAlign: "left" as const,
   background: "#fff",
 };
 
 const brandStyle = {
-  margin: "0 0 5px",
+  margin: "0 0 8px",
   fontSize: "11px",
-  fontWeight: "900",
-  letterSpacing: "1px",
-  color: "#777",
+  fontWeight: "950",
+  letterSpacing: "1.4px",
+  color: "#8b806f",
   textTransform: "uppercase" as const,
 };
 
 const nameStyle = {
-  margin: "0 0 10px",
-  fontSize: "13px",
+  margin: "0 0 12px",
+  fontSize: "14px",
   color: "#111",
-  lineHeight: "1.4",
-  minHeight: "36px",
-  fontWeight: "700",
+  lineHeight: "1.45",
+  minHeight: "40px",
+  fontWeight: "800",
+  wordBreak: "keep-all" as const,
 };
 
 const priceStyle = {
-  margin: 0,
-  fontSize: "16px",
-  fontWeight: "900",
+  margin: "0 0 14px",
+  fontSize: "17px",
+  fontWeight: "950",
   color: "#111",
 };
 
-const soldOutTextStyle = {
-  margin: "8px 0 0",
+const moreStyle = {
+  display: "inline-block",
   fontSize: "12px",
   fontWeight: "900",
-  color: "#d93025",
-};
-
-const availableTextStyle = {
-  margin: "8px 0 0",
-  fontSize: "12px",
-  fontWeight: "900",
-  color: "#167a3a",
+  color: "#777",
 };
