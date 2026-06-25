@@ -67,7 +67,7 @@ export default function ProductDetail() {
         .neq("id", product.id)
         .or(`brand.eq.${product.brand},category.eq.${product.category}`)
         .order("created_at", { ascending: false })
-        .limit(4);
+        .limit(8);
 
       if (error) {
         console.error(error);
@@ -133,29 +133,19 @@ export default function ProductDetail() {
     }
 
     if (isWished) {
-      const { error } = await supabase
+      await supabase
         .from("wishlists")
         .delete()
         .eq("user_id", user.id)
         .eq("product_id", Number(id));
 
-      if (error) {
-        alert("찜 해제 중 오류가 발생했습니다.");
-        return;
-      }
-
       setIsWished(false);
       alert("찜 목록에서 삭제되었습니다.");
     } else {
-      const { error } = await supabase.from("wishlists").insert({
+      await supabase.from("wishlists").insert({
         user_id: user.id,
         product_id: Number(id),
       });
-
-      if (error) {
-        alert("찜 추가 중 오류가 발생했습니다.");
-        return;
-      }
 
       setIsWished(true);
       alert("찜 목록에 추가되었습니다.");
@@ -224,7 +214,7 @@ export default function ProductDetail() {
           style={{
             ...detailGridStyle,
             gridTemplateColumns: isMobile ? "1fr" : "1.05fr 0.95fr",
-            gap: isMobile ? "28px" : "72px",
+            gap: isMobile ? "24px" : "72px",
           }}
         >
           <div
@@ -266,22 +256,14 @@ export default function ProductDetail() {
               {product.name}
             </h1>
 
-            <div style={reviewStyle}>★★★★★ AETHER SELECT</div>
-
             <button onClick={toggleWishlist} style={wishButtonStyle}>
               {isWished ? "❤️ 찜한 상품" : "🤍 찜하기"}
             </button>
 
-            <div style={badgeWrapStyle}>
-              {product.gender && <span style={badgeStyle}>{product.gender}</span>}
-              <span style={badgeStyle}>{product.category}</span>
-              <span style={badgeStyle}>{isSoldOut ? "SOLD OUT" : "IN STOCK"}</span>
-            </div>
-
             <h2
               style={{
                 ...priceStyle,
-                fontSize: isMobile ? "28px" : "34px",
+                fontSize: isMobile ? "30px" : "36px",
               }}
             >
               ₩{Number(product.price).toLocaleString()}
@@ -295,7 +277,7 @@ export default function ProductDetail() {
             <div style={serviceGridStyle}>
               <div style={serviceCardStyle}>
                 <strong>무료배송</strong>
-                <span>100,000원 이상</span>
+                <span>10만원 이상 구매 시</span>
               </div>
 
               <div style={serviceCardStyle}>
@@ -304,29 +286,32 @@ export default function ProductDetail() {
               </div>
 
               <div style={serviceCardStyle}>
-                <strong>상담 결제</strong>
-                <span>오픈채팅 안내</span>
+                <strong>상담 / 결제</strong>
+                <span>오픈채팅 문의</span>
               </div>
             </div>
 
-            <div
-              style={{
-                ...buttonWrapStyle,
-                flexDirection: isMobile ? "column" : "row",
-              }}
-            >
+            <div style={buttonWrapStyle}>
               <button
                 onClick={addToCart}
                 disabled={isSoldOut}
-                style={{ ...cartButtonStyle, opacity: isSoldOut ? 0.45 : 1 }}
+                style={{
+                  ...actionButtonStyle,
+                  ...cartButtonStyle,
+                  opacity: isSoldOut ? 0.45 : 1,
+                }}
               >
-                {isSoldOut ? "품절된 상품입니다" : "장바구니 담기"}
+                {isSoldOut ? "품절된 상품" : "장바구니 담기"}
               </button>
 
               <button
                 onClick={buyNow}
                 disabled={isSoldOut}
-                style={{ ...buyButtonStyle, opacity: isSoldOut ? 0.45 : 1 }}
+                style={{
+                  ...actionButtonStyle,
+                  ...buyButtonStyle,
+                  opacity: isSoldOut ? 0.45 : 1,
+                }}
               >
                 {isSoldOut ? "구매 불가" : "바로 구매"}
               </button>
@@ -337,22 +322,36 @@ export default function ProductDetail() {
         {relatedProducts.length > 0 && (
           <section style={relatedSectionStyle}>
             <div style={relatedTitleStyle}>
-              <p style={brandLabelStyle}>YOU MAY ALSO LIKE</p>
+              <p style={brandLabelStyle}>추천 상품</p>
               <h2 style={relatedHeadingStyle}>함께 보면 좋은 상품</h2>
             </div>
 
-            <div style={relatedGridStyle}>
+            <div
+              style={{
+                ...relatedGridStyle,
+                display: isMobile ? "flex" : "grid",
+                overflowX: isMobile ? "auto" : "visible",
+                justifyItems: isMobile ? "unset" : "center",
+                paddingBottom: isMobile ? "14px" : 0,
+              }}
+            >
               {relatedProducts.map((item) => (
-                <ProductCard
+                <div
                   key={item.id}
-                  brand={item.brand}
-                  name={item.name}
-                  price={`₩${Number(item.price).toLocaleString()}`}
-                  image={item.image}
-                  href={`/product/${item.id}`}
-                  stockStatus={item.stock_status}
-                  stockQuantity={item.stock_quantity}
-                />
+                  style={{
+                    flex: isMobile ? "0 0 190px" : "unset",
+                  }}
+                >
+                  <ProductCard
+                    brand={item.brand}
+                    name={item.name}
+                    price={`₩${Number(item.price).toLocaleString()}`}
+                    image={item.image}
+                    href={`/product/${item.id}`}
+                    stockStatus={item.stock_status}
+                    stockQuantity={item.stock_quantity}
+                  />
+                </div>
               ))}
             </div>
           </section>
@@ -386,7 +385,7 @@ const centerStyle = {
 
 const backLinkStyle = {
   display: "inline-block",
-  marginBottom: "32px",
+  marginBottom: "28px",
   color: "#777",
   textDecoration: "none",
   fontSize: "14px",
@@ -416,7 +415,7 @@ const mainImageStyle = {
 };
 
 const infoCardStyle = {
-  background: "rgba(255,255,255,0.82)",
+  background: "rgba(255,255,255,0.9)",
   border: "1px solid rgba(0,0,0,0.06)",
   boxShadow: "0 20px 60px rgba(0,0,0,0.06)",
   backdropFilter: "blur(18px)",
@@ -425,42 +424,16 @@ const infoCardStyle = {
 const brandLabelStyle = {
   fontSize: "13px",
   fontWeight: 950,
-  letterSpacing: "4px",
+  letterSpacing: "3px",
   color: "#9b8b73",
   marginBottom: "14px",
 };
 
 const titleStyle = {
   lineHeight: "1.14",
-  marginBottom: "12px",
+  marginBottom: "18px",
   fontWeight: 950,
   letterSpacing: "-1.5px",
-};
-
-const reviewStyle = {
-  color: "#9b8b73",
-  fontSize: "13px",
-  fontWeight: 900,
-  letterSpacing: "1px",
-  marginBottom: "18px",
-};
-
-const badgeWrapStyle = {
-  display: "flex",
-  gap: "8px",
-  flexWrap: "wrap" as const,
-  margin: "22px 0",
-};
-
-const badgeStyle = {
-  display: "inline-block",
-  padding: "8px 14px",
-  borderRadius: "999px",
-  background: "#f5f1ea",
-  color: "#7a6a55",
-  fontSize: "12px",
-  fontWeight: "900",
-  textTransform: "uppercase" as const,
 };
 
 const wishButtonStyle = {
@@ -473,10 +446,11 @@ const wishButtonStyle = {
   fontSize: "16px",
   fontWeight: 950,
   cursor: "pointer",
+  marginBottom: "24px",
 };
 
 const priceStyle = {
-  marginBottom: "28px",
+  marginBottom: "24px",
   fontWeight: 950,
 };
 
@@ -505,8 +479,33 @@ const serviceCardStyle = {
 };
 
 const buttonWrapStyle = {
-  display: "flex",
+  display: "grid",
+  gridTemplateColumns: "1fr",
   gap: "12px",
+};
+
+const actionButtonStyle = {
+  width: "100%",
+  height: "58px",
+  borderRadius: "999px",
+  fontSize: "18px",
+  fontWeight: 950,
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
+const cartButtonStyle = {
+  border: "2px solid #111",
+  background: "#fff",
+  color: "#111",
+};
+
+const buyButtonStyle = {
+  border: "2px solid #111",
+  background: "#111",
+  color: "#fff",
 };
 
 const soldOutOverlayStyle = {
@@ -523,49 +522,23 @@ const soldOutOverlayStyle = {
   letterSpacing: "2px",
 };
 
-const cartButtonStyle = {
-  flex: 1,
-  height: "64px",
-  border: "2px solid #111",
-  borderRadius: "999px",
-  background: "#fff",
-  color: "#111",
-  fontSize: "19px",
-  fontWeight: "950",
-  cursor: "pointer",
-};
-
-const buyButtonStyle = {
-  flex: 1,
-  height: "64px",
-  border: "none",
-  borderRadius: "999px",
-  background: "#111",
-  color: "#fff",
-  fontSize: "19px",
-  fontWeight: "950",
-  cursor: "pointer",
-};
-
 const relatedSectionStyle = {
-  marginTop: "90px",
+  marginTop: "84px",
 };
 
 const relatedTitleStyle = {
   textAlign: "center" as const,
-  marginBottom: "38px",
+  marginBottom: "32px",
 };
 
 const relatedHeadingStyle = {
-  fontSize: "clamp(34px, 6vw, 58px)",
+  fontSize: "clamp(32px, 6vw, 54px)",
   fontWeight: 950,
   letterSpacing: "-1.8px",
   margin: 0,
 };
 
 const relatedGridStyle = {
-  display: "grid",
   gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-  gap: "24px",
-  justifyItems: "center",
+  gap: "18px",
 };
