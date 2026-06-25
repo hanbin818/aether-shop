@@ -13,6 +13,12 @@ type CartItem = {
   category?: string;
 };
 
+type StockProduct = {
+  id: number;
+  stock_status?: string;
+  stock_quantity?: number;
+};
+
 const FREE_SHIPPING_MINIMUM = 100000;
 const SHIPPING_FEE = 3000;
 
@@ -105,7 +111,9 @@ export default function CheckoutPage() {
     }
 
     const unavailableItem = cart.find((cartItem) => {
-      const product = stockData?.find((p) => p.id === cartItem.id);
+      const product = stockData?.find(
+        (p: StockProduct) => p.id === cartItem.id
+      );
 
       if (!product) return true;
 
@@ -147,13 +155,41 @@ export default function CheckoutPage() {
       },
     ]);
 
-    setLoading(false);
-
     if (error) {
       console.error(error);
+      setLoading(false);
       alert(error.message);
       return;
     }
+
+    for (const item of cart) {
+      const product = stockData?.find(
+        (p: StockProduct) => p.id === item.id
+      );
+
+      if (!product) continue;
+
+      const currentQuantity = Number(product.stock_quantity || 0);
+      const newQuantity = Math.max(currentQuantity - item.quantity, 0);
+      const newStatus = newQuantity <= 0 ? "sold_out" : "in_stock";
+
+      const { error: updateStockError } = await supabase
+        .from("products")
+        .update({
+          stock_quantity: newQuantity,
+          stock_status: newStatus,
+        })
+        .eq("id", item.id);
+
+      if (updateStockError) {
+        console.error(updateStockError);
+        setLoading(false);
+        alert("주문은 접수되었지만 재고 차감 중 오류가 발생했습니다.");
+        return;
+      }
+    }
+
+    setLoading(false);
 
     localStorage.removeItem("aether-cart");
     localStorage.setItem("aether-last-order-number", orderNumber);
