@@ -177,7 +177,7 @@ export default function Header() {
           display: flex;
           align-items: center;
           min-width: max-content;
-          animation: notice-marquee 24s linear infinite;
+          animation: notice-marquee 42s linear infinite;
         }
 
         .notice-track span {
@@ -326,7 +326,7 @@ export default function Header() {
           }
 
           .notice-track {
-            animation-duration: 18s;
+            animation-duration: 34s;
           }
 
           .notice-track span {
