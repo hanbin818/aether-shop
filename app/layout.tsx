@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import LoadingScreen from "../components/LoadingScreen";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://aether-shop-sage.vercel.app"),
@@ -65,7 +66,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <LoadingScreen />
+        {children}
+      </body>
     </html>
   );
 }
