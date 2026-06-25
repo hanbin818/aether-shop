@@ -34,7 +34,7 @@ export default function BestItems() {
     if (!scrollRef.current) return;
 
     scrollRef.current.scrollBy({
-      left: direction === "left" ? -320 : 320,
+      left: direction === "left" ? -220 : 220,
       behavior: "smooth",
     });
   };
@@ -62,11 +62,7 @@ export default function BestItems() {
         ) : (
           <div ref={scrollRef} className="best-slider">
             {products.map((product, index) => (
-              <a
-                key={product.id}
-                href={`/product/${product.id}`}
-                className="best-card"
-              >
+              <a key={product.id} href={`/product/${product.id}`} className="best-card">
                 <div className="image-box">
                   <span className="rank-badge">BEST {index + 1}</span>
                   <button
@@ -81,19 +77,13 @@ export default function BestItems() {
                     ♡
                   </button>
 
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="best-image"
-                  />
+                  <img src={product.image} alt={product.name} className="best-image" />
                 </div>
 
                 <div className="best-info">
                   <p className="best-brand">{product.brand}</p>
                   <h3 className="best-name">{product.name}</h3>
-                  <p className="best-price">
-                    ₩{Number(product.price).toLocaleString()}
-                  </p>
+                  <p className="best-price">₩{Number(product.price).toLocaleString()}</p>
                   <span className="shop-label">바로 보기</span>
                 </div>
               </a>
@@ -110,10 +100,7 @@ export default function BestItems() {
 
       <style jsx>{`
         .best-section {
-          background:
-            radial-gradient(circle at top left, rgba(216, 195, 159, 0.18), transparent 34%),
-            radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.08), transparent 28%),
-            #111;
+          background: #111;
           color: #fff;
           padding: 104px 0;
           overflow: hidden;
@@ -153,7 +140,6 @@ export default function BestItems() {
           margin-top: 14px;
           color: rgba(255, 255, 255, 0.68);
           font-size: 16px;
-          line-height: 1.7;
         }
 
         .arrow-wrap {
@@ -170,30 +156,19 @@ export default function BestItems() {
           color: #fff;
           font-size: 32px;
           cursor: pointer;
-          line-height: 1;
-          transition: 0.25s ease;
-        }
-
-        .arrow-wrap button:hover {
-          background: #fff;
-          color: #111;
         }
 
         .best-slider {
           display: flex;
-          gap: 24px;
+          gap: 20px;
           overflow-x: auto;
           scroll-snap-type: x mandatory;
           padding: 8px 2px 28px;
+          -webkit-overflow-scrolling: touch;
         }
 
         .best-slider::-webkit-scrollbar {
-          height: 6px;
-        }
-
-        .best-slider::-webkit-scrollbar-thumb {
-          background: rgba(255,255,255,0.35);
-          border-radius: 999px;
+          display: none;
         }
 
         .best-card {
@@ -205,11 +180,6 @@ export default function BestItems() {
           border-radius: 30px;
           overflow: hidden;
           box-shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
-          transition: 0.35s ease;
-        }
-
-        .best-card:hover {
-          transform: translateY(-8px);
         }
 
         .image-box {
@@ -246,20 +216,13 @@ export default function BestItems() {
           font-size: 22px;
           font-weight: 950;
           cursor: pointer;
-          box-shadow: 0 8px 20px rgba(0,0,0,0.12);
         }
 
         .best-image {
           width: 100%;
           height: 330px;
           object-fit: cover;
-          background: #f5f5f5;
           display: block;
-          transition: 0.35s ease;
-        }
-
-        .best-card:hover .best-image {
-          transform: scale(1.06);
         }
 
         .best-info {
@@ -279,17 +242,14 @@ export default function BestItems() {
         .best-name {
           font-size: 16px;
           line-height: 1.45;
-          color: #111;
           margin: 0 0 12px;
           min-height: 46px;
           font-weight: 900;
-          word-break: keep-all;
         }
 
         .best-price {
           font-size: 17px;
           font-weight: 950;
-          color: #111;
           margin: 0 0 14px;
         }
 
@@ -314,7 +274,7 @@ export default function BestItems() {
 
         .more-wrap {
           text-align: center;
-          margin-top: 34px;
+          margin-top: 28px;
         }
 
         .more-button {
@@ -333,21 +293,23 @@ export default function BestItems() {
 
         @media (max-width: 768px) {
           .best-section {
-            padding: 72px 0;
+            padding: 64px 0;
           }
 
           .best-inner {
-            padding: 0 16px;
+            padding: 0;
           }
 
           .title-row {
             display: block;
             text-align: center;
-            margin-bottom: 34px;
+            margin-bottom: 28px;
+            padding: 0 18px;
           }
 
           .title-row h2 {
-            font-size: 38px;
+            font-size: 32px;
+            letter-spacing: -1px;
           }
 
           .title-row span {
@@ -356,33 +318,65 @@ export default function BestItems() {
 
           .arrow-wrap {
             justify-content: center;
-            margin-top: 24px;
+            margin-top: 22px;
+          }
+
+          .arrow-wrap button {
+            width: 44px;
+            height: 44px;
           }
 
           .best-slider {
-            gap: 16px;
-            padding-bottom: 22px;
+            gap: 12px;
+            padding: 4px 18px 18px;
           }
 
           .best-card {
-            flex-basis: 238px;
-            border-radius: 24px;
+            flex: 0 0 158px;
+            border-radius: 22px;
           }
 
           .best-image {
-            height: 270px;
+            height: 175px;
+          }
+
+          .rank-badge {
+            top: 10px;
+            left: 10px;
+            padding: 6px 10px;
+            font-size: 9px;
+          }
+
+          .wish-button {
+            width: 32px;
+            height: 32px;
+            top: 9px;
+            right: 9px;
+            font-size: 18px;
           }
 
           .best-info {
-            padding: 18px 12px 22px;
+            padding: 14px 10px 16px;
+          }
+
+          .best-brand {
+            font-size: 9px;
+            letter-spacing: 2px;
           }
 
           .best-name {
-            font-size: 14px;
+            font-size: 12px;
+            min-height: 34px;
           }
 
           .best-price {
-            font-size: 15px;
+            font-size: 13px;
+          }
+
+          .shop-label {
+            height: 30px;
+            padding: 0 13px;
+            font-size: 11px;
           }
         }
       `}</style>

@@ -34,7 +34,7 @@ export default function NewArrivals() {
     if (!scrollRef.current) return;
 
     scrollRef.current.scrollBy({
-      left: direction === "left" ? -320 : 320,
+      left: direction === "left" ? -220 : 220,
       behavior: "smooth",
     });
   };
@@ -62,11 +62,7 @@ export default function NewArrivals() {
         ) : (
           <div ref={scrollRef} className="new-slider">
             {products.map((product) => (
-              <a
-                key={product.id}
-                href={`/product/${product.id}`}
-                className="new-card"
-              >
+              <a key={product.id} href={`/product/${product.id}`} className="new-card">
                 <div className="image-box">
                   <span className="new-badge">NEW</span>
 
@@ -82,19 +78,13 @@ export default function NewArrivals() {
                     ♡
                   </button>
 
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="new-image"
-                  />
+                  <img src={product.image} alt={product.name} className="new-image" />
                 </div>
 
                 <div className="new-info">
                   <p className="new-brand">{product.brand}</p>
                   <h3>{product.name}</h3>
-                  <p className="new-price">
-                    ₩{Number(product.price).toLocaleString()}
-                  </p>
+                  <p className="new-price">₩{Number(product.price).toLocaleString()}</p>
                   <span className="view-label">바로 보기</span>
                 </div>
               </a>
@@ -169,30 +159,19 @@ export default function NewArrivals() {
           color: #111;
           font-size: 32px;
           cursor: pointer;
-          line-height: 1;
-          transition: 0.25s ease;
-        }
-
-        .arrow-wrap button:hover {
-          background: #111;
-          color: #fff;
         }
 
         .new-slider {
           display: flex;
-          gap: 24px;
+          gap: 20px;
           overflow-x: auto;
           scroll-snap-type: x mandatory;
           padding: 8px 2px 26px;
+          -webkit-overflow-scrolling: touch;
         }
 
         .new-slider::-webkit-scrollbar {
-          height: 6px;
-        }
-
-        .new-slider::-webkit-scrollbar-thumb {
-          background: rgba(0,0,0,0.2);
-          border-radius: 999px;
+          display: none;
         }
 
         .new-card {
@@ -205,12 +184,6 @@ export default function NewArrivals() {
           overflow: hidden;
           border: 1px solid rgba(0,0,0,0.06);
           box-shadow: 0 24px 70px rgba(0,0,0,0.08);
-          transition: 0.35s ease;
-        }
-
-        .new-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 32px 90px rgba(0,0,0,0.14);
         }
 
         .image-box {
@@ -247,20 +220,13 @@ export default function NewArrivals() {
           font-size: 22px;
           font-weight: 950;
           cursor: pointer;
-          box-shadow: 0 8px 20px rgba(0,0,0,0.12);
         }
 
         .new-image {
           width: 100%;
           height: 330px;
           object-fit: cover;
-          background: #f5f5f5;
           display: block;
-          transition: 0.35s ease;
-        }
-
-        .new-card:hover .new-image {
-          transform: scale(1.06);
         }
 
         .new-info {
@@ -280,17 +246,14 @@ export default function NewArrivals() {
         .new-info h3 {
           font-size: 16px;
           line-height: 1.45;
-          color: #111;
           margin: 0 0 12px;
           min-height: 46px;
           font-weight: 900;
-          word-break: keep-all;
         }
 
         .new-price {
           font-size: 17px;
           font-weight: 950;
-          color: #111;
           margin: 0 0 14px;
         }
 
@@ -315,7 +278,7 @@ export default function NewArrivals() {
 
         .more-wrap {
           text-align: center;
-          margin-top: 34px;
+          margin-top: 28px;
         }
 
         .more-button {
@@ -334,21 +297,23 @@ export default function NewArrivals() {
 
         @media (max-width: 768px) {
           .new-section {
-            padding: 72px 0;
+            padding: 64px 0;
           }
 
           .new-inner {
-            padding: 0 16px;
+            padding: 0;
           }
 
           .title-row {
             display: block;
             text-align: center;
-            margin-bottom: 34px;
+            margin-bottom: 28px;
+            padding: 0 18px;
           }
 
           .title-row h2 {
-            font-size: 38px;
+            font-size: 32px;
+            letter-spacing: -1px;
           }
 
           .title-row span {
@@ -357,33 +322,65 @@ export default function NewArrivals() {
 
           .arrow-wrap {
             justify-content: center;
-            margin-top: 24px;
+            margin-top: 22px;
+          }
+
+          .arrow-wrap button {
+            width: 44px;
+            height: 44px;
           }
 
           .new-slider {
-            gap: 16px;
-            padding-bottom: 22px;
+            gap: 12px;
+            padding: 4px 18px 18px;
           }
 
           .new-card {
-            flex-basis: 238px;
-            border-radius: 24px;
+            flex: 0 0 158px;
+            border-radius: 22px;
           }
 
           .new-image {
-            height: 270px;
+            height: 175px;
+          }
+
+          .new-badge {
+            top: 10px;
+            left: 10px;
+            padding: 6px 10px;
+            font-size: 9px;
+          }
+
+          .wish-button {
+            width: 32px;
+            height: 32px;
+            top: 9px;
+            right: 9px;
+            font-size: 18px;
           }
 
           .new-info {
-            padding: 18px 12px 22px;
+            padding: 14px 10px 16px;
+          }
+
+          .new-brand {
+            font-size: 9px;
+            letter-spacing: 2px;
           }
 
           .new-info h3 {
-            font-size: 14px;
+            font-size: 12px;
+            min-height: 34px;
           }
 
           .new-price {
-            font-size: 15px;
+            font-size: 13px;
+          }
+
+          .view-label {
+            height: 30px;
+            padding: 0 13px;
+            font-size: 11px;
           }
         }
       `}</style>
