@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { supabase } from "@/app/lib/supabase";
 
 type CartItem = {
   id: number;
@@ -9,6 +10,8 @@ type CartItem = {
   price: number;
   image?: string;
   quantity: number;
+  stock_status?: string;
+  stock_quantity?: number;
 };
 
 const FREE_SHIPPING_MINIMUM = 100000;
@@ -16,11 +19,56 @@ const SHIPPING_FEE = 3000;
 
 export default function CartPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [checkingStock, setCheckingStock] = useState(true);
 
   useEffect(() => {
-    const savedCart = localStorage.getItem("aether-cart");
-    setCart(savedCart ? JSON.parse(savedCart) : []);
+    const loadCartWithStock = async () => {
+      const savedCart = localStorage.getItem("aether-cart");
+      const parsedCart: CartItem[] = savedCart ? JSON.parse(savedCart) : [];
+
+      if (parsedCart.length === 0) {
+        setCart([]);
+        setCheckingStock(false);
+        return;
+      }
+
+      const ids = parsedCart.map((item) => item.id);
+
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, stock_status, stock_quantity")
+        .in("id", ids);
+
+      if (error) {
+        console.error(error);
+        setCart(parsedCart);
+        setCheckingStock(false);
+        return;
+      }
+
+      const updatedCart = parsedCart.map((item) => {
+        const productStock = data?.find((product) => product.id === item.id);
+
+        return {
+          ...item,
+          stock_status: productStock?.stock_status || item.stock_status,
+          stock_quantity:
+            productStock?.stock_quantity ?? item.stock_quantity ?? 0,
+        };
+      });
+
+      setCart(updatedCart);
+      localStorage.setItem("aether-cart", JSON.stringify(updatedCart));
+      setCheckingStock(false);
+    };
+
+    loadCartWithStock();
   }, []);
+
+  const isSoldOut = (item: CartItem) => {
+    const stockStatus = item.stock_status?.toLowerCase().replace(/[_-\s]/g, "");
+    return stockStatus === "soldout" || Number(item.stock_quantity || 0) <= 0;
+  };
 
   const saveCart = (newCart: CartItem[]) => {
     setCart(newCart);
@@ -28,6 +76,20 @@ export default function CartPage() {
   };
 
   const increaseQuantity = (id: number) => {
+    const target = cart.find((item) => item.id === id);
+
+    if (!target) return;
+
+    if (isSoldOut(target)) {
+      alert("품절 상품은 수량을 변경할 수 없습니다.");
+      return;
+    }
+
+    if (target.quantity >= Number(target.stock_quantity || 0)) {
+      alert("현재 재고보다 많이 담을 수 없습니다.");
+      return;
+    }
+
     saveCart(
       cart.map((item) =>
         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
@@ -36,6 +98,13 @@ export default function CartPage() {
   };
 
   const decreaseQuantity = (id: number) => {
+    const target = cart.find((item) => item.id === id);
+
+    if (target && isSoldOut(target)) {
+      alert("품절 상품은 삭제 후 다시 주문해주세요.");
+      return;
+    }
+
     saveCart(
       cart
         .map((item) =>
@@ -49,7 +118,11 @@ export default function CartPage() {
     saveCart(cart.filter((item) => item.id !== id));
   };
 
-  const productTotalPrice = cart.reduce(
+  const hasSoldOutItem = cart.some((item) => isSoldOut(item));
+
+  const availableCart = cart.filter((item) => !isSoldOut(item));
+
+  const productTotalPrice = availableCart.reduce(
     (total, item) => total + Number(item.price) * item.quantity,
     0
   );
@@ -58,6 +131,33 @@ export default function CartPage() {
     productTotalPrice >= FREE_SHIPPING_MINIMUM ? 0 : SHIPPING_FEE;
 
   const finalTotalPrice = productTotalPrice + shippingFee;
+
+  const goCheckout = () => {
+    if (hasSoldOutItem) {
+      alert("품절 상품을 삭제한 후 주문할 수 있습니다.");
+      return;
+    }
+
+    window.location.href = "/checkout";
+  };
+
+  if (checkingStock) {
+    return (
+      <main
+        style={{
+          minHeight: "100vh",
+          background: "#f7f7f7",
+          color: "#111",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontWeight: 800,
+        }}
+      >
+        장바구니 재고 확인 중...
+      </main>
+    );
+  }
 
   return (
     <main
@@ -106,133 +206,182 @@ export default function CartPage() {
         </div>
       ) : (
         <>
+          {hasSoldOutItem && (
+            <div
+              style={{
+                marginTop: "24px",
+                background: "#fff1f1",
+                color: "#d93025",
+                padding: "18px 22px",
+                borderRadius: "18px",
+                fontWeight: 900,
+                border: "1px solid #ffd1d1",
+              }}
+            >
+              품절 상품이 포함되어 있습니다. 품절 상품을 삭제해야 주문할 수
+              있습니다.
+            </div>
+          )}
+
           <div style={{ marginTop: "30px", display: "grid", gap: "20px" }}>
-            {cart.map((item) => (
-              <div
-                key={item.id}
-                style={{
-                  background: "#fff",
-                  borderRadius: "22px",
-                  padding: "24px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  gap: "24px",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
-                }}
-              >
+            {cart.map((item) => {
+              const soldOut = isSoldOut(item);
+
+              return (
                 <div
+                  key={item.id}
                   style={{
+                    background: "#fff",
+                    borderRadius: "22px",
+                    padding: "24px",
                     display: "flex",
-                    gap: "22px",
+                    justifyContent: "space-between",
                     alignItems: "center",
+                    gap: "24px",
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
+                    opacity: soldOut ? 0.68 : 1,
                   }}
                 >
                   <div
                     style={{
-                      width: "120px",
-                      height: "120px",
-                      borderRadius: "18px",
-                      overflow: "hidden",
-                      background: "#fafafa",
+                      display: "flex",
+                      gap: "22px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "120px",
+                        height: "120px",
+                        borderRadius: "18px",
+                        overflow: "hidden",
+                        background: "#fafafa",
+                        flexShrink: 0,
+                        position: "relative",
+                      }}
+                    >
+                      {item.image && (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "contain",
+                            padding: "8px",
+                            boxSizing: "border-box",
+                            opacity: soldOut ? 0.45 : 1,
+                          }}
+                        />
+                      )}
+
+                      {soldOut && <div style={soldOutBadgeStyle}>품절</div>}
+                    </div>
+
+                    <div>
+                      <p
+                        style={{
+                          color: "#777",
+                          margin: 0,
+                          fontSize: "13px",
+                          fontWeight: "700",
+                          letterSpacing: "1px",
+                        }}
+                      >
+                        {item.brand}
+                      </p>
+
+                      <h3 style={{ margin: "8px 0", fontSize: "22px" }}>
+                        {item.name}
+                      </h3>
+
+                      <strong
+                        style={{
+                          display: "block",
+                          marginTop: "6px",
+                          fontSize: "18px",
+                        }}
+                      >
+                        ₩{Number(item.price).toLocaleString()}
+                      </strong>
+
+                      {soldOut ? (
+                        <p
+                          style={{
+                            marginTop: "12px",
+                            color: "#d93025",
+                            fontWeight: 900,
+                          }}
+                        >
+                          품절된 상품입니다.
+                        </p>
+                      ) : (
+                        <p
+                          style={{
+                            marginTop: "12px",
+                            color: "#777",
+                            fontWeight: 800,
+                            fontSize: "13px",
+                          }}
+                        >
+                          남은 재고 {item.stock_quantity ?? 0}개
+                        </p>
+                      )}
+
+                      <div
+                        style={{
+                          marginTop: "16px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "12px",
+                        }}
+                      >
+                        <button
+                          onClick={() => decreaseQuantity(item.id)}
+                          style={quantityMinusButtonStyle}
+                        >
+                          −
+                        </button>
+
+                        <span
+                          style={{
+                            minWidth: "30px",
+                            textAlign: "center",
+                            fontSize: "20px",
+                            fontWeight: "800",
+                          }}
+                        >
+                          {item.quantity}
+                        </span>
+
+                        <button
+                          onClick={() => increaseQuantity(item.id)}
+                          style={quantityPlusButtonStyle}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => removeItem(item.id)}
+                    style={{
+                      border: "none",
+                      background: soldOut ? "#d93025" : "#111",
+                      color: "#fff",
+                      padding: "12px 20px",
+                      borderRadius: "999px",
+                      cursor: "pointer",
+                      fontWeight: "700",
                       flexShrink: 0,
                     }}
                   >
-                    {item.image && (
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "contain",
-                          padding: "8px",
-                          boxSizing: "border-box",
-                        }}
-                      />
-                    )}
-                  </div>
-
-                  <div>
-                    <p
-                      style={{
-                        color: "#777",
-                        margin: 0,
-                        fontSize: "13px",
-                        fontWeight: "700",
-                        letterSpacing: "1px",
-                      }}
-                    >
-                      {item.brand}
-                    </p>
-
-                    <h3 style={{ margin: "8px 0", fontSize: "22px" }}>
-                      {item.name}
-                    </h3>
-
-                    <strong
-                      style={{
-                        display: "block",
-                        marginTop: "6px",
-                        fontSize: "18px",
-                      }}
-                    >
-                      ₩{Number(item.price).toLocaleString()}
-                    </strong>
-
-                    <div
-                      style={{
-                        marginTop: "16px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                      }}
-                    >
-                      <button
-                        onClick={() => decreaseQuantity(item.id)}
-                        style={quantityMinusButtonStyle}
-                      >
-                        −
-                      </button>
-
-                      <span
-                        style={{
-                          minWidth: "30px",
-                          textAlign: "center",
-                          fontSize: "20px",
-                          fontWeight: "800",
-                        }}
-                      >
-                        {item.quantity}
-                      </span>
-
-                      <button
-                        onClick={() => increaseQuantity(item.id)}
-                        style={quantityPlusButtonStyle}
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
+                    삭제
+                  </button>
                 </div>
-
-                <button
-                  onClick={() => removeItem(item.id)}
-                  style={{
-                    border: "none",
-                    background: "#111",
-                    color: "#fff",
-                    padding: "12px 20px",
-                    borderRadius: "999px",
-                    cursor: "pointer",
-                    fontWeight: "700",
-                    flexShrink: 0,
-                  }}
-                >
-                  삭제
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div style={summaryBoxStyle}>
@@ -270,21 +419,22 @@ export default function CartPage() {
 
           <div style={{ marginTop: "20px" }}>
             <button
-              onClick={() => (window.location.href = "/checkout")}
+              onClick={goCheckout}
+              disabled={hasSoldOutItem}
               style={{
                 width: "100%",
                 padding: "20px",
-                background: "#111",
+                background: hasSoldOutItem ? "#999" : "#111",
                 color: "#fff",
                 border: "none",
                 borderRadius: "22px",
                 fontSize: "18px",
                 fontWeight: "800",
-                cursor: "pointer",
+                cursor: hasSoldOutItem ? "not-allowed" : "pointer",
                 letterSpacing: "1px",
               }}
             >
-              주문하기
+              {hasSoldOutItem ? "품절 상품 삭제 후 주문 가능" : "주문하기"}
             </button>
           </div>
         </>
@@ -292,6 +442,19 @@ export default function CartPage() {
     </main>
   );
 }
+
+const soldOutBadgeStyle = {
+  position: "absolute" as const,
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  background: "rgba(0,0,0,0.82)",
+  color: "#fff",
+  padding: "8px 13px",
+  borderRadius: "999px",
+  fontSize: "12px",
+  fontWeight: "900",
+};
 
 const summaryBoxStyle = {
   marginTop: "30px",
