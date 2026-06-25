@@ -48,7 +48,23 @@ export default function Header() {
   return (
     <header className={scrolled ? "site-header scrolled" : "site-header"}>
       <div className="notice-bar">
-        AETHER 신규 컬렉션 업데이트 · 100,000원 이상 무료배송
+        <div className="notice-track">
+          <span>✦ 카카오톡 채널 추가시 전품목 10% 할인</span>
+          <span>✦ 포토리뷰 작성시 10% 할인</span>
+          <span>✦ 여름맞이 행사 전상품 3+1</span>
+          <span>✦ 카카오톡 채널 추가시 전품목 10% 할인</span>
+          <span>✦ 포토리뷰 작성시 10% 할인</span>
+          <span>✦ 여름맞이 행사 전상품 3+1</span>
+        </div>
+
+        <div className="notice-track">
+          <span>✦ 카카오톡 채널 추가시 전품목 10% 할인</span>
+          <span>✦ 포토리뷰 작성시 10% 할인</span>
+          <span>✦ 여름맞이 행사 전상품 3+1</span>
+          <span>✦ 카카오톡 채널 추가시 전품목 10% 할인</span>
+          <span>✦ 포토리뷰 작성시 10% 할인</span>
+          <span>✦ 여름맞이 행사 전상품 3+1</span>
+        </div>
       </div>
 
       <div className="header-wrap">
@@ -148,13 +164,39 @@ export default function Header() {
 
         .notice-bar {
           width: 100%;
+          height: 34px;
           background: #111;
           color: #fff;
-          text-align: center;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          white-space: nowrap;
+        }
+
+        .notice-track {
+          display: flex;
+          align-items: center;
+          min-width: max-content;
+          animation: notice-marquee 24s linear infinite;
+        }
+
+        .notice-track span {
+          display: inline-flex;
+          align-items: center;
+          padding: 0 24px;
           font-size: 12px;
           font-weight: 900;
-          letter-spacing: 0.5px;
-          padding: 9px 12px;
+          letter-spacing: 0.2px;
+        }
+
+        @keyframes notice-marquee {
+          0% {
+            transform: translateX(0);
+          }
+
+          100% {
+            transform: translateX(-100%);
+          }
         }
 
         .header-wrap {
@@ -280,8 +322,16 @@ export default function Header() {
 
         @media (max-width: 768px) {
           .notice-bar {
+            height: 32px;
+          }
+
+          .notice-track {
+            animation-duration: 18s;
+          }
+
+          .notice-track span {
             font-size: 11px;
-            padding: 8px 10px;
+            padding: 0 18px;
           }
 
           .header-wrap {
