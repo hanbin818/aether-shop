@@ -28,33 +28,46 @@ export default function CheckoutPage() {
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [depositorName, setDepositorName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [checkingUser, setCheckingUser] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const openChatUrl = "#";
 
   useEffect(() => {
-    const savedCart = localStorage.getItem("aether-cart");
-    setCart(savedCart ? JSON.parse(savedCart) : []);
-    loadProfile();
+    const checkUserAndLoadData = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        alert("로그인 후 주문 가능합니다.");
+        window.location.href = "/login";
+        return;
+      }
+
+      setUserEmail(user.email || "");
+
+      const savedCart = localStorage.getItem("aether-cart");
+      setCart(savedCart ? JSON.parse(savedCart) : []);
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (data) {
+        setCustomerName(data.name || "");
+        setCustomerPhone(data.phone || "");
+        setCustomerAddress(data.address || "");
+      }
+
+      setCheckingUser(false);
+    };
+
+    checkUserAndLoadData();
   }, []);
-
-  const loadProfile = async () => {
-    const { data: userData } = await supabase.auth.getUser();
-
-    if (!userData.user) return;
-
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userData.user.id)
-      .maybeSingle();
-
-    if (data) {
-      setCustomerName(data.name || "");
-      setCustomerPhone(data.phone || "");
-      setCustomerAddress(data.address || "");
-    }
-  };
 
   const productTotalPrice = cart.reduce(
     (total, item) => total + Number(item.price) * item.quantity,
@@ -80,6 +93,16 @@ export default function CheckoutPage() {
   };
 
   const submitOrder = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      alert("로그인 후 주문 가능합니다.");
+      window.location.href = "/login";
+      return;
+    }
+
     if (cart.length === 0) {
       alert("장바구니가 비어있습니다.");
       return;
@@ -91,10 +114,6 @@ export default function CheckoutPage() {
     }
 
     setLoading(true);
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
 
     const ids = cart.map((item) => item.id);
 
@@ -146,7 +165,7 @@ export default function CheckoutPage() {
         customer_name: customerName,
         customer_phone: customerPhone,
         customer_address: customerAddress,
-        customer_email: user?.email || null,
+        customer_email: user.email,
         depositor_name: depositorName,
         payment_method: "오픈채팅 계좌이체",
         status: "상담대기",
@@ -163,9 +182,7 @@ export default function CheckoutPage() {
     }
 
     for (const item of cart) {
-      const product = stockData?.find(
-        (p: StockProduct) => p.id === item.id
-      );
+      const product = stockData?.find((p: StockProduct) => p.id === item.id);
 
       if (!product) continue;
 
@@ -198,6 +215,35 @@ export default function CheckoutPage() {
     window.location.href = "/order-complete";
   };
 
+  if (checkingUser) {
+    return (
+      <main className="checkout-page">
+        <div className="checkout-wrap">
+          <h1>회원정보 확인 중...</h1>
+        </div>
+
+        <style>{`
+          .checkout-page {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #fff 0%, #f7f1e8 100%);
+            color: #111;
+            padding: 60px 20px;
+          }
+
+          .checkout-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+          }
+
+          h1 {
+            font-size: 34px;
+            font-weight: 950;
+          }
+        `}</style>
+      </main>
+    );
+  }
+
   return (
     <main className="checkout-page">
       <div className="checkout-wrap">
@@ -206,6 +252,11 @@ export default function CheckoutPage() {
         </a>
 
         <h1>주문하기</h1>
+
+        <p className="login-notice">
+          로그인된 회원만 주문 가능합니다. 현재 로그인 계정:{" "}
+          <strong>{userEmail}</strong>
+        </p>
 
         <div className="checkout-grid">
           <section className="checkout-card">
@@ -343,9 +394,17 @@ export default function CheckoutPage() {
 
         h1 {
           font-size: 44px;
-          margin: 38px 0 30px;
+          margin: 38px 0 14px;
           font-weight: 950;
           letter-spacing: -1.4px;
+        }
+
+        .login-notice {
+          margin: 0 0 28px;
+          color: #6f6253;
+          font-size: 14px;
+          font-weight: 800;
+          line-height: 1.7;
         }
 
         .checkout-grid {
@@ -519,7 +578,7 @@ export default function CheckoutPage() {
 
           h1 {
             font-size: 40px;
-            margin: 30px 0 24px;
+            margin: 30px 0 14px;
           }
 
           .checkout-grid {
