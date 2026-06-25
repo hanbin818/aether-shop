@@ -65,7 +65,6 @@ export default function ProductDetail() {
         .from("products")
         .select("*")
         .neq("id", product.id)
-        .or(`brand.eq.${product.brand},category.eq.${product.category}`)
         .order("created_at", { ascending: false })
         .limit(8);
 
@@ -235,7 +234,7 @@ export default function ProductDetail() {
               }}
             />
 
-            {isSoldOut && <div style={soldOutOverlayStyle}>SOLD OUT</div>}
+            {isSoldOut && <div style={soldOutOverlayStyle}>품절</div>}
           </div>
 
           <section
@@ -328,18 +327,17 @@ export default function ProductDetail() {
 
             <div
               style={{
-                ...relatedGridStyle,
-                display: isMobile ? "flex" : "grid",
+                ...relatedListStyle,
+                justifyContent: isMobile ? "flex-start" : "center",
                 overflowX: isMobile ? "auto" : "visible",
-                justifyItems: isMobile ? "unset" : "center",
-                paddingBottom: isMobile ? "14px" : 0,
+                flexWrap: isMobile ? "nowrap" : "wrap",
               }}
             >
               {relatedProducts.map((item) => (
                 <div
                   key={item.id}
                   style={{
-                    flex: isMobile ? "0 0 190px" : "unset",
+                    flex: isMobile ? "0 0 220px" : "0 0 220px",
                   }}
                 >
                   <ProductCard
@@ -538,7 +536,9 @@ const relatedHeadingStyle = {
   margin: 0,
 };
 
-const relatedGridStyle = {
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+const relatedListStyle = {
+  display: "flex",
   gap: "18px",
+  paddingBottom: "16px",
+  WebkitOverflowScrolling: "touch" as const,
 };
