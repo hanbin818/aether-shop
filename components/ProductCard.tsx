@@ -23,7 +23,6 @@ export default function ProductCard({
   stockQuantity,
 }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [isHover, setIsHover] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
   const normalizedStock = stockStatus.toLowerCase().replace(/[_-\s]/g, "");
@@ -66,7 +65,6 @@ export default function ProductCard({
     }
 
     const currentUserId = userId || data.user.id;
-    setUserId(currentUserId);
 
     if (isWishlisted) {
       await supabase
@@ -76,167 +74,191 @@ export default function ProductCard({
         .eq("product_id", productId);
 
       setIsWishlisted(false);
-      return;
+    } else {
+      await supabase.from("wishlists").insert({
+        user_id: currentUserId,
+        product_id: productId,
+      });
+
+      setIsWishlisted(true);
     }
-
-    await supabase.from("wishlists").insert({
-      user_id: currentUserId,
-      product_id: productId,
-    });
-
-    setIsWishlisted(true);
   };
 
   return (
-    <a
-      href={href}
-      style={{
-        ...cardStyle,
-        transform: isHover ? "translateY(-6px)" : "translateY(0)",
-        boxShadow: isHover
-          ? "0 22px 45px rgba(0,0,0,0.14)"
-          : "0 10px 28px rgba(0,0,0,0.07)",
-      }}
-      onMouseEnter={() => setIsHover(true)}
-      onMouseLeave={() => setIsHover(false)}
-    >
-      <div style={imageBoxStyle}>
-        <button
-          type="button"
-          onClick={toggleWishlist}
-          style={{
-            ...heartButtonStyle,
-            background: isWishlisted ? "#111" : "rgba(255,255,255,0.94)",
-            color: isWishlisted ? "#fff" : "#111",
-          }}
-        >
-          {isWishlisted ? "♥" : "♡"}
-        </button>
+    <>
+      <a href={href} className="card">
+        <div className="imageWrap">
+          <button
+            onClick={toggleWishlist}
+            className={isWishlisted ? "heart active" : "heart"}
+          >
+            {isWishlisted ? "♥" : "♡"}
+          </button>
 
-        <img
-          src={image}
-          alt={name}
-          style={{
-            ...imageStyle,
-            opacity: isSoldOut ? 0.34 : 1,
-            transform: isHover ? "scale(1.08)" : "scale(1)",
-          }}
-        />
+          <img
+            src={image}
+            alt={name}
+            className={isSoldOut ? "soldOutImage" : ""}
+          />
 
-        {isSoldOut && <div style={soldOutStyle}>품절</div>}
-      </div>
+          {isSoldOut && <div className="soldOut">품절</div>}
+        </div>
 
-      <div style={textBoxStyle}>
-        <p style={brandStyle}>{brand}</p>
-        <p style={nameStyle}>{name}</p>
-        <p style={priceStyle}>{price}</p>
+        <div className="info">
+          <div className="brand">{brand}</div>
 
-        <span style={moreStyle}>자세히 보기 →</span>
-      </div>
-    </a>
+          <div className="name">{name}</div>
+
+          <div className="price">{price}</div>
+
+          <div className="detail">자세히 보기 →</div>
+        </div>
+      </a>
+
+      <style jsx>{`
+        .card {
+          width: 100%;
+          background: #fff;
+          border-radius: 14px;
+          overflow: hidden;
+          text-decoration: none;
+          color: #111;
+          transition: .25s;
+          box-shadow: 0 6px 18px rgba(0,0,0,.06);
+          border: 1px solid rgba(0,0,0,.05);
+        }
+
+        .card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 16px 34px rgba(0,0,0,.12);
+        }
+
+        .imageWrap {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 1 / 0.9;
+          background: #fafafa;
+          overflow: hidden;
+        }
+
+        .imageWrap img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          transition: .35s;
+        }
+
+        .card:hover img {
+          transform: scale(1.04);
+        }
+
+        .soldOutImage {
+          opacity: .35;
+        }
+
+        .heart {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          border: none;
+          background: rgba(255,255,255,.96);
+          font-size: 17px;
+          cursor: pointer;
+          z-index: 5;
+          box-shadow: 0 3px 10px rgba(0,0,0,.12);
+        }
+
+        .heart.active {
+          background:#111;
+          color:#fff;
+        }
+
+        .soldOut {
+          position:absolute;
+          left:50%;
+          top:50%;
+          transform:translate(-50%,-50%);
+          background:#111;
+          color:#fff;
+          padding:8px 16px;
+          border-radius:999px;
+          font-size:12px;
+          font-weight:900;
+        }
+
+        .info {
+          padding:10px;
+        }
+
+        .brand {
+          font-size:9px;
+          color:#9b8b73;
+          letter-spacing:2px;
+          font-weight:900;
+          margin-bottom:5px;
+        }
+
+        .name {
+          font-size:12px;
+          font-weight:800;
+          line-height:1.35;
+          height:32px;
+          overflow:hidden;
+        }
+
+        .price {
+          margin-top:10px;
+          font-size:14px;
+          font-weight:900;
+        }
+
+        .detail {
+          margin-top:8px;
+          font-size:10px;
+          color:#888;
+          font-weight:800;
+        }
+
+        @media (max-width:768px){
+
+          .imageWrap{
+            aspect-ratio:1 / .82;
+          }
+
+          .heart{
+            width:26px;
+            height:26px;
+            font-size:15px;
+          }
+
+          .info{
+            padding:8px;
+          }
+
+          .brand{
+            font-size:8px;
+          }
+
+          .name{
+            font-size:11px;
+            height:28px;
+          }
+
+          .price{
+            font-size:13px;
+            margin-top:8px;
+          }
+
+          .detail{
+            font-size:9px;
+          }
+
+        }
+
+      `}</style>
+    </>
   );
 }
-
-const cardStyle = {
-  width: "220px",
-  minWidth: "180px",
-  textDecoration: "none",
-  color: "#111",
-  background: "#fff",
-  borderRadius: "24px",
-  overflow: "hidden",
-  border: "1px solid rgba(0,0,0,0.06)",
-  position: "relative" as const,
-  transition: "0.28s ease",
-};
-
-const imageBoxStyle = {
-  width: "100%",
-  height: "238px",
-  background: "linear-gradient(180deg, #fafafa 0%, #f4f1eb 100%)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  overflow: "hidden",
-  position: "relative" as const,
-};
-
-const heartButtonStyle = {
-  position: "absolute" as const,
-  top: "12px",
-  right: "12px",
-  zIndex: 5,
-  width: "34px",
-  height: "34px",
-  borderRadius: "999px",
-  border: "1px solid rgba(0,0,0,0.08)",
-  fontSize: "18px",
-  fontWeight: 900,
-  cursor: "pointer",
-  boxShadow: "0 8px 18px rgba(0,0,0,0.1)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-};
-
-const imageStyle = {
-  width: "112%",
-  height: "112%",
-  objectFit: "contain" as const,
-  objectPosition: "center",
-  display: "block",
-  transition: "0.35s ease",
-};
-
-const soldOutStyle = {
-  position: "absolute" as const,
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  background: "rgba(0,0,0,0.86)",
-  color: "#fff",
-  padding: "10px 18px",
-  borderRadius: "999px",
-  fontSize: "13px",
-  fontWeight: "950",
-  letterSpacing: "1.5px",
-};
-
-const textBoxStyle = {
-  padding: "16px 15px 18px",
-  textAlign: "left" as const,
-  background: "#fff",
-};
-
-const brandStyle = {
-  margin: "0 0 8px",
-  fontSize: "11px",
-  fontWeight: "950",
-  letterSpacing: "1.4px",
-  color: "#8b806f",
-  textTransform: "uppercase" as const,
-};
-
-const nameStyle = {
-  margin: "0 0 12px",
-  fontSize: "14px",
-  color: "#111",
-  lineHeight: "1.45",
-  minHeight: "40px",
-  fontWeight: "800",
-  wordBreak: "keep-all" as const,
-};
-
-const priceStyle = {
-  margin: "0 0 14px",
-  fontSize: "17px",
-  fontWeight: "950",
-  color: "#111",
-};
-
-const moreStyle = {
-  display: "inline-block",
-  fontSize: "12px",
-  fontWeight: "900",
-  color: "#777",
-};
