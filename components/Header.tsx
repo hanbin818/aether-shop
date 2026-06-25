@@ -46,47 +46,41 @@ export default function Header() {
   }, []);
 
   return (
-    <header
-      style={{
-        width: "100%",
-        position: "sticky",
-        top: 0,
-        zIndex: 999,
-        background: scrolled ? "rgba(255,255,255,0.86)" : "#fff",
-        backdropFilter: scrolled ? "blur(18px)" : "none",
-        borderBottom: "1px solid rgba(0,0,0,0.08)",
-        boxShadow: scrolled ? "0 16px 50px rgba(0,0,0,0.08)" : "none",
-      }}
-    >
-      <div style={wrapStyle}>
-        <div style={topStyle}>
-          <button onClick={() => setMenuOpen(!menuOpen)} style={menuButtonStyle}>
-            {menuOpen ? "닫기" : "메뉴"}
-          </button>
+    <header className={scrolled ? "site-header scrolled" : "site-header"}>
+      <div className="notice-bar">
+        AETHER 신규 컬렉션 업데이트 · 100,000원 이상 무료배송
+      </div>
 
-          <a href="/" style={logoStyle}>
+      <div className="header-wrap">
+        <div className="utility-row">
+          <div className="utility-left">
+            <button onClick={() => setMenuOpen(!menuOpen)}>
+              {menuOpen ? "닫기" : "전체메뉴"}
+            </button>
+          </div>
+
+          <div className="utility-right">
+            {isLoggedIn ? (
+              <>
+                <a href="/mypage">마이페이지</a>
+                <button onClick={logout}>로그아웃</button>
+              </>
+            ) : (
+              <a href="/login">로그인</a>
+            )}
+
+            <a href="/order">주문조회</a>
+            <a href="/cart">장바구니</a>
+          </div>
+        </div>
+
+        <div className="logo-row">
+          <a href="/" className="logo">
             AETHER
-          </a>
-
-          <a href="/cart" style={cartMiniStyle}>
-            장바구니
           </a>
         </div>
 
-        <nav style={navStyle}>
-          {[
-            ["전체상품", "/products"],
-            ["남성", "/men"],
-            ["여성", "/women"],
-            ["주문조회", "/order"],
-          ].map(([label, href]) => (
-            <a key={href} href={href} style={navLinkStyle}>
-              {label}
-            </a>
-          ))}
-        </nav>
-
-        <div style={searchRowStyle}>
+        <div className="search-row">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -94,211 +88,246 @@ export default function Header() {
               if (e.key === "Enter") handleSearch();
             }}
             placeholder="브랜드 또는 상품명을 검색하세요"
-            style={searchInputStyle}
           />
 
-          <button onClick={handleSearch} style={searchButtonStyle}>
-            검색
-          </button>
+          <button onClick={handleSearch}>검색</button>
         </div>
 
-        <div style={bottomStyle}>
-          {isLoggedIn ? (
-            <>
-              <a href="/mypage" style={bottomLinkStyle}>
-                마이페이지
-              </a>
-
-              <a href="/cart" style={bottomLinkStyle}>
-                장바구니
-              </a>
-
-              <button onClick={logout} style={logoutButtonStyle}>
-                로그아웃
-              </button>
-            </>
-          ) : (
-            <>
-              <a href="/login" style={bottomLinkStyle}>
-                로그인
-              </a>
-
-              <a href="/cart" style={bottomLinkStyle}>
-                장바구니
-              </a>
-            </>
-          )}
-        </div>
+        <nav className="category-nav">
+          <a href="/products">전체상품</a>
+          <a href="/men">남성</a>
+          <a href="/women">여성</a>
+          <a href="/products?search=bag">가방</a>
+          <a href="/products?search=wallet">지갑</a>
+          <a href="/products?search=shoes">신발</a>
+          <a href="/products?search=accessory">액세서리</a>
+          <a href="/products?search=clothes">의류</a>
+        </nav>
 
         {menuOpen && (
-          <div style={mobileMenuStyle}>
-            <a href="/products" style={mobileMenuLinkStyle}>
-              전체상품
-            </a>
-            <a href="/men" style={mobileMenuLinkStyle}>
-              남성
-            </a>
-            <a href="/women" style={mobileMenuLinkStyle}>
-              여성
-            </a>
-            <a href="/order" style={mobileMenuLinkStyle}>
-              주문조회
-            </a>
+          <div className="mobile-menu">
+            <a href="/products">전체상품</a>
+            <a href="/men">남성</a>
+            <a href="/women">여성</a>
+            <a href="/products?search=bag">가방</a>
+            <a href="/products?search=wallet">지갑</a>
+            <a href="/products?search=shoes">신발</a>
+            <a href="/products?search=accessory">액세서리</a>
+            <a href="/products?search=clothes">의류</a>
+            <a href="/order">주문조회</a>
+            <a href="/cart">장바구니</a>
+
             {isLoggedIn ? (
               <>
-                <a href="/mypage" style={mobileMenuLinkStyle}>
-                  마이페이지
-                </a>
-                <button onClick={logout} style={mobileLogoutStyle}>
-                  로그아웃
-                </button>
+                <a href="/mypage">마이페이지</a>
+                <button onClick={logout}>로그아웃</button>
               </>
             ) : (
-              <a href="/login" style={mobileMenuLinkStyle}>
-                로그인
-              </a>
+              <a href="/login">로그인</a>
             )}
           </div>
         )}
       </div>
+
+      <style>{`
+        .site-header {
+          width: 100%;
+          position: sticky;
+          top: 0;
+          z-index: 999;
+          background: #fff;
+          border-bottom: 1px solid rgba(0,0,0,0.08);
+          transition: 0.25s ease;
+        }
+
+        .site-header.scrolled {
+          background: rgba(255,255,255,0.9);
+          backdrop-filter: blur(18px);
+          box-shadow: 0 16px 50px rgba(0,0,0,0.08);
+        }
+
+        .notice-bar {
+          width: 100%;
+          background: #111;
+          color: #fff;
+          text-align: center;
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 0.5px;
+          padding: 9px 12px;
+        }
+
+        .header-wrap {
+          max-width: 1180px;
+          margin: 0 auto;
+          padding: 12px 16px 0;
+        }
+
+        .utility-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .utility-left button,
+        .utility-right button {
+          background: none;
+          border: none;
+          color: #111;
+          font-size: 12px;
+          font-weight: 950;
+          cursor: pointer;
+        }
+
+        .utility-right {
+          display: flex;
+          align-items: center;
+          gap: 18px;
+        }
+
+        .utility-right a,
+        .utility-right button {
+          text-decoration: none;
+          color: #111;
+          font-size: 12px;
+          font-weight: 950;
+        }
+
+        .logo-row {
+          text-align: center;
+          padding: 10px 0 12px;
+        }
+
+        .logo {
+          color: #111;
+          text-decoration: none;
+          font-size: clamp(34px, 5vw, 52px);
+          font-weight: 950;
+          letter-spacing: 12px;
+        }
+
+        .search-row {
+          max-width: 680px;
+          margin: 0 auto 14px;
+          display: flex;
+          gap: 8px;
+        }
+
+        .search-row input {
+          flex: 1;
+          height: 48px;
+          border-radius: 999px;
+          border: 1px solid #ddd;
+          padding: 0 18px;
+          font-size: 14px;
+          outline: none;
+          background: #fafafa;
+          color: #111;
+          font-weight: 800;
+        }
+
+        .search-row button {
+          width: 86px;
+          height: 48px;
+          border-radius: 999px;
+          background: #111;
+          color: #fff;
+          border: none;
+          font-weight: 950;
+          cursor: pointer;
+        }
+
+        .category-nav {
+          display: flex;
+          justify-content: center;
+          gap: 28px;
+          border-top: 1px solid #eee;
+          padding: 15px 0;
+          overflow-x: auto;
+          white-space: nowrap;
+        }
+
+        .category-nav a {
+          text-decoration: none;
+          color: #111;
+          font-weight: 950;
+          font-size: 14px;
+        }
+
+        .mobile-menu {
+          margin: 0 0 14px;
+          background: #111;
+          border-radius: 22px;
+          padding: 18px;
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+        }
+
+        .mobile-menu a,
+        .mobile-menu button {
+          color: #fff;
+          text-decoration: none;
+          font-size: 15px;
+          font-weight: 950;
+          padding: 10px 4px;
+          background: transparent;
+          border: none;
+          text-align: left;
+          cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+          .notice-bar {
+            font-size: 11px;
+            padding: 8px 10px;
+          }
+
+          .header-wrap {
+            padding: 10px 14px 0;
+          }
+
+          .utility-right {
+            gap: 12px;
+          }
+
+          .utility-right a,
+          .utility-right button,
+          .utility-left button {
+            font-size: 11px;
+          }
+
+          .logo {
+            font-size: 36px;
+            letter-spacing: 8px;
+          }
+
+          .search-row {
+            margin-bottom: 12px;
+          }
+
+          .search-row input {
+            height: 46px;
+            font-size: 13px;
+          }
+
+          .search-row button {
+            width: 74px;
+            height: 46px;
+          }
+
+          .category-nav {
+            justify-content: flex-start;
+            gap: 22px;
+            padding: 14px 2px;
+          }
+
+          .category-nav::-webkit-scrollbar {
+            display: none;
+          }
+        }
+      `}</style>
     </header>
   );
 }
-
-const wrapStyle = {
-  maxWidth: "1180px",
-  margin: "0 auto",
-  padding: "16px 16px 14px",
-};
-
-const topStyle = {
-  display: "grid",
-  gridTemplateColumns: "80px 1fr 80px",
-  alignItems: "center",
-};
-
-const logoStyle = {
-  textAlign: "center" as const,
-  textDecoration: "none",
-  color: "#111",
-  fontSize: "clamp(28px, 5vw, 42px)",
-  fontWeight: 950,
-  letterSpacing: "9px",
-};
-
-const menuButtonStyle = {
-  background: "none",
-  border: "none",
-  color: "#111",
-  fontSize: "13px",
-  fontWeight: 900,
-  cursor: "pointer",
-};
-
-const cartMiniStyle = {
-  textAlign: "right" as const,
-  color: "#111",
-  textDecoration: "none",
-  fontSize: "13px",
-  fontWeight: 900,
-};
-
-const navStyle = {
-  display: "flex",
-  justifyContent: "center",
-  gap: "34px",
-  borderTop: "1px solid #eee",
-  borderBottom: "1px solid #eee",
-  padding: "14px 0",
-  marginTop: "16px",
-};
-
-const navLinkStyle = {
-  textDecoration: "none",
-  color: "#111",
-  fontWeight: 900,
-  fontSize: "14px",
-};
-
-const searchRowStyle = {
-  maxWidth: "620px",
-  margin: "16px auto 0",
-  display: "flex",
-  gap: "8px",
-};
-
-const searchInputStyle = {
-  flex: 1,
-  height: "48px",
-  borderRadius: "999px",
-  border: "1px solid #ddd",
-  padding: "0 18px",
-  fontSize: "14px",
-  outline: "none",
-  background: "#fafafa",
-  color: "#111",
-  fontWeight: 700,
-};
-
-const searchButtonStyle = {
-  width: "82px",
-  height: "48px",
-  borderRadius: "999px",
-  background: "#111",
-  color: "#fff",
-  border: "none",
-  fontWeight: 950,
-  cursor: "pointer",
-};
-
-const bottomStyle = {
-  display: "flex",
-  justifyContent: "center",
-  gap: "28px",
-  marginTop: "16px",
-  flexWrap: "wrap" as const,
-};
-
-const bottomLinkStyle = {
-  textDecoration: "none",
-  color: "#111",
-  fontSize: "13px",
-  fontWeight: 900,
-};
-
-const logoutButtonStyle = {
-  background: "none",
-  border: "none",
-  color: "#111",
-  fontSize: "13px",
-  fontWeight: 900,
-  cursor: "pointer",
-};
-
-const mobileMenuStyle = {
-  marginTop: "16px",
-  background: "#111",
-  borderRadius: "22px",
-  padding: "18px",
-  display: "grid",
-  gap: "12px",
-};
-
-const mobileMenuLinkStyle = {
-  color: "#fff",
-  textDecoration: "none",
-  fontSize: "15px",
-  fontWeight: 900,
-  padding: "10px 4px",
-};
-
-const mobileLogoutStyle = {
-  textAlign: "left" as const,
-  background: "none",
-  border: "none",
-  color: "#fff",
-  fontSize: "15px",
-  fontWeight: 900,
-  padding: "10px 4px",
-  cursor: "pointer",
-};
