@@ -21,6 +21,9 @@ type Order = {
   id: number;
   total_price: number;
   status?: string;
+  created_at?: string;
+  order_number?: string;
+  customer_name?: string;
 };
 
 export default function AdminPage() {
@@ -71,7 +74,10 @@ export default function AdminPage() {
   };
 
   const fetchOrders = async () => {
-    const { data, error } = await supabase.from("orders").select("*");
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .order("id", { ascending: false });
 
     if (error) {
       console.error(error);
@@ -92,10 +98,24 @@ export default function AdminPage() {
     0
   );
 
+  const today = new Date().toDateString();
+
+  const todayOrders = orders.filter((order) => {
+    if (!order.created_at) return false;
+    return new Date(order.created_at).toDateString() === today;
+  });
+
+  const todaySales = todayOrders.reduce(
+    (sum, order) => sum + Number(order.total_price || 0),
+    0
+  );
+
   const soldOutCount = products.filter((product) => {
     const status = product.stock_status?.toLowerCase().replace(/[_-\s]/g, "");
     return status === "soldout" || Number(product.stock_quantity || 0) <= 0;
   }).length;
+
+  const activeProductCount = products.length - soldOutCount;
 
   const waitingOrders = orders.filter(
     (order) => (order.status || "상담대기") === "상담대기"
@@ -112,6 +132,8 @@ export default function AdminPage() {
   const completedOrders = orders.filter(
     (order) => order.status === "배송완료"
   ).length;
+
+  const recentOrders = orders.slice(0, 5);
 
   const resetForm = () => {
     setName("");
@@ -293,76 +315,113 @@ export default function AdminPage() {
 
   return (
     <main style={mainStyle}>
-      <div style={topBarStyle}>
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          <h1 style={{ fontSize: "36px", margin: 0 }}>AETHER Admin</h1>
+      <section style={heroStyle}>
+        <div>
+          <p style={heroLabelStyle}>AETHER ADMIN</p>
+          <h1 style={heroTitleStyle}>Luxury Management Dashboard</h1>
+          <p style={heroTextStyle}>
+            상품, 주문, 재고, 매출을 한눈에 관리하는 AETHER 운영 화면입니다.
+          </p>
+        </div>
 
-          <a href="/admin/orders" style={linkButtonStyle}>
+        <div style={heroButtonWrapStyle}>
+          <a href="/" style={outlineButtonStyle}>
+            사이트 보기
+          </a>
+
+          <a href="/admin/orders" style={whiteButtonStyle}>
             주문 관리
           </a>
-        </div>
 
-        <button onClick={logout} style={logoutButtonStyle}>
-          로그아웃
-        </button>
-      </div>
-
-      <section style={dashboardGridStyle}>
-        <div style={dashboardCardStyle}>
-          <p style={dashboardLabelStyle}>총 상품 수</p>
-          <strong style={dashboardNumberStyle}>{products.length}개</strong>
-        </div>
-
-        <div style={dashboardCardStyle}>
-          <p style={dashboardLabelStyle}>판매중 상품</p>
-          <strong style={dashboardNumberStyle}>
-            {products.length - soldOutCount}개
-          </strong>
-        </div>
-
-        <div style={dashboardCardStyle}>
-          <p style={dashboardLabelStyle}>품절 상품</p>
-          <strong style={dashboardNumberStyle}>{soldOutCount}개</strong>
-        </div>
-
-        <div style={dashboardCardStyle}>
-          <p style={dashboardLabelStyle}>총 주문 수</p>
-          <strong style={dashboardNumberStyle}>{orders.length}건</strong>
-        </div>
-
-        <div style={dashboardCardStyle}>
-          <p style={dashboardLabelStyle}>총 매출</p>
-          <strong style={dashboardNumberStyle}>₩{totalSales.toLocaleString()}</strong>
-        </div>
-
-        <div style={dashboardCardStyle}>
-          <p style={dashboardLabelStyle}>상담대기</p>
-          <strong style={dashboardNumberStyle}>{waitingOrders}건</strong>
-        </div>
-
-        <div style={dashboardCardStyle}>
-          <p style={dashboardLabelStyle}>입금확인</p>
-          <strong style={dashboardNumberStyle}>{paidOrders}건</strong>
-        </div>
-
-        <div style={dashboardCardStyle}>
-          <p style={dashboardLabelStyle}>배송준비중</p>
-          <strong style={dashboardNumberStyle}>{preparingOrders}건</strong>
-        </div>
-
-        <div style={dashboardCardStyle}>
-          <p style={dashboardLabelStyle}>배송중</p>
-          <strong style={dashboardNumberStyle}>{shippingOrders}건</strong>
-        </div>
-
-        <div style={dashboardCardStyle}>
-          <p style={dashboardLabelStyle}>배송완료</p>
-          <strong style={dashboardNumberStyle}>{completedOrders}건</strong>
+          <button onClick={logout} style={logoutButtonStyle}>
+            로그아웃
+          </button>
         </div>
       </section>
 
-      <section style={formSectionStyle}>
-        <h2 style={{ fontSize: "24px", marginBottom: "20px" }}>
+      <section style={dashboardGridStyle}>
+        <DashboardCard label="오늘 주문" value={`${todayOrders.length}건`} />
+        <DashboardCard label="오늘 매출" value={`₩${todaySales.toLocaleString()}`} />
+        <DashboardCard label="총 주문" value={`${orders.length}건`} />
+        <DashboardCard label="총 매출" value={`₩${totalSales.toLocaleString()}`} />
+        <DashboardCard label="판매중 상품" value={`${activeProductCount}개`} />
+        <DashboardCard label="품절 상품" value={`${soldOutCount}개`} />
+        <DashboardCard label="상담대기" value={`${waitingOrders}건`} />
+        <DashboardCard label="배송준비중" value={`${preparingOrders}건`} />
+      </section>
+
+      <section style={quickSectionStyle}>
+        <a href="#product-form" style={quickButtonStyle}>
+          상품 등록
+        </a>
+        <a href="/admin/orders" style={quickButtonStyle}>
+          주문 관리
+        </a>
+        <a href="#product-list" style={quickButtonStyle}>
+          상품 목록
+        </a>
+        <a href="/" style={quickButtonStyle}>
+          쇼핑몰 보기
+        </a>
+      </section>
+
+      <section style={panelGridStyle}>
+        <div style={panelStyle}>
+          <div style={panelTitleRowStyle}>
+            <div>
+              <p style={panelLabelStyle}>RECENT ORDERS</p>
+              <h2 style={panelTitleStyle}>최근 주문</h2>
+            </div>
+
+            <a href="/admin/orders" style={smallLinkStyle}>
+              전체보기
+            </a>
+          </div>
+
+          {recentOrders.length === 0 ? (
+            <p style={emptyTextStyle}>최근 주문이 없습니다.</p>
+          ) : (
+            <div style={recentListStyle}>
+              {recentOrders.map((order) => (
+                <div key={order.id} style={recentOrderStyle}>
+                  <div>
+                    <strong>
+                      {order.order_number || `ORDER-${order.id}`}
+                    </strong>
+                    <p>{order.customer_name || "주문자 정보 없음"}</p>
+                  </div>
+
+                  <div style={{ textAlign: "right" }}>
+                    <strong>₩{Number(order.total_price || 0).toLocaleString()}</strong>
+                    <p>{order.status || "상담대기"}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div style={panelStyle}>
+          <div style={panelTitleRowStyle}>
+            <div>
+              <p style={panelLabelStyle}>ORDER STATUS</p>
+              <h2 style={panelTitleStyle}>주문 상태</h2>
+            </div>
+          </div>
+
+          <div style={statusGridStyle}>
+            <StatusBox label="상담대기" value={waitingOrders} />
+            <StatusBox label="입금확인" value={paidOrders} />
+            <StatusBox label="배송준비중" value={preparingOrders} />
+            <StatusBox label="배송중" value={shippingOrders} />
+            <StatusBox label="배송완료" value={completedOrders} />
+          </div>
+        </div>
+      </section>
+
+      <section id="product-form" style={formSectionStyle}>
+        <p style={sectionLabelStyle}>PRODUCT MANAGEMENT</p>
+        <h2 style={sectionTitleStyle}>
           {editingProduct ? "상품 수정" : "상품 등록"}
         </h2>
 
@@ -440,14 +499,14 @@ export default function AdminPage() {
         </div>
 
         <textarea
-          placeholder="상품 설명 ex) 고급스러운 디자인과 실용성을 모두 갖춘 프리미엄 아이템입니다."
+          placeholder="상품 설명"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           style={textareaStyle}
         />
 
         <div style={imageBoxStyle}>
-          <p style={{ marginTop: 0, fontWeight: "700" }}>상품 이미지</p>
+          <p style={{ marginTop: 0, fontWeight: 900 }}>상품 이미지</p>
 
           <input
             type="file"
@@ -463,15 +522,7 @@ export default function AdminPage() {
             type="button"
             onClick={uploadImage}
             disabled={uploading}
-            style={{
-              padding: "10px 14px",
-              background: uploading ? "#777" : "#111",
-              color: "#fff",
-              border: "none",
-              borderRadius: "8px",
-              cursor: uploading ? "not-allowed" : "pointer",
-              marginBottom: "12px",
-            }}
+            style={uploadButtonStyle}
           >
             {uploading ? "업로드 중..." : "이미지 업로드"}
           </button>
@@ -487,14 +538,7 @@ export default function AdminPage() {
             <img
               src={imageUrl}
               alt="미리보기"
-              style={{
-                width: "160px",
-                height: "160px",
-                objectFit: "cover",
-                borderRadius: "12px",
-                marginTop: "14px",
-                display: "block",
-              }}
+              style={previewImageStyle}
             />
           )}
         </div>
@@ -513,8 +557,17 @@ export default function AdminPage() {
         )}
       </section>
 
-      <section>
-        <h2 style={{ fontSize: "24px", marginBottom: "20px" }}>상품 목록</h2>
+      <section id="product-list">
+        <div style={panelTitleRowStyle}>
+          <div>
+            <p style={sectionLabelStyle}>PRODUCT LIST</p>
+            <h2 style={sectionTitleStyle}>상품 목록</h2>
+          </div>
+
+          <button onClick={fetchProducts} style={refreshButtonStyle}>
+            새로고침
+          </button>
+        </div>
 
         <div style={productGridStyle}>
           {products.map((product) => {
@@ -561,9 +614,7 @@ export default function AdminPage() {
                 <p>{product.brand}</p>
 
                 {product.description && (
-                  <p style={{ color: "#777", lineHeight: "1.6" }}>
-                    {product.description}
-                  </p>
+                  <p style={descStyle}>{product.description}</p>
                 )}
 
                 <strong>{Number(product.price).toLocaleString()}원</strong>
@@ -620,81 +671,265 @@ export default function AdminPage() {
   );
 }
 
+function DashboardCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div style={dashboardCardStyle}>
+      <p style={dashboardLabelStyle}>{label}</p>
+      <strong style={dashboardNumberStyle}>{value}</strong>
+    </div>
+  );
+}
+
+function StatusBox({ label, value }: { label: string; value: number }) {
+  return (
+    <div style={statusBoxStyle}>
+      <span>{label}</span>
+      <strong>{value}건</strong>
+    </div>
+  );
+}
+
 const mainStyle = {
-  padding: "50px",
-  background: "#f5f5f5",
+  padding: "36px 18px 90px",
+  background: "linear-gradient(180deg, #0b0b0f 0%, #f5f1ea 360px, #f5f5f5 100%)",
   minHeight: "100vh",
   color: "#111",
 };
 
 const loadingStyle = {
   minHeight: "100vh",
-  background: "#f5f5f5",
+  background: "#0b0b0f",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  color: "#111",
+  color: "#fff",
   fontSize: "24px",
-  fontWeight: "700",
+  fontWeight: "900",
 };
 
-const topBarStyle = {
+const heroStyle = {
+  maxWidth: "1180px",
+  margin: "0 auto 28px",
+  padding: "42px",
+  borderRadius: "32px",
+  background:
+    "radial-gradient(circle at top right, rgba(216,195,159,0.22), transparent 32%), #111",
+  color: "#fff",
   display: "flex",
   justifyContent: "space-between",
-  alignItems: "center",
-  marginBottom: "30px",
+  gap: "24px",
+  flexWrap: "wrap" as const,
+  boxShadow: "0 28px 90px rgba(0,0,0,0.28)",
 };
 
-const linkButtonStyle = {
-  background: "#111",
-  color: "#fff",
-  padding: "10px 16px",
-  borderRadius: "10px",
+const heroLabelStyle = {
+  margin: "0 0 12px",
+  color: "#d8c39f",
+  fontSize: "12px",
+  fontWeight: 950,
+  letterSpacing: "5px",
+};
+
+const heroTitleStyle = {
+  margin: 0,
+  fontSize: "clamp(34px, 5vw, 58px)",
+  fontWeight: 950,
+  letterSpacing: "-1.6px",
+};
+
+const heroTextStyle = {
+  margin: "16px 0 0",
+  color: "rgba(255,255,255,0.72)",
+  lineHeight: 1.8,
+};
+
+const heroButtonWrapStyle = {
+  display: "flex",
+  gap: "10px",
+  alignItems: "flex-start",
+  flexWrap: "wrap" as const,
+};
+
+const whiteButtonStyle = {
+  background: "#fff",
+  color: "#111",
+  padding: "13px 18px",
+  borderRadius: "999px",
   textDecoration: "none",
   fontSize: "14px",
-  fontWeight: "700",
+  fontWeight: 950,
+};
+
+const outlineButtonStyle = {
+  background: "rgba(255,255,255,0.08)",
+  color: "#fff",
+  padding: "13px 18px",
+  borderRadius: "999px",
+  textDecoration: "none",
+  fontSize: "14px",
+  fontWeight: 950,
+  border: "1px solid rgba(255,255,255,0.25)",
 };
 
 const logoutButtonStyle = {
-  padding: "12px 18px",
-  background: "#111",
+  padding: "13px 18px",
+  background: "#d93025",
   color: "#fff",
   border: "none",
-  borderRadius: "10px",
+  borderRadius: "999px",
   cursor: "pointer",
+  fontWeight: 950,
 };
 
 const dashboardGridStyle = {
+  maxWidth: "1180px",
+  margin: "0 auto 28px",
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
-  gap: "20px",
-  marginBottom: "40px",
+  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+  gap: "16px",
 };
 
 const dashboardCardStyle = {
-  background: "#fff",
-  padding: "24px",
-  borderRadius: "18px",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+  background: "rgba(255,255,255,0.94)",
+  padding: "22px",
+  borderRadius: "22px",
+  boxShadow: "0 18px 50px rgba(0,0,0,0.08)",
+  border: "1px solid rgba(0,0,0,0.06)",
 };
 
 const dashboardLabelStyle = {
   margin: 0,
   color: "#777",
-  fontWeight: "700",
+  fontWeight: "900",
+  fontSize: "13px",
 };
 
 const dashboardNumberStyle = {
   display: "block",
-  marginTop: "12px",
-  fontSize: "30px",
+  marginTop: "10px",
+  fontSize: "28px",
+  fontWeight: 950,
+};
+
+const quickSectionStyle = {
+  maxWidth: "1180px",
+  margin: "0 auto 28px",
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+  gap: "12px",
+};
+
+const quickButtonStyle = {
+  background: "#111",
+  color: "#fff",
+  padding: "16px",
+  borderRadius: "999px",
+  textAlign: "center" as const,
+  textDecoration: "none",
+  fontSize: "14px",
+  fontWeight: 950,
+};
+
+const panelGridStyle = {
+  maxWidth: "1180px",
+  margin: "0 auto 32px",
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+  gap: "18px",
+};
+
+const panelStyle = {
+  background: "#fff",
+  borderRadius: "28px",
+  padding: "26px",
+  boxShadow: "0 18px 50px rgba(0,0,0,0.08)",
+  border: "1px solid rgba(0,0,0,0.06)",
+};
+
+const panelTitleRowStyle = {
+  maxWidth: "1180px",
+  margin: "0 auto 20px",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "16px",
+  flexWrap: "wrap" as const,
+};
+
+const panelLabelStyle = {
+  margin: "0 0 8px",
+  color: "#9b8b73",
+  fontSize: "12px",
+  fontWeight: 950,
+  letterSpacing: "4px",
+};
+
+const panelTitleStyle = {
+  margin: 0,
+  fontSize: "26px",
+  fontWeight: 950,
+};
+
+const smallLinkStyle = {
+  color: "#111",
+  fontSize: "13px",
+  fontWeight: 950,
+};
+
+const emptyTextStyle = {
+  color: "#777",
+  fontWeight: 900,
+};
+
+const recentListStyle = {
+  display: "grid",
+  gap: "12px",
+};
+
+const recentOrderStyle = {
+  background: "#f7f2ea",
+  padding: "16px",
+  borderRadius: "18px",
+  display: "flex",
+  justifyContent: "space-between",
+  gap: "14px",
+};
+
+const statusGridStyle = {
+  display: "grid",
+  gap: "10px",
+};
+
+const statusBoxStyle = {
+  background: "#f7f2ea",
+  padding: "15px",
+  borderRadius: "16px",
+  display: "flex",
+  justifyContent: "space-between",
+  fontWeight: 900,
 };
 
 const formSectionStyle = {
+  maxWidth: "1180px",
+  margin: "0 auto 40px",
   background: "#fff",
   padding: "30px",
-  borderRadius: "16px",
-  marginBottom: "40px",
+  borderRadius: "28px",
+  boxShadow: "0 18px 50px rgba(0,0,0,0.08)",
+};
+
+const sectionLabelStyle = {
+  margin: "0 0 8px",
+  color: "#9b8b73",
+  fontSize: "12px",
+  fontWeight: 950,
+  letterSpacing: "4px",
+};
+
+const sectionTitleStyle = {
+  fontSize: "28px",
+  margin: "0 0 22px",
+  fontWeight: 950,
 };
 
 const twoColumnStyle = {
@@ -704,53 +939,87 @@ const twoColumnStyle = {
 };
 
 const imageBoxStyle = {
-  padding: "16px",
+  padding: "18px",
   border: "1px solid #ddd",
-  borderRadius: "10px",
+  borderRadius: "18px",
   marginBottom: "14px",
   background: "#fafafa",
 };
 
 const inputStyle = {
   width: "100%",
-  padding: "14px",
+  padding: "15px",
   marginBottom: "14px",
   border: "1px solid #ddd",
-  borderRadius: "10px",
+  borderRadius: "14px",
   fontSize: "15px",
   boxSizing: "border-box" as const,
 };
 
 const textareaStyle = {
   ...inputStyle,
-  minHeight: "110px",
+  minHeight: "120px",
   resize: "vertical" as const,
+};
+
+const uploadButtonStyle = {
+  padding: "11px 15px",
+  background: "#111",
+  color: "#fff",
+  border: "none",
+  borderRadius: "999px",
+  cursor: "pointer",
+  marginBottom: "12px",
+  fontWeight: 900,
+};
+
+const previewImageStyle = {
+  width: "160px",
+  height: "160px",
+  objectFit: "cover" as const,
+  borderRadius: "16px",
+  marginTop: "14px",
+  display: "block",
 };
 
 const mainButtonStyle = {
   width: "100%",
-  padding: "16px",
+  padding: "17px",
   background: "#111",
   color: "#fff",
   border: "none",
-  borderRadius: "10px",
+  borderRadius: "999px",
   fontSize: "16px",
+  fontWeight: 950,
   cursor: "pointer",
 };
 
 const cancelButtonStyle = {
   width: "100%",
-  padding: "14px",
+  padding: "15px",
   background: "#777",
   color: "#fff",
   border: "none",
-  borderRadius: "10px",
+  borderRadius: "999px",
   fontSize: "15px",
+  fontWeight: 900,
   cursor: "pointer",
   marginTop: "10px",
 };
 
+const refreshButtonStyle = {
+  padding: "12px 18px",
+  background: "#111",
+  color: "#fff",
+  border: "none",
+  borderRadius: "999px",
+  cursor: "pointer",
+  fontWeight: 950,
+};
+
 const productGridStyle = {
+  maxWidth: "1180px",
+  margin: "0 auto",
   display: "grid",
   gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
   gap: "24px",
@@ -759,14 +1028,15 @@ const productGridStyle = {
 const productCardStyle = {
   background: "#fff",
   padding: "20px",
-  borderRadius: "16px",
+  borderRadius: "24px",
+  boxShadow: "0 18px 50px rgba(0,0,0,0.08)",
 };
 
 const productImageStyle = {
   width: "100%",
   height: "260px",
   objectFit: "cover" as const,
-  borderRadius: "12px",
+  borderRadius: "18px",
   marginBottom: "16px",
 };
 
@@ -809,6 +1079,11 @@ const quantityStyle = {
   fontWeight: "900",
 };
 
+const descStyle = {
+  color: "#777",
+  lineHeight: "1.6",
+};
+
 const stockControlWrapStyle = {
   display: "grid",
   gap: "8px",
@@ -821,8 +1096,9 @@ const editButtonStyle = {
   background: "#111",
   color: "#fff",
   border: "none",
-  borderRadius: "8px",
+  borderRadius: "999px",
   cursor: "pointer",
+  fontWeight: 900,
 };
 
 const stockButtonStyle = {
@@ -831,8 +1107,9 @@ const stockButtonStyle = {
   background: "#1b5e20",
   color: "#fff",
   border: "none",
-  borderRadius: "8px",
+  borderRadius: "999px",
   cursor: "pointer",
+  fontWeight: 900,
 };
 
 const soldOutButtonStyle = {
@@ -841,8 +1118,9 @@ const soldOutButtonStyle = {
   background: "#111",
   color: "#fff",
   border: "none",
-  borderRadius: "8px",
+  borderRadius: "999px",
   cursor: "pointer",
+  fontWeight: 900,
 };
 
 const restoreButtonStyle = {
@@ -851,8 +1129,9 @@ const restoreButtonStyle = {
   background: "#1565c0",
   color: "#fff",
   border: "none",
-  borderRadius: "8px",
+  borderRadius: "999px",
   cursor: "pointer",
+  fontWeight: 900,
 };
 
 const deleteButtonStyle = {
@@ -861,6 +1140,7 @@ const deleteButtonStyle = {
   background: "#d93025",
   color: "#fff",
   border: "none",
-  borderRadius: "8px",
+  borderRadius: "999px",
   cursor: "pointer",
+  fontWeight: 900,
 };
