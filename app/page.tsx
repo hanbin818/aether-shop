@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+const KAKAO_CHANNEL_URL = "http://pf.kakao.com/_FvxexfX";
+
 export default function LandingPage() {
   const [showBenefitPopup, setShowBenefitPopup] = useState(false);
 
@@ -34,7 +36,7 @@ export default function LandingPage() {
         </h2>
 
         <p style={descStyle}>
-          상품 문의는 오픈채팅으로,
+          상품 문의는 카카오톡 채널로,
           <br />
           쇼핑은 공식 웹사이트에서 이용해주세요.
         </p>
@@ -62,11 +64,11 @@ export default function LandingPage() {
 
         <a
           style={{ ...buttonStyle, ...kakaoButtonStyle }}
-          href="https://open.kakao.com/o/여기에_오픈채팅주소"
+          href={KAKAO_CHANNEL_URL}
           target="_blank"
           rel="noopener noreferrer"
         >
-          오픈채팅 주문 / 제품문의
+          카카오톡 채널 문의 / 제품문의
         </a>
 
         <a style={{ ...buttonStyle, ...websiteButtonStyle }} href="/home">
