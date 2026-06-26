@@ -11,10 +11,11 @@ const categoryTabs = [
   { label: "MEN", value: "MEN" },
   { label: "WOMEN", value: "WOMEN" },
   { label: "BAG", value: "bag" },
+  { label: "CLUTCH", value: "clutch" },
   { label: "WALLET", value: "wallet" },
   { label: "SHOES", value: "shoes" },
   { label: "ACC", value: "accessory" },
-  { label: "CLOTHES", value: "clothes" },
+  { label: "SUNGLASSES", value: "sunglasses" },
 ];
 
 const sortOptions = [
@@ -26,7 +27,10 @@ const sortOptions = [
 export default function ProductsClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
   const initialSearch = searchParams.get("search") || "";
+  const initialGender = searchParams.get("gender") || "";
+  const initialCategory = searchParams.get("category") || "";
 
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +41,20 @@ export default function ProductsClient() {
   useEffect(() => {
     setSearch(initialSearch);
   }, [initialSearch]);
+
+  useEffect(() => {
+    if (initialGender) {
+      setActiveTab(initialGender.toUpperCase());
+      return;
+    }
+
+    if (initialCategory) {
+      setActiveTab(initialCategory.toLowerCase());
+      return;
+    }
+
+    setActiveTab("ALL");
+  }, [initialGender, initialCategory]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -71,6 +89,12 @@ export default function ProductsClient() {
     router.push(`/products?search=${encodeURIComponent(keyword)}`);
   };
 
+  const clearUrlFilters = () => {
+    if (initialGender || initialCategory) {
+      router.push("/products");
+    }
+  };
+
   const filteredProducts = useMemo(() => {
     const keyword = search.trim().toLowerCase();
 
@@ -83,6 +107,9 @@ export default function ProductsClient() {
         normalizedStock === "soldout" ||
         Number(product.stock_quantity || 0) <= 0;
 
+      const productGender = product.gender?.toUpperCase() || "";
+      const productCategory = product.category?.toLowerCase() || "";
+
       const matchesSearch =
         keyword === "" ||
         product.name?.toLowerCase().includes(keyword) ||
@@ -90,13 +117,21 @@ export default function ProductsClient() {
         product.category?.toLowerCase().includes(keyword) ||
         product.gender?.toLowerCase().includes(keyword);
 
+      const matchesGender =
+        !initialGender ||
+        productGender === initialGender.toUpperCase();
+
+      const matchesCategory =
+        !initialCategory ||
+        productCategory === initialCategory.toLowerCase();
+
       const matchesTab =
         activeTab === "ALL" ||
         (activeTab === "NEW" && !isSoldOut) ||
-        product.gender?.toUpperCase() === activeTab ||
-        product.category?.toLowerCase() === activeTab.toLowerCase();
+        productGender === activeTab ||
+        productCategory === activeTab.toLowerCase();
 
-      return matchesSearch && matchesTab;
+      return matchesSearch && matchesGender && matchesCategory && matchesTab;
     });
 
     result = result.sort((a, b) => {
@@ -117,7 +152,28 @@ export default function ProductsClient() {
     });
 
     return result;
-  }, [products, search, activeTab, sort]);
+  }, [
+    products,
+    search,
+    activeTab,
+    sort,
+    initialGender,
+    initialCategory,
+  ]);
+
+  const pageTitle =
+    initialGender === "WOMEN" && initialCategory === "bag"
+      ? "WOMEN BAG"
+      : initialGender === "MEN" && initialCategory === "bag"
+      ? "MEN BAG"
+      : "SHOP";
+
+  const pageDescription =
+    initialGender === "WOMEN" && initialCategory === "bag"
+      ? "여성을 위한 프리미엄 가방 셀렉션을 만나보세요."
+      : initialGender === "MEN" && initialCategory === "bag"
+      ? "남성을 위한 프리미엄 가방 셀렉션을 만나보세요."
+      : "엄선된 프리미엄 명품 셀렉션을 만나보세요.";
 
   if (loading) {
     return <main className="loading-page">상품 불러오는 중...</main>;
@@ -131,8 +187,8 @@ export default function ProductsClient() {
         </a>
 
         <p>AETHER COLLECTION</p>
-        <h1>SHOP</h1>
-        <span>엄선된 프리미엄 명품 셀렉션을 만나보세요.</span>
+        <h1>{pageTitle}</h1>
+        <span>{pageDescription}</span>
       </section>
 
       <section className="shop-control">
@@ -140,7 +196,10 @@ export default function ProductsClient() {
           {categoryTabs.map((tab) => (
             <button
               key={tab.value}
-              onClick={() => setActiveTab(tab.value)}
+              onClick={() => {
+                clearUrlFilters();
+                setActiveTab(tab.value);
+              }}
               className={activeTab === tab.value ? "active" : ""}
             >
               {tab.label}
@@ -181,18 +240,27 @@ export default function ProductsClient() {
           <div className="empty-box">검색 결과가 없습니다.</div>
         ) : (
           <div className="product-grid">
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                brand={product.brand}
-                name={product.name}
-                price={`₩${Number(product.price).toLocaleString()}`}
-                image={product.image}
-                href={`/product/${product.id}`}
-                stockStatus={product.stock_status}
-                stockQuantity={product.stock_quantity}
-              />
-            ))}
+            {filteredProducts.map((product) => {
+              const productImages =
+                product.images && product.images.length > 0
+                  ? product.images
+                  : product.image
+                  ? [product.image]
+                  : [];
+
+              return (
+                <ProductCard
+                  key={product.id}
+                  brand={product.brand}
+                  name={product.name}
+                  price={`₩${Number(product.price).toLocaleString()}`}
+                  image={productImages[0] || product.image}
+                  href={`/product/${product.id}`}
+                  stockStatus={product.stock_status}
+                  stockQuantity={product.stock_quantity}
+                />
+              );
+            })}
           </div>
         )}
       </section>
@@ -258,10 +326,11 @@ export default function ProductsClient() {
 
         .shop-hero h1 {
           margin: 0;
-          font-size: clamp(50px, 10vw, 94px);
+          font-size: clamp(42px, 8vw, 94px);
           font-weight: 950;
-          letter-spacing: 12px;
-          line-height: 0.9;
+          letter-spacing: 10px;
+          line-height: 0.95;
+          word-break: keep-all;
         }
 
         .shop-hero span {
@@ -439,8 +508,8 @@ export default function ProductsClient() {
           }
 
           .shop-hero h1 {
-            font-size: 46px;
-            letter-spacing: 7px;
+            font-size: 42px;
+            letter-spacing: 6px;
           }
 
           .shop-hero span {
