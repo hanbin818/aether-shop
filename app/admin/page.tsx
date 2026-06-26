@@ -233,7 +233,14 @@ export default function AdminPage() {
   const addProduct = async () => {
     const cleanImages = getCleanImages();
 
-    if (!name || !brand || !price || cleanImages.length === 0 || !category || !gender) {
+    if (
+      !name ||
+      !brand ||
+      !price ||
+      cleanImages.length === 0 ||
+      !category ||
+      !gender
+    ) {
       alert("상품명, 브랜드, 가격, 이미지, 카테고리, 성별은 꼭 입력해줘!");
       return;
     }
@@ -269,7 +276,14 @@ export default function AdminPage() {
 
     const cleanImages = getCleanImages();
 
-    if (!name || !brand || !price || cleanImages.length === 0 || !category || !gender) {
+    if (
+      !name ||
+      !brand ||
+      !price ||
+      cleanImages.length === 0 ||
+      !category ||
+      !gender
+    ) {
       alert("상품명, 브랜드, 가격, 이미지, 카테고리, 성별은 꼭 입력해줘!");
       return;
     }
@@ -519,10 +533,11 @@ export default function AdminPage() {
             style={inputStyle}
           >
             <option value="bag">가방</option>
+            <option value="clutch">클러치</option>
             <option value="wallet">지갑</option>
             <option value="shoes">신발</option>
             <option value="accessory">액세서리</option>
-            <option value="clothes">의류</option>
+            <option value="sunglasses">선글라스</option>
           </select>
         </div>
 
