@@ -55,18 +55,15 @@ export default function Header() {
             flexWrap: "wrap",
           }}
         >
-          <a href="/men" style={navLinkStyle}>
-            남성
-          </a>
-          <a href="/women" style={navLinkStyle}>
-            여성
-          </a>
-          <a href="/products" style={navLinkStyle}>
-            전체상품
-          </a>
-          <a href="/order-status" style={navLinkStyle}>
-            주문조회
-          </a>
+          <a href="/products" style={navLinkStyle}>전체상품</a>
+          <a href="/men" style={navLinkStyle}>남성</a>
+          <a href="/women" style={navLinkStyle}>여성</a>
+          <a href="/products?search=bag" style={navLinkStyle}>가방</a>
+          <a href="/products?search=clutch" style={navLinkStyle}>클러치</a>
+          <a href="/products?search=wallet" style={navLinkStyle}>지갑</a>
+          <a href="/products?search=shoes" style={navLinkStyle}>신발</a>
+          <a href="/products?search=accessory" style={navLinkStyle}>액세서리</a>
+          <a href="/products?search=sunglasses" style={navLinkStyle}>선글라스</a>
         </nav>
 
         <div
@@ -115,9 +112,8 @@ export default function Header() {
             검색
           </button>
 
-          <a href="/cart" style={cartStyle}>
-            장바구니
-          </a>
+          <a href="/order" style={cartStyle}>주문조회</a>
+          <a href="/cart" style={cartStyle}>장바구니</a>
         </div>
       </div>
     </header>
@@ -130,6 +126,7 @@ const navLinkStyle = {
   fontSize: "13px",
   fontWeight: 900,
   letterSpacing: "1px",
+  whiteSpace: "nowrap" as const,
 };
 
 const cartStyle = {
