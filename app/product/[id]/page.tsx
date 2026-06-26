@@ -16,7 +16,7 @@ type Product = {
   gender?: string;
   description?: string;
   stock_status?: string;
-  stock_quantity?: number;
+  stock_quantity?: number | null;
 };
 
 export default function ProductDetail() {
@@ -166,13 +166,8 @@ export default function ProductDetail() {
 
     const distance = touchStartX - endX;
 
-    if (distance > 45) {
-      goNextImage();
-    }
-
-    if (distance < -45) {
-      goPrevImage();
-    }
+    if (distance > 45) goNextImage();
+    if (distance < -45) goPrevImage();
 
     setTouchStartX(null);
   };
@@ -212,7 +207,10 @@ export default function ProductDetail() {
     .replace(/[_-\s]/g, "");
 
   const isSoldOut =
-    normalizedStock === "soldout" || Number(product?.stock_quantity || 0) <= 0;
+    normalizedStock === "soldout" ||
+    (product?.stock_quantity !== null &&
+      product?.stock_quantity !== undefined &&
+      Number(product.stock_quantity) <= 0);
 
   const addToCart = () => {
     if (!product) return;
@@ -301,31 +299,16 @@ export default function ProductDetail() {
 
               {productImages.length > 1 && (
                 <>
-                  <button
-                    type="button"
-                    onClick={goPrevImage}
-                    style={{
-                      ...slideButtonStyle,
-                      left: isMobile ? "12px" : "20px",
-                    }}
-                  >
+                  <button type="button" onClick={goPrevImage} style={{ ...slideButtonStyle, left: isMobile ? "12px" : "20px" }}>
                     ‹
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={goNextImage}
-                    style={{
-                      ...slideButtonStyle,
-                      right: isMobile ? "12px" : "20px",
-                    }}
-                  >
+                  <button type="button" onClick={goNextImage} style={{ ...slideButtonStyle, right: isMobile ? "12px" : "20px" }}>
                     ›
                   </button>
 
                   <div style={imageCountStyle}>
-                    {(selectedIndex >= 0 ? selectedIndex : 0) + 1} /{" "}
-                    {productImages.length}
+                    {(selectedIndex >= 0 ? selectedIndex : 0) + 1} / {productImages.length}
                   </div>
                 </>
               )}
@@ -349,11 +332,7 @@ export default function ProductDetail() {
                         opacity: active ? 1 : 0.62,
                       }}
                     >
-                      <img
-                        src={image}
-                        alt={`${product.name} 이미지 ${index + 1}`}
-                        style={thumbnailImageStyle}
-                      />
+                      <img src={image} alt={`${product.name} 이미지 ${index + 1}`} style={thumbnailImageStyle} />
                     </button>
                   );
                 })}
@@ -370,12 +349,7 @@ export default function ProductDetail() {
           >
             <p style={brandLabelStyle}>{product.brand}</p>
 
-            <h1
-              style={{
-                ...titleStyle,
-                fontSize: isMobile ? "31px" : "46px",
-              }}
-            >
+            <h1 style={{ ...titleStyle, fontSize: isMobile ? "31px" : "46px" }}>
               {product.name}
             </h1>
 
@@ -383,18 +357,13 @@ export default function ProductDetail() {
               {isWished ? "❤️ 찜한 상품" : "🤍 찜하기"}
             </button>
 
-            <h2
-              style={{
-                ...priceStyle,
-                fontSize: isMobile ? "30px" : "36px",
-              }}
-            >
+            <h2 style={{ ...priceStyle, fontSize: isMobile ? "30px" : "36px" }}>
               ₩{Number(product.price).toLocaleString()}
             </h2>
 
             <p style={descriptionStyle}>
               {product.description ||
-                "AETHER가 엄선한 프리미엄 패션 아이템입니다. 세련된 실루엣과 고급스러운 무드로 데일리 룩부터 특별한 스타일까지 완성해줍니다."}
+                "AETHER가 엄선한 프리미엄 패션 아이템입니다.\n세련된 실루엣과 고급스러운 무드로 데일리 룩부터 특별한 스타일까지 완성해줍니다."}
             </p>
 
             <div style={serviceGridStyle}>
@@ -466,12 +435,7 @@ export default function ProductDetail() {
                     : [];
 
                 return (
-                  <div
-                    key={item.id}
-                    style={{
-                      flex: isMobile ? "0 0 220px" : "0 0 220px",
-                    }}
-                  >
+                  <div key={item.id} style={{ flex: "0 0 220px" }}>
                     <ProductCard
                       brand={item.brand}
                       name={item.name}
@@ -479,7 +443,7 @@ export default function ProductDetail() {
                       image={relatedImages[0] || item.image}
                       href={`/product/${item.id}`}
                       stockStatus={item.stock_status}
-                      stockQuantity={item.stock_quantity}
+                      stockQuantity={item.stock_quantity || undefined}
                     />
                   </div>
                 );
@@ -645,6 +609,7 @@ const descriptionStyle = {
   fontSize: "15px",
   marginBottom: "28px",
   wordBreak: "keep-all" as const,
+  whiteSpace: "pre-line" as const,
 };
 
 const serviceGridStyle = {
@@ -703,7 +668,7 @@ const soldOutOverlayStyle = {
   padding: "15px 26px",
   borderRadius: "999px",
   fontSize: "17px",
-  fontWeight: "950",
+  fontWeight: 950,
   letterSpacing: "2px",
 };
 
