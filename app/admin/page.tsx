@@ -10,6 +10,7 @@ type Product = {
   brand: string;
   price: number;
   image: string;
+  images?: string[];
   category: string;
   gender?: string;
   description?: string;
@@ -37,13 +38,14 @@ export default function AdminPage() {
   const [brand, setBrand] = useState("AETHER");
   const [price, setPrice] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [category, setCategory] = useState("bag");
   const [gender, setGender] = useState("MEN");
   const [description, setDescription] = useState("");
   const [stockStatus, setStockStatus] = useState("available");
   const [stockQuantity, setStockQuantity] = useState(1);
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
@@ -127,7 +129,9 @@ export default function AdminPage() {
     (order) => order.status === "배송준비중"
   ).length;
 
-  const shippingOrders = orders.filter((order) => order.status === "배송중").length;
+  const shippingOrders = orders.filter(
+    (order) => order.status === "배송중"
+  ).length;
 
   const completedOrders = orders.filter(
     (order) => order.status === "배송완료"
@@ -140,44 +144,85 @@ export default function AdminPage() {
     setBrand("AETHER");
     setPrice("");
     setImageUrl("");
+    setImageUrls([]);
     setCategory("bag");
     setGender("MEN");
     setDescription("");
     setStockStatus("available");
     setStockQuantity(1);
-    setSelectedFile(null);
+    setSelectedFiles([]);
     setEditingProduct(null);
   };
 
-  const uploadImage = async () => {
-    if (!selectedFile) {
+  const getCleanImages = () => {
+    const urls = [...imageUrls];
+
+    if (imageUrl && !urls.includes(imageUrl)) {
+      urls.unshift(imageUrl);
+    }
+
+    return urls.filter((url) => url.trim() !== "");
+  };
+
+  const uploadImages = async () => {
+    if (selectedFiles.length === 0) {
       alert("먼저 이미지 파일을 선택해줘!");
       return;
     }
 
     setUploading(true);
 
-    const fileExt = selectedFile.name.split(".").pop();
-    const fileName = `${Date.now()}.${fileExt}`;
+    const uploadedUrls: string[] = [];
 
-    const { error } = await supabase.storage
-      .from("product-images")
-      .upload(fileName, selectedFile);
+    for (const file of selectedFiles) {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2)}.${fileExt}`;
 
-    if (error) {
-      console.error(error);
-      alert("이미지 업로드 실패 ㅠㅠ");
-      setUploading(false);
-      return;
+      const { error } = await supabase.storage
+        .from("product-images")
+        .upload(fileName, file);
+
+      if (error) {
+        console.error(error);
+        alert("이미지 업로드 중 일부 실패했어 ㅠㅠ");
+        setUploading(false);
+        return;
+      }
+
+      const { data } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(fileName);
+
+      uploadedUrls.push(data.publicUrl);
     }
 
-    const { data } = supabase.storage
-      .from("product-images")
-      .getPublicUrl(fileName);
+    const mergedImages = [...imageUrls, ...uploadedUrls];
 
-    setImageUrl(data.publicUrl);
+    setImageUrls(mergedImages);
+    setImageUrl(mergedImages[0] || "");
+    setSelectedFiles([]);
     setUploading(false);
+
     alert("이미지 업로드 완료!");
+  };
+
+  const removeImage = (url: string) => {
+    const filtered = imageUrls.filter((image) => image !== url);
+    setImageUrls(filtered);
+
+    if (imageUrl === url) {
+      setImageUrl(filtered[0] || "");
+    }
+  };
+
+  const setMainImage = (url: string) => {
+    const filtered = imageUrls.filter((image) => image !== url);
+    const reordered = [url, ...filtered];
+
+    setImageUrls(reordered);
+    setImageUrl(url);
   };
 
   const getAutoStockStatus = () => {
@@ -186,7 +231,9 @@ export default function AdminPage() {
   };
 
   const addProduct = async () => {
-    if (!name || !brand || !price || !imageUrl || !category || !gender) {
+    const cleanImages = getCleanImages();
+
+    if (!name || !brand || !price || cleanImages.length === 0 || !category || !gender) {
       alert("상품명, 브랜드, 가격, 이미지, 카테고리, 성별은 꼭 입력해줘!");
       return;
     }
@@ -196,7 +243,8 @@ export default function AdminPage() {
         name,
         brand,
         price: Number(price),
-        image: imageUrl,
+        image: cleanImages[0],
+        images: cleanImages,
         category,
         gender,
         description,
@@ -219,7 +267,9 @@ export default function AdminPage() {
   const updateProduct = async () => {
     if (!editingProduct) return;
 
-    if (!name || !brand || !price || !imageUrl || !category || !gender) {
+    const cleanImages = getCleanImages();
+
+    if (!name || !brand || !price || cleanImages.length === 0 || !category || !gender) {
       alert("상품명, 브랜드, 가격, 이미지, 카테고리, 성별은 꼭 입력해줘!");
       return;
     }
@@ -230,7 +280,8 @@ export default function AdminPage() {
         name,
         brand,
         price: Number(price),
-        image: imageUrl,
+        image: cleanImages[0],
+        images: cleanImages,
         category,
         gender,
         description,
@@ -288,17 +339,25 @@ export default function AdminPage() {
   };
 
   const startEditProduct = (product: Product) => {
+    const productImages =
+      product.images && product.images.length > 0
+        ? product.images
+        : product.image
+        ? [product.image]
+        : [];
+
     setEditingProduct(product);
     setName(product.name);
     setBrand(product.brand || "AETHER");
     setPrice(String(product.price));
-    setImageUrl(product.image);
+    setImageUrls(productImages);
+    setImageUrl(productImages[0] || "");
     setCategory(product.category || "bag");
     setGender(product.gender || "MEN");
     setDescription(product.description || "");
     setStockStatus(product.stock_status || "available");
     setStockQuantity(product.stock_quantity ?? 1);
-    setSelectedFile(null);
+    setSelectedFiles([]);
 
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -385,9 +444,7 @@ export default function AdminPage() {
               {recentOrders.map((order) => (
                 <div key={order.id} style={recentOrderStyle}>
                   <div>
-                    <strong>
-                      {order.order_number || `ORDER-${order.id}`}
-                    </strong>
+                    <strong>{order.order_number || `ORDER-${order.id}`}</strong>
                     <p>{order.customer_name || "주문자 정보 없음"}</p>
                   </div>
 
@@ -511,35 +568,64 @@ export default function AdminPage() {
           <input
             type="file"
             accept="image/*"
+            multiple
             onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) setSelectedFile(file);
+              const files = Array.from(e.target.files || []);
+              setSelectedFiles(files);
             }}
             style={{ marginBottom: "12px" }}
           />
 
           <button
             type="button"
-            onClick={uploadImage}
+            onClick={uploadImages}
             disabled={uploading}
             style={uploadButtonStyle}
           >
-            {uploading ? "업로드 중..." : "이미지 업로드"}
+            {uploading ? "업로드 중..." : "선택한 이미지 업로드"}
           </button>
 
           <input
-            placeholder="이미지 주소"
+            placeholder="대표 이미지 주소"
             value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            style={{ ...inputStyle, marginBottom: "0" }}
+            onChange={(e) => {
+              setImageUrl(e.target.value);
+
+              if (e.target.value && !imageUrls.includes(e.target.value)) {
+                setImageUrls([e.target.value, ...imageUrls]);
+              }
+            }}
+            style={{ ...inputStyle, marginBottom: "12px" }}
           />
 
-          {imageUrl && (
-            <img
-              src={imageUrl}
-              alt="미리보기"
-              style={previewImageStyle}
-            />
+          {imageUrls.length > 0 && (
+            <div style={previewGridStyle}>
+              {imageUrls.map((url, index) => (
+                <div key={`${url}-${index}`} style={previewCardStyle}>
+                  <img src={url} alt="상품 이미지" style={previewImageStyle} />
+
+                  {imageUrl === url && <span style={mainBadgeStyle}>대표</span>}
+
+                  <div style={previewButtonWrapStyle}>
+                    <button
+                      type="button"
+                      onClick={() => setMainImage(url)}
+                      style={smallBlackButtonStyle}
+                    >
+                      대표
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => removeImage(url)}
+                      style={smallRedButtonStyle}
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
@@ -579,17 +665,30 @@ export default function AdminPage() {
             const isSoldOut =
               normalizedStock === "soldout" || Number(quantity) <= 0;
 
+            const productImages =
+              product.images && product.images.length > 0
+                ? product.images
+                : product.image
+                ? [product.image]
+                : [];
+
             return (
               <div key={product.id} style={productCardStyle}>
                 <div style={{ position: "relative" }}>
                   <img
-                    src={product.image}
+                    src={productImages[0]}
                     alt={product.name}
                     style={{
                       ...productImageStyle,
                       opacity: isSoldOut ? 0.45 : 1,
                     }}
                   />
+
+                  {productImages.length > 1 && (
+                    <div style={imageCountBadgeStyle}>
+                      사진 {productImages.length}장
+                    </div>
+                  )}
 
                   {isSoldOut && <div style={soldOutOverlayStyle}>SOLD OUT</div>}
                 </div>
@@ -973,13 +1072,68 @@ const uploadButtonStyle = {
   fontWeight: 900,
 };
 
-const previewImageStyle = {
-  width: "160px",
-  height: "160px",
-  objectFit: "cover" as const,
-  borderRadius: "16px",
+const previewGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+  gap: "14px",
   marginTop: "14px",
+};
+
+const previewCardStyle = {
+  position: "relative" as const,
+  background: "#fff",
+  border: "1px solid #eee",
+  borderRadius: "16px",
+  padding: "10px",
+};
+
+const previewImageStyle = {
+  width: "100%",
+  height: "130px",
+  objectFit: "cover" as const,
+  borderRadius: "12px",
   display: "block",
+};
+
+const mainBadgeStyle = {
+  position: "absolute" as const,
+  top: "16px",
+  left: "16px",
+  background: "#111",
+  color: "#fff",
+  padding: "5px 9px",
+  borderRadius: "999px",
+  fontSize: "11px",
+  fontWeight: 900,
+};
+
+const previewButtonWrapStyle = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "6px",
+  marginTop: "8px",
+};
+
+const smallBlackButtonStyle = {
+  padding: "8px",
+  border: "none",
+  background: "#111",
+  color: "#fff",
+  borderRadius: "999px",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontSize: "12px",
+};
+
+const smallRedButtonStyle = {
+  padding: "8px",
+  border: "none",
+  background: "#d93025",
+  color: "#fff",
+  borderRadius: "999px",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontSize: "12px",
 };
 
 const mainButtonStyle = {
@@ -1038,6 +1192,18 @@ const productImageStyle = {
   objectFit: "cover" as const,
   borderRadius: "18px",
   marginBottom: "16px",
+};
+
+const imageCountBadgeStyle = {
+  position: "absolute" as const,
+  right: "12px",
+  top: "12px",
+  background: "rgba(0,0,0,0.72)",
+  color: "#fff",
+  padding: "7px 10px",
+  borderRadius: "999px",
+  fontSize: "12px",
+  fontWeight: 900,
 };
 
 const soldOutOverlayStyle = {
