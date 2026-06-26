@@ -3,6 +3,18 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../app/lib/supabase";
 
+const categoryLinks = [
+  { name: "전체상품", href: "/products" },
+  { name: "남성", href: "/men" },
+  { name: "여성", href: "/women" },
+  { name: "가방", href: "/products?search=bag" },
+  { name: "클러치", href: "/products?search=clutch" },
+  { name: "지갑", href: "/products?search=wallet" },
+  { name: "신발", href: "/products?search=shoes" },
+  { name: "액세서리", href: "/products?search=accessory" },
+  { name: "선글라스", href: "/products?search=sunglasses" },
+];
+
 export default function Header() {
   const [search, setSearch] = useState("");
   const [scrolled, setScrolled] = useState(false);
@@ -110,26 +122,21 @@ export default function Header() {
         </div>
 
         <nav className="category-nav">
-          <a href="/products">전체상품</a>
-          <a href="/men">남성</a>
-          <a href="/women">여성</a>
-          <a href="/products?search=bag">가방</a>
-          <a href="/products?search=wallet">지갑</a>
-          <a href="/products?search=shoes">신발</a>
-          <a href="/products?search=accessory">액세서리</a>
-          <a href="/products?search=clothes">의류</a>
+          {categoryLinks.map((category) => (
+            <a key={category.name} href={category.href}>
+              {category.name}
+            </a>
+          ))}
         </nav>
 
         {menuOpen && (
           <div className="mobile-menu">
-            <a href="/products">전체상품</a>
-            <a href="/men">남성</a>
-            <a href="/women">여성</a>
-            <a href="/products?search=bag">가방</a>
-            <a href="/products?search=wallet">지갑</a>
-            <a href="/products?search=shoes">신발</a>
-            <a href="/products?search=accessory">액세서리</a>
-            <a href="/products?search=clothes">의류</a>
+            {categoryLinks.map((category) => (
+              <a key={category.name} href={category.href}>
+                {category.name}
+              </a>
+            ))}
+
             <a href="/order">주문조회</a>
             <a href="/cart">장바구니</a>
 
