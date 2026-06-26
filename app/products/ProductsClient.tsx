@@ -78,6 +78,10 @@ export default function ProductsClient() {
     fetchProducts();
   }, []);
 
+  const isBagFamily = (category: string) => {
+    return category === "bag" || category === "clutch";
+  };
+
   const handleSearchSubmit = () => {
     const keyword = search.trim();
 
@@ -123,13 +127,17 @@ export default function ProductsClient() {
 
       const matchesCategory =
         !initialCategory ||
-        productCategory === initialCategory.toLowerCase();
+        (initialCategory.toLowerCase() === "bag"
+          ? isBagFamily(productCategory)
+          : productCategory === initialCategory.toLowerCase());
 
       const matchesTab =
         activeTab === "ALL" ||
         (activeTab === "NEW" && !isSoldOut) ||
         productGender === activeTab ||
-        productCategory === activeTab.toLowerCase();
+        (activeTab.toLowerCase() === "bag"
+          ? isBagFamily(productCategory)
+          : productCategory === activeTab.toLowerCase());
 
       return matchesSearch && matchesGender && matchesCategory && matchesTab;
     });
@@ -170,9 +178,9 @@ export default function ProductsClient() {
 
   const pageDescription =
     initialGender === "WOMEN" && initialCategory === "bag"
-      ? "여성을 위한 프리미엄 가방 셀렉션을 만나보세요."
+      ? "여성 가방과 클러치 셀렉션을 만나보세요."
       : initialGender === "MEN" && initialCategory === "bag"
-      ? "남성을 위한 프리미엄 가방 셀렉션을 만나보세요."
+      ? "남성 가방과 클러치 셀렉션을 만나보세요."
       : "엄선된 프리미엄 명품 셀렉션을 만나보세요.";
 
   if (loading) {
