@@ -9,33 +9,29 @@ import {
 } from "lucide-react";
 
 const categories = [
-  { Icon: Search, name: "찾아주세요", href: "/products" },
-  { Icon: MessageCircle, name: "리뷰", href: "/products" },
-  { Icon: Camera, name: "검수사진", href: "/products" },
-  { Icon: Gift, name: "이벤트", href: "/products" },
+  { Icon: Search, name: "찾아주세요", href: "/request" },
+  { Icon: MessageCircle, name: "리뷰", href: "/reviews" },
+  { Icon: Camera, name: "검수사진", href: "/inspection" },
+  { Icon: Gift, name: "이벤트", href: "/events" },
   {
     Icon: ShoppingBag,
     name: "여성 가방",
-    href: "/products?search=여성 가방",
+    href: "/products?gender=WOMEN&category=bag",
   },
   {
     Icon: BriefcaseBusiness,
     name: "남성 가방",
-    href: "/products?search=남성 가방",
+    href: "/products?gender=MEN&category=bag",
   },
-
-  // 카카오톡 채널
   {
     Icon: MessageCircle,
     name: "채널문의",
     href: "http://pf.kakao.com/_FvxexfX",
   },
-
-  // 이벤트 준비중
   {
     Icon: Sparkles,
     name: "이벤트 준비중",
-    href: "#",
+    href: "/events",
   },
 ];
 
