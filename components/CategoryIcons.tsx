@@ -5,7 +5,6 @@ import {
   Gift,
   ShoppingBag,
   BriefcaseBusiness,
-  Shirt,
   Sparkles,
 } from "lucide-react";
 
@@ -14,10 +13,30 @@ const categories = [
   { Icon: MessageCircle, name: "리뷰", href: "/products" },
   { Icon: Camera, name: "검수사진", href: "/products" },
   { Icon: Gift, name: "이벤트", href: "/products" },
-  { Icon: ShoppingBag, name: "여성 가방", href: "/products?search=여성 가방" },
-  { Icon: BriefcaseBusiness, name: "남성 가방", href: "/products?search=남성 가방" },
-  { Icon: Sparkles, name: "하이엔드 여성", href: "/products?search=여성" },
-  { Icon: Shirt, name: "하이엔드 남성", href: "/products?search=남성" },
+  {
+    Icon: ShoppingBag,
+    name: "여성 가방",
+    href: "/products?search=여성 가방",
+  },
+  {
+    Icon: BriefcaseBusiness,
+    name: "남성 가방",
+    href: "/products?search=남성 가방",
+  },
+
+  // 카카오톡 채널
+  {
+    Icon: MessageCircle,
+    name: "채널문의",
+    href: "http://pf.kakao.com/_FvxexfX",
+  },
+
+  // 이벤트 준비중
+  {
+    Icon: Sparkles,
+    name: "이벤트 준비중",
+    href: "#",
+  },
 ];
 
 export default function CategoryIcons() {
@@ -39,11 +58,14 @@ export default function CategoryIcons() {
       >
         {categories.map((category) => {
           const Icon = category.Icon;
+          const isExternal = category.href.startsWith("http");
 
           return (
             <a
               key={category.name}
               href={category.href}
+              target={isExternal ? "_blank" : undefined}
+              rel={isExternal ? "noopener noreferrer" : undefined}
               style={{
                 textDecoration: "none",
                 color: "#111",
