@@ -11,6 +11,7 @@ type Product = {
   brand: string;
   price: number;
   image: string;
+  images?: string[];
   category: string;
   gender?: string;
   description?: string;
@@ -27,6 +28,8 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isWished, setIsWished] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -50,7 +53,15 @@ export default function ProductDetail() {
         return;
       }
 
+      const images =
+        data.images && data.images.length > 0
+          ? data.images
+          : data.image
+          ? [data.image]
+          : [];
+
       setProduct(data);
+      setSelectedImage(images[0] || "");
       setLoading(false);
     };
 
@@ -121,6 +132,51 @@ export default function ProductDetail() {
     checkWishlist();
   }, [id]);
 
+  const productImages =
+    product?.images && product.images.length > 0
+      ? product.images
+      : product?.image
+      ? [product.image]
+      : [];
+
+  const selectedIndex = productImages.findIndex((img) => img === selectedImage);
+
+  const goPrevImage = () => {
+    if (productImages.length <= 1) return;
+
+    const currentIndex = selectedIndex >= 0 ? selectedIndex : 0;
+    const prevIndex =
+      currentIndex === 0 ? productImages.length - 1 : currentIndex - 1;
+
+    setSelectedImage(productImages[prevIndex]);
+  };
+
+  const goNextImage = () => {
+    if (productImages.length <= 1) return;
+
+    const currentIndex = selectedIndex >= 0 ? selectedIndex : 0;
+    const nextIndex =
+      currentIndex === productImages.length - 1 ? 0 : currentIndex + 1;
+
+    setSelectedImage(productImages[nextIndex]);
+  };
+
+  const handleTouchEnd = (endX: number) => {
+    if (touchStartX === null) return;
+
+    const distance = touchStartX - endX;
+
+    if (distance > 45) {
+      goNextImage();
+    }
+
+    if (distance < -45) {
+      goPrevImage();
+    }
+
+    setTouchStartX(null);
+  };
+
   const toggleWishlist = async () => {
     const { data: userData } = await supabase.auth.getUser();
     const user = userData.user;
@@ -180,7 +236,13 @@ export default function ProductDetail() {
 
       localStorage.setItem("aether-cart", JSON.stringify(updatedCart));
     } else {
-      cart.push({ ...product, quantity: 1 });
+      cart.push({
+        ...product,
+        image: productImages[0] || product.image,
+        images: productImages,
+        quantity: 1,
+      });
+
       localStorage.setItem("aether-cart", JSON.stringify(cart));
     }
 
@@ -216,25 +278,87 @@ export default function ProductDetail() {
             gap: isMobile ? "24px" : "72px",
           }}
         >
-          <div
-            style={{
-              ...imageBoxStyle,
-              borderRadius: isMobile ? "24px" : "34px",
-              minHeight: isMobile ? "390px" : "650px",
-            }}
-          >
-            <img
-              src={product.image}
-              alt={product.name}
+          <div>
+            <div
               style={{
-                ...mainImageStyle,
-                maxHeight: isMobile ? "390px" : "650px",
-                padding: isMobile ? "18px" : "34px",
-                opacity: isSoldOut ? 0.34 : 1,
+                ...imageBoxStyle,
+                borderRadius: isMobile ? "24px" : "34px",
+                minHeight: isMobile ? "390px" : "650px",
               }}
-            />
+              onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
+              onTouchEnd={(e) => handleTouchEnd(e.changedTouches[0].clientX)}
+            >
+              <img
+                src={selectedImage || product.image}
+                alt={product.name}
+                style={{
+                  ...mainImageStyle,
+                  maxHeight: isMobile ? "390px" : "650px",
+                  padding: isMobile ? "18px" : "34px",
+                  opacity: isSoldOut ? 0.34 : 1,
+                }}
+              />
 
-            {isSoldOut && <div style={soldOutOverlayStyle}>품절</div>}
+              {productImages.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={goPrevImage}
+                    style={{
+                      ...slideButtonStyle,
+                      left: isMobile ? "12px" : "20px",
+                    }}
+                  >
+                    ‹
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={goNextImage}
+                    style={{
+                      ...slideButtonStyle,
+                      right: isMobile ? "12px" : "20px",
+                    }}
+                  >
+                    ›
+                  </button>
+
+                  <div style={imageCountStyle}>
+                    {(selectedIndex >= 0 ? selectedIndex : 0) + 1} /{" "}
+                    {productImages.length}
+                  </div>
+                </>
+              )}
+
+              {isSoldOut && <div style={soldOutOverlayStyle}>품절</div>}
+            </div>
+
+            {productImages.length > 1 && (
+              <div style={thumbnailWrapStyle}>
+                {productImages.map((image, index) => {
+                  const active = image === selectedImage;
+
+                  return (
+                    <button
+                      key={`${image}-${index}`}
+                      type="button"
+                      onClick={() => setSelectedImage(image)}
+                      style={{
+                        ...thumbnailButtonStyle,
+                        border: active ? "2px solid #111" : "1px solid #ddd",
+                        opacity: active ? 1 : 0.62,
+                      }}
+                    >
+                      <img
+                        src={image}
+                        alt={`${product.name} 이미지 ${index + 1}`}
+                        style={thumbnailImageStyle}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <section
@@ -275,11 +399,6 @@ export default function ProductDetail() {
 
             <div style={serviceGridStyle}>
               <div style={serviceCardStyle}>
-                <strong>무료배송</strong>
-                <span>10만원 이상 구매 시</span>
-              </div>
-
-              <div style={serviceCardStyle}>
                 <strong>프리미엄 패키징</strong>
                 <span>AETHER 감성 포장</span>
               </div>
@@ -287,6 +406,11 @@ export default function ProductDetail() {
               <div style={serviceCardStyle}>
                 <strong>상담 / 결제</strong>
                 <span>오픈채팅 문의</span>
+              </div>
+
+              <div style={serviceCardStyle}>
+                <strong>상품 검수</strong>
+                <span>등록 전 컨디션 확인</span>
               </div>
             </div>
 
@@ -333,24 +457,33 @@ export default function ProductDetail() {
                 flexWrap: isMobile ? "nowrap" : "wrap",
               }}
             >
-              {relatedProducts.map((item) => (
-                <div
-                  key={item.id}
-                  style={{
-                    flex: isMobile ? "0 0 220px" : "0 0 220px",
-                  }}
-                >
-                  <ProductCard
-                    brand={item.brand}
-                    name={item.name}
-                    price={`₩${Number(item.price).toLocaleString()}`}
-                    image={item.image}
-                    href={`/product/${item.id}`}
-                    stockStatus={item.stock_status}
-                    stockQuantity={item.stock_quantity}
-                  />
-                </div>
-              ))}
+              {relatedProducts.map((item) => {
+                const relatedImages =
+                  item.images && item.images.length > 0
+                    ? item.images
+                    : item.image
+                    ? [item.image]
+                    : [];
+
+                return (
+                  <div
+                    key={item.id}
+                    style={{
+                      flex: isMobile ? "0 0 220px" : "0 0 220px",
+                    }}
+                  >
+                    <ProductCard
+                      brand={item.brand}
+                      name={item.name}
+                      price={`₩${Number(item.price).toLocaleString()}`}
+                      image={relatedImages[0] || item.image}
+                      href={`/product/${item.id}`}
+                      stockStatus={item.stock_status}
+                      stockQuantity={item.stock_quantity}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}
@@ -410,6 +543,60 @@ const mainImageStyle = {
   height: "100%",
   objectFit: "contain" as const,
   transition: "0.45s ease",
+};
+
+const slideButtonStyle = {
+  position: "absolute" as const,
+  top: "50%",
+  transform: "translateY(-50%)",
+  width: "44px",
+  height: "44px",
+  borderRadius: "999px",
+  border: "1px solid rgba(0,0,0,0.1)",
+  background: "rgba(255,255,255,0.86)",
+  color: "#111",
+  fontSize: "34px",
+  lineHeight: "34px",
+  cursor: "pointer",
+  zIndex: 5,
+  boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
+};
+
+const imageCountStyle = {
+  position: "absolute" as const,
+  right: "18px",
+  bottom: "18px",
+  background: "rgba(0,0,0,0.72)",
+  color: "#fff",
+  padding: "8px 12px",
+  borderRadius: "999px",
+  fontSize: "13px",
+  fontWeight: 900,
+};
+
+const thumbnailWrapStyle = {
+  display: "flex",
+  gap: "10px",
+  overflowX: "auto" as const,
+  padding: "14px 2px 4px",
+  WebkitOverflowScrolling: "touch" as const,
+};
+
+const thumbnailButtonStyle = {
+  flex: "0 0 86px",
+  height: "86px",
+  padding: "4px",
+  borderRadius: "16px",
+  background: "#fff",
+  cursor: "pointer",
+};
+
+const thumbnailImageStyle = {
+  width: "100%",
+  height: "100%",
+  objectFit: "cover" as const,
+  borderRadius: "12px",
+  display: "block",
 };
 
 const infoCardStyle = {
