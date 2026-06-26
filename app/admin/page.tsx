@@ -1342,6 +1342,7 @@ const quantityStyle = {
 const descStyle = {
   color: "#777",
   lineHeight: "1.6",
+  whiteSpace: "pre-line" as const,
 };
 
 const stockControlWrapStyle = {
