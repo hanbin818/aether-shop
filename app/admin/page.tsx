@@ -27,6 +27,20 @@ type Order = {
   customer_name?: string;
 };
 
+const categoryOptions = [
+  { value: "all", label: "전체" },
+  { value: "bag", label: "가방" },
+  { value: "clutch", label: "클러치" },
+  { value: "wallet", label: "지갑" },
+  { value: "shoes", label: "신발" },
+  { value: "accessory", label: "액세서리" },
+  { value: "sunglasses", label: "선글라스" },
+];
+
+const getCategoryLabel = (value?: string) => {
+  return categoryOptions.find((item) => item.value === value)?.label || value || "기타";
+};
+
 export default function AdminPage() {
   const router = useRouter();
 
@@ -48,6 +62,8 @@ export default function AdminPage() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  const [productCategoryFilter, setProductCategoryFilter] = useState("all");
 
   const checkLogin = async () => {
     const { data } = await supabase.auth.getSession();
@@ -95,6 +111,25 @@ export default function AdminPage() {
     fetchOrders();
   }, []);
 
+  const resetOrders = async () => {
+    const ok = confirm(
+      "총 주문과 총 매출을 0으로 만들기 위해 주문 데이터를 모두 삭제할까?\n테스트 주문만 있을 때만 눌러줘."
+    );
+
+    if (!ok) return;
+
+    const { error } = await supabase.from("orders").delete().gte("id", 0);
+
+    if (error) {
+      console.error(error);
+      alert("주문 초기화 실패 ㅠㅠ Supabase 권한을 확인해줘.");
+      return;
+    }
+
+    alert("주문/매출 초기화 완료!");
+    fetchOrders();
+  };
+
   const totalSales = orders.reduce(
     (sum, order) => sum + Number(order.total_price || 0),
     0
@@ -129,15 +164,18 @@ export default function AdminPage() {
     (order) => order.status === "배송준비중"
   ).length;
 
-  const shippingOrders = orders.filter(
-    (order) => order.status === "배송중"
-  ).length;
+  const shippingOrders = orders.filter((order) => order.status === "배송중").length;
 
   const completedOrders = orders.filter(
     (order) => order.status === "배송완료"
   ).length;
 
   const recentOrders = orders.slice(0, 5);
+
+  const filteredProducts =
+    productCategoryFilter === "all"
+      ? products
+      : products.filter((product) => product.category === productCategoryFilter);
 
   const resetForm = () => {
     setName("");
@@ -391,7 +429,7 @@ export default function AdminPage() {
       <section style={heroStyle}>
         <div>
           <p style={heroLabelStyle}>AETHER ADMIN</p>
-          <h1 style={heroTitleStyle}>Luxury Management Dashboard</h1>
+          <h1 style={heroTitleStyle}>관리자 페이지</h1>
           <p style={heroTextStyle}>
             상품, 주문, 재고, 매출을 한눈에 관리하는 AETHER 운영 화면입니다.
           </p>
@@ -433,9 +471,9 @@ export default function AdminPage() {
         <a href="#product-list" style={quickButtonStyle}>
           상품 목록
         </a>
-        <a href="/" style={quickButtonStyle}>
-          쇼핑몰 보기
-        </a>
+        <button onClick={resetOrders} style={dangerQuickButtonStyle}>
+          주문/매출 초기화
+        </button>
       </section>
 
       <section style={panelGridStyle}>
@@ -523,8 +561,8 @@ export default function AdminPage() {
             onChange={(e) => setGender(e.target.value)}
             style={inputStyle}
           >
-            <option value="MEN">MEN</option>
-            <option value="WOMEN">WOMEN</option>
+            <option value="MEN">남성</option>
+            <option value="WOMEN">여성</option>
           </select>
 
           <select
@@ -670,8 +708,25 @@ export default function AdminPage() {
           </button>
         </div>
 
+        <div style={filterWrapStyle}>
+          {categoryOptions.map((item) => (
+            <button
+              key={item.value}
+              onClick={() => setProductCategoryFilter(item.value)}
+              style={{
+                ...filterButtonStyle,
+                background:
+                  productCategoryFilter === item.value ? "#111" : "#fff",
+                color: productCategoryFilter === item.value ? "#fff" : "#111",
+              }}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
         <div style={productGridStyle}>
-          {products.map((product) => {
+          {filteredProducts.map((product) => {
             const quantity = product.stock_quantity ?? 0;
             const normalizedStock = product.stock_status
               ?.toLowerCase()
@@ -709,7 +764,8 @@ export default function AdminPage() {
                 </div>
 
                 <p style={badgeStyle}>
-                  {product.gender || "MEN"} · {product.category}
+                  {product.gender === "WOMEN" ? "여성" : "남성"} ·{" "}
+                  {getCategoryLabel(product.category)}
                 </p>
 
                 <p
@@ -942,6 +998,13 @@ const quickButtonStyle = {
   textDecoration: "none",
   fontSize: "14px",
   fontWeight: 950,
+  border: "none",
+  cursor: "pointer",
+};
+
+const dangerQuickButtonStyle = {
+  ...quickButtonStyle,
+  background: "#d93025",
 };
 
 const panelGridStyle = {
@@ -1181,6 +1244,22 @@ const refreshButtonStyle = {
   background: "#111",
   color: "#fff",
   border: "none",
+  borderRadius: "999px",
+  cursor: "pointer",
+  fontWeight: 950,
+};
+
+const filterWrapStyle = {
+  maxWidth: "1180px",
+  margin: "0 auto 22px",
+  display: "flex",
+  gap: "10px",
+  flexWrap: "wrap" as const,
+};
+
+const filterButtonStyle = {
+  padding: "11px 16px",
+  border: "1px solid #111",
   borderRadius: "999px",
   cursor: "pointer",
   fontWeight: 950,
