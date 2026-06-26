@@ -38,7 +38,11 @@ const categoryOptions = [
 ];
 
 const getCategoryLabel = (value?: string) => {
-  return categoryOptions.find((item) => item.value === value)?.label || value || "기타";
+  return (
+    categoryOptions.find((item) => item.value === value)?.label ||
+    value ||
+    "기타"
+  );
 };
 
 export default function AdminPage() {
@@ -164,7 +168,9 @@ export default function AdminPage() {
     (order) => order.status === "배송준비중"
   ).length;
 
-  const shippingOrders = orders.filter((order) => order.status === "배송중").length;
+  const shippingOrders = orders.filter(
+    (order) => order.status === "배송중"
+  ).length;
 
   const completedOrders = orders.filter(
     (order) => order.status === "배송완료"
@@ -501,7 +507,9 @@ export default function AdminPage() {
                   </div>
 
                   <div style={{ textAlign: "right" }}>
-                    <strong>₩{Number(order.total_price || 0).toLocaleString()}</strong>
+                    <strong>
+                      ₩{Number(order.total_price || 0).toLocaleString()}
+                    </strong>
                     <p>{order.status || "상담대기"}</p>
                   </div>
                 </div>
@@ -744,7 +752,7 @@ export default function AdminPage() {
 
             return (
               <div key={product.id} style={productCardStyle}>
-                <div style={{ position: "relative" }}>
+                <div style={productImageWrapStyle}>
                   <img
                     src={productImages[0]}
                     alt={product.name}
@@ -763,74 +771,80 @@ export default function AdminPage() {
                   {isSoldOut && <div style={soldOutOverlayStyle}>SOLD OUT</div>}
                 </div>
 
-                <p style={badgeStyle}>
-                  {product.gender === "WOMEN" ? "여성" : "남성"} ·{" "}
-                  {getCategoryLabel(product.category)}
-                </p>
+                <div style={mobileCardBodyStyle}>
+                  <div style={badgeRowStyle}>
+                    <span style={badgeStyle}>
+                      {product.gender === "WOMEN" ? "여성" : "남성"} ·{" "}
+                      {getCategoryLabel(product.category)}
+                    </span>
 
-                <p
-                  style={{
-                    ...stockBadgeStyle,
-                    background: isSoldOut ? "#111" : "#e8f7ee",
-                    color: isSoldOut ? "#fff" : "#167a3a",
-                  }}
-                >
-                  {isSoldOut ? "품절" : "판매중"}
-                </p>
+                    <span
+                      style={{
+                        ...stockBadgeStyle,
+                        background: isSoldOut ? "#111" : "#e8f7ee",
+                        color: isSoldOut ? "#fff" : "#167a3a",
+                      }}
+                    >
+                      {isSoldOut ? "품절" : "판매중"}
+                    </span>
+                  </div>
 
-                <p style={quantityStyle}>재고 : {quantity}개</p>
+                  <p style={quantityStyle}>재고 : {quantity}개</p>
 
-                <h3>{product.name}</h3>
-                <p>{product.brand}</p>
+                  <h3 style={productNameStyle}>{product.name}</h3>
+                  <p style={productBrandStyle}>{product.brand}</p>
 
-                {product.description && (
-                  <p style={descStyle}>{product.description}</p>
-                )}
+                  {product.description && (
+                    <p style={descStyle}>{product.description}</p>
+                  )}
 
-                <strong>{Number(product.price).toLocaleString()}원</strong>
+                  <strong style={priceStyle}>
+                    {Number(product.price).toLocaleString()}원
+                  </strong>
 
-                <div style={stockControlWrapStyle}>
-                  <button
-                    onClick={() => startEditProduct(product)}
-                    style={editButtonStyle}
-                  >
-                    수정
-                  </button>
+                  <div style={stockControlWrapStyle}>
+                    <button
+                      onClick={() => startEditProduct(product)}
+                      style={editButtonStyle}
+                    >
+                      수정
+                    </button>
 
-                  <button
-                    onClick={() => changeStock(product.id, quantity + 1)}
-                    style={stockButtonStyle}
-                  >
-                    재고 +1
-                  </button>
+                    <button
+                      onClick={() => changeStock(product.id, quantity + 1)}
+                      style={stockButtonStyle}
+                    >
+                      재고 +1
+                    </button>
 
-                  <button
-                    onClick={() => changeStock(product.id, quantity - 1)}
-                    style={stockButtonStyle}
-                  >
-                    재고 -1
-                  </button>
+                    <button
+                      onClick={() => changeStock(product.id, quantity - 1)}
+                      style={stockButtonStyle}
+                    >
+                      재고 -1
+                    </button>
 
-                  <button
-                    onClick={() => changeStock(product.id, 0)}
-                    style={soldOutButtonStyle}
-                  >
-                    품절 처리
-                  </button>
+                    <button
+                      onClick={() => changeStock(product.id, 0)}
+                      style={soldOutButtonStyle}
+                    >
+                      품절
+                    </button>
 
-                  <button
-                    onClick={() => changeStock(product.id, 1)}
-                    style={restoreButtonStyle}
-                  >
-                    재고 복구
-                  </button>
+                    <button
+                      onClick={() => changeStock(product.id, 1)}
+                      style={restoreButtonStyle}
+                    >
+                      복구
+                    </button>
 
-                  <button
-                    onClick={() => deleteProduct(product.id)}
-                    style={deleteButtonStyle}
-                  >
-                    삭제
-                  </button>
+                    <button
+                      onClick={() => deleteProduct(product.id)}
+                      style={deleteButtonStyle}
+                    >
+                      삭제
+                    </button>
+                  </div>
                 </div>
               </div>
             );
@@ -860,7 +874,7 @@ function StatusBox({ label, value }: { label: string; value: number }) {
 }
 
 const mainStyle = {
-  padding: "36px 18px 90px",
+  padding: "36px 10px 90px",
   background: "linear-gradient(180deg, #0b0b0f 0%, #f5f1ea 360px, #f5f5f5 100%)",
   minHeight: "100vh",
   color: "#111",
@@ -880,8 +894,8 @@ const loadingStyle = {
 const heroStyle = {
   maxWidth: "1180px",
   margin: "0 auto 28px",
-  padding: "42px",
-  borderRadius: "32px",
+  padding: "32px 22px",
+  borderRadius: "28px",
   background:
     "radial-gradient(circle at top right, rgba(216,195,159,0.22), transparent 32%), #111",
   color: "#fff",
@@ -902,7 +916,7 @@ const heroLabelStyle = {
 
 const heroTitleStyle = {
   margin: 0,
-  fontSize: "clamp(34px, 5vw, 58px)",
+  fontSize: "clamp(30px, 5vw, 58px)",
   fontWeight: 950,
   letterSpacing: "-1.6px",
 };
@@ -955,13 +969,13 @@ const dashboardGridStyle = {
   maxWidth: "1180px",
   margin: "0 auto 28px",
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-  gap: "16px",
+  gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+  gap: "12px",
 };
 
 const dashboardCardStyle = {
   background: "rgba(255,255,255,0.94)",
-  padding: "22px",
+  padding: "18px",
   borderRadius: "22px",
   boxShadow: "0 18px 50px rgba(0,0,0,0.08)",
   border: "1px solid rgba(0,0,0,0.06)",
@@ -977,7 +991,7 @@ const dashboardLabelStyle = {
 const dashboardNumberStyle = {
   display: "block",
   marginTop: "10px",
-  fontSize: "28px",
+  fontSize: "24px",
   fontWeight: 950,
 };
 
@@ -985,14 +999,14 @@ const quickSectionStyle = {
   maxWidth: "1180px",
   margin: "0 auto 28px",
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-  gap: "12px",
+  gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+  gap: "10px",
 };
 
 const quickButtonStyle = {
   background: "#111",
   color: "#fff",
-  padding: "16px",
+  padding: "15px",
   borderRadius: "999px",
   textAlign: "center" as const,
   textDecoration: "none",
@@ -1011,14 +1025,14 @@ const panelGridStyle = {
   maxWidth: "1180px",
   margin: "0 auto 32px",
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
   gap: "18px",
 };
 
 const panelStyle = {
   background: "#fff",
   borderRadius: "28px",
-  padding: "26px",
+  padding: "22px",
   boxShadow: "0 18px 50px rgba(0,0,0,0.08)",
   border: "1px solid rgba(0,0,0,0.06)",
 };
@@ -1090,7 +1104,7 @@ const formSectionStyle = {
   maxWidth: "1180px",
   margin: "0 auto 40px",
   background: "#fff",
-  padding: "30px",
+  padding: "24px",
   borderRadius: "28px",
   boxShadow: "0 18px 50px rgba(0,0,0,0.08)",
 };
@@ -1152,8 +1166,8 @@ const uploadButtonStyle = {
 
 const previewGridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-  gap: "14px",
+  gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+  gap: "12px",
   marginTop: "14px",
 };
 
@@ -1167,7 +1181,7 @@ const previewCardStyle = {
 
 const previewImageStyle = {
   width: "100%",
-  height: "130px",
+  height: "120px",
   objectFit: "cover" as const,
   borderRadius: "12px",
   display: "block",
@@ -1251,52 +1265,73 @@ const refreshButtonStyle = {
 
 const filterWrapStyle = {
   maxWidth: "1180px",
-  margin: "0 auto 22px",
+  margin: "0 auto 18px",
   display: "flex",
-  gap: "10px",
+  gap: "8px",
   flexWrap: "wrap" as const,
 };
 
 const filterButtonStyle = {
-  padding: "11px 16px",
+  padding: "10px 14px",
   border: "1px solid #111",
   borderRadius: "999px",
   cursor: "pointer",
   fontWeight: 950,
 };
 
+/* 여기부터 상품 목록 모바일 축소 핵심 */
 const productGridStyle = {
   maxWidth: "1180px",
   margin: "0 auto",
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-  gap: "24px",
+  gridTemplateColumns: "repeat(auto-fill, minmax(155px, 1fr))",
+  gap: "12px",
 };
 
 const productCardStyle = {
   background: "#fff",
-  padding: "20px",
-  borderRadius: "24px",
-  boxShadow: "0 18px 50px rgba(0,0,0,0.08)",
+  padding: "10px",
+  borderRadius: "18px",
+  boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+  border: "1px solid rgba(0,0,0,0.06)",
+  overflow: "hidden",
+};
+
+const productImageWrapStyle = {
+  position: "relative" as const,
+  marginBottom: "10px",
 };
 
 const productImageStyle = {
   width: "100%",
-  height: "260px",
+  aspectRatio: "1 / 1",
   objectFit: "cover" as const,
-  borderRadius: "18px",
-  marginBottom: "16px",
+  borderRadius: "14px",
+  display: "block",
+  background: "#f4f4f4",
+};
+
+const mobileCardBodyStyle = {
+  display: "flex",
+  flexDirection: "column" as const,
+};
+
+const badgeRowStyle = {
+  display: "flex",
+  gap: "5px",
+  flexWrap: "wrap" as const,
+  alignItems: "center",
 };
 
 const imageCountBadgeStyle = {
   position: "absolute" as const,
-  right: "12px",
-  top: "12px",
+  right: "8px",
+  top: "8px",
   background: "rgba(0,0,0,0.72)",
   color: "#fff",
-  padding: "7px 10px",
+  padding: "5px 7px",
   borderRadius: "999px",
-  fontSize: "12px",
+  fontSize: "10px",
   fontWeight: 900,
 };
 
@@ -1307,101 +1342,136 @@ const soldOutOverlayStyle = {
   transform: "translate(-50%, -50%)",
   background: "rgba(0,0,0,0.82)",
   color: "#fff",
-  padding: "12px 18px",
+  padding: "9px 12px",
   borderRadius: "999px",
+  fontSize: "11px",
   fontWeight: "900",
   letterSpacing: "1px",
+  whiteSpace: "nowrap" as const,
 };
 
 const badgeStyle = {
   display: "inline-block",
-  padding: "6px 10px",
+  padding: "5px 7px",
   background: "#f1f1f1",
   borderRadius: "999px",
-  fontSize: "12px",
+  fontSize: "10px",
   fontWeight: "800",
   color: "#333",
-  marginRight: "6px",
 };
 
 const stockBadgeStyle = {
   display: "inline-block",
-  padding: "6px 10px",
+  padding: "5px 7px",
   borderRadius: "999px",
-  fontSize: "12px",
+  fontSize: "10px",
   fontWeight: "800",
 };
 
 const quantityStyle = {
-  margin: "10px 0 0",
+  margin: "8px 0 4px",
   color: "#666",
-  fontSize: "13px",
+  fontSize: "12px",
   fontWeight: "900",
+};
+
+const productNameStyle = {
+  margin: "0 0 3px",
+  fontSize: "15px",
+  lineHeight: 1.25,
+  fontWeight: 950,
+  letterSpacing: "-0.4px",
+};
+
+const productBrandStyle = {
+  margin: "0 0 6px",
+  fontSize: "12px",
+  color: "#555",
+  fontWeight: 800,
 };
 
 const descStyle = {
   color: "#777",
-  lineHeight: "1.6",
+  lineHeight: "1.45",
   whiteSpace: "pre-line" as const,
+  fontSize: "12px",
+  margin: "0 0 8px",
+  display: "-webkit-box",
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: "vertical" as const,
+  overflow: "hidden",
+};
+
+const priceStyle = {
+  display: "block",
+  fontSize: "14px",
+  fontWeight: 950,
+  marginBottom: "10px",
 };
 
 const stockControlWrapStyle = {
   display: "grid",
-  gap: "8px",
-  marginTop: "16px",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "6px",
+  marginTop: "8px",
 };
 
 const editButtonStyle = {
   width: "100%",
-  padding: "12px",
+  padding: "9px 6px",
   background: "#111",
   color: "#fff",
   border: "none",
-  borderRadius: "999px",
+  borderRadius: "10px",
   cursor: "pointer",
   fontWeight: 900,
+  fontSize: "12px",
 };
 
 const stockButtonStyle = {
   width: "100%",
-  padding: "12px",
+  padding: "9px 6px",
   background: "#1b5e20",
   color: "#fff",
   border: "none",
-  borderRadius: "999px",
+  borderRadius: "10px",
   cursor: "pointer",
   fontWeight: 900,
+  fontSize: "12px",
 };
 
 const soldOutButtonStyle = {
   width: "100%",
-  padding: "12px",
+  padding: "9px 6px",
   background: "#111",
   color: "#fff",
   border: "none",
-  borderRadius: "999px",
+  borderRadius: "10px",
   cursor: "pointer",
   fontWeight: 900,
+  fontSize: "12px",
 };
 
 const restoreButtonStyle = {
   width: "100%",
-  padding: "12px",
+  padding: "9px 6px",
   background: "#1565c0",
   color: "#fff",
   border: "none",
-  borderRadius: "999px",
+  borderRadius: "10px",
   cursor: "pointer",
   fontWeight: 900,
+  fontSize: "12px",
 };
 
 const deleteButtonStyle = {
   width: "100%",
-  padding: "12px",
+  padding: "9px 6px",
   background: "#d93025",
   color: "#fff",
   border: "none",
-  borderRadius: "999px",
+  borderRadius: "10px",
   cursor: "pointer",
   fontWeight: 900,
+  fontSize: "12px",
 };
