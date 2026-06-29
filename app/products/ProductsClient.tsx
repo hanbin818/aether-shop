@@ -6,16 +6,16 @@ import { supabase } from "@/app/lib/supabase";
 import ProductCard from "@/components/ProductCard";
 
 const categoryTabs = [
-  { label: "ALL", value: "ALL" },
-  { label: "NEW", value: "NEW" },
-  { label: "MEN", value: "MEN" },
-  { label: "WOMEN", value: "WOMEN" },
-  { label: "BAG", value: "bag" },
-  { label: "CLUTCH", value: "clutch" },
-  { label: "WALLET", value: "wallet" },
-  { label: "SHOES", value: "shoes" },
-  { label: "ACC", value: "accessory" },
-  { label: "SUNGLASSES", value: "sunglasses" },
+  { label: "전체", value: "ALL" },
+  { label: "신상품", value: "NEW" },
+  { label: "남성", value: "MEN" },
+  { label: "여성", value: "WOMEN" },
+  { label: "가방", value: "bag" },
+  { label: "클러치", value: "clutch" },
+  { label: "지갑", value: "wallet" },
+  { label: "신발", value: "shoes" },
+  { label: "액세서리", value: "accessory" },
+  { label: "선글라스", value: "sunglasses" },
 ];
 
 const sortOptions = [
@@ -122,8 +122,7 @@ export default function ProductsClient() {
         product.gender?.toLowerCase().includes(keyword);
 
       const matchesGender =
-        !initialGender ||
-        productGender === initialGender.toUpperCase();
+        !initialGender || productGender === initialGender.toUpperCase();
 
       const matchesCategory =
         !initialCategory ||
@@ -160,21 +159,14 @@ export default function ProductsClient() {
     });
 
     return result;
-  }, [
-    products,
-    search,
-    activeTab,
-    sort,
-    initialGender,
-    initialCategory,
-  ]);
+  }, [products, search, activeTab, sort, initialGender, initialCategory]);
 
   const pageTitle =
     initialGender === "WOMEN" && initialCategory === "bag"
-      ? "WOMEN BAG"
+      ? "여성 가방"
       : initialGender === "MEN" && initialCategory === "bag"
-      ? "MEN BAG"
-      : "SHOP";
+      ? "남성 가방"
+      : "전체 상품";
 
   const pageDescription =
     initialGender === "WOMEN" && initialCategory === "bag"
@@ -194,7 +186,7 @@ export default function ProductsClient() {
           ← 메인으로
         </a>
 
-        <p>AETHER COLLECTION</p>
+        <p>에테르 컬렉션</p>
         <h1>{pageTitle}</h1>
         <span>{pageDescription}</span>
       </section>
@@ -334,10 +326,10 @@ export default function ProductsClient() {
 
         .shop-hero h1 {
           margin: 0;
-          font-size: clamp(42px, 8vw, 94px);
+          font-size: clamp(38px, 7vw, 82px);
           font-weight: 950;
-          letter-spacing: 10px;
-          line-height: 0.95;
+          letter-spacing: 4px;
+          line-height: 1.05;
           word-break: keep-all;
         }
 
@@ -384,7 +376,7 @@ export default function ProductsClient() {
           color: #111;
           font-size: 12px;
           font-weight: 950;
-          letter-spacing: 1.2px;
+          letter-spacing: 0.3px;
           cursor: pointer;
         }
 
@@ -516,8 +508,8 @@ export default function ProductsClient() {
           }
 
           .shop-hero h1 {
-            font-size: 42px;
-            letter-spacing: 6px;
+            font-size: 38px;
+            letter-spacing: 2px;
           }
 
           .shop-hero span {
@@ -540,7 +532,7 @@ export default function ProductsClient() {
           .tab-row button {
             padding: 8px 12px;
             font-size: 10px;
-            letter-spacing: 0.8px;
+            letter-spacing: 0;
           }
 
           .search-row {
