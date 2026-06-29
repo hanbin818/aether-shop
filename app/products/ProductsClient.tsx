@@ -375,7 +375,10 @@ export default function ProductsClient() {
         }
 
         .tab-row {
+          width: 100%;
           display: flex;
+          justify-content: center;
+          align-items: center;
           gap: 8px;
           overflow-x: auto;
           padding-bottom: 11px;
@@ -410,6 +413,7 @@ export default function ProductsClient() {
           max-width: 580px;
           margin: 0 auto;
           display: flex;
+          justify-content: center;
           gap: 8px;
         }
 
@@ -544,6 +548,7 @@ export default function ProductsClient() {
           }
 
           .tab-row {
+            justify-content: flex-start;
             gap: 6px;
             padding-bottom: 10px;
             margin-bottom: 13px;
