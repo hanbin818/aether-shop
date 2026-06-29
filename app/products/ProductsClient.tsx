@@ -186,9 +186,11 @@ export default function ProductsClient() {
           ← 메인으로
         </a>
 
-        <p>에테르 컬렉션</p>
-        <h1>{pageTitle}</h1>
-        <span>{pageDescription}</span>
+        <div className="hero-content">
+          <p>에테르 컬렉션</p>
+          <h1>{pageTitle}</h1>
+          <span>{pageDescription}</span>
+        </div>
       </section>
 
       <section className="shop-control">
@@ -287,6 +289,7 @@ export default function ProductsClient() {
 
         .shop-hero {
           position: relative;
+          width: 100%;
           min-height: 300px;
           padding: 68px 20px;
           background:
@@ -295,6 +298,17 @@ export default function ProductsClient() {
           background-size: cover;
           background-position: center;
           color: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          box-sizing: border-box;
+        }
+
+        .hero-content {
+          width: 100%;
+          max-width: 980px;
+          margin: 0 auto;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -316,30 +330,36 @@ export default function ProductsClient() {
           box-shadow: 0 10px 24px rgba(0,0,0,0.18);
         }
 
-        .shop-hero p {
+        .hero-content p {
+          width: 100%;
           margin: 0 0 14px;
           color: #d8c39f;
           font-size: 12px;
           font-weight: 950;
           letter-spacing: 6px;
+          text-align: center;
         }
 
-        .shop-hero h1 {
-          margin: 0;
+        .hero-content h1 {
+          width: 100%;
+          margin: 0 auto;
           font-size: clamp(38px, 7vw, 82px);
           font-weight: 950;
           letter-spacing: 4px;
           line-height: 1.05;
           word-break: keep-all;
+          text-align: center;
         }
 
-        .shop-hero span {
+        .hero-content span {
+          width: 100%;
           display: block;
           margin-top: 22px;
           color: rgba(255,255,255,0.78);
           font-size: 15px;
           line-height: 1.8;
           word-break: keep-all;
+          text-align: center;
         }
 
         .shop-control {
@@ -502,17 +522,17 @@ export default function ProductsClient() {
             font-size: 11px;
           }
 
-          .shop-hero p {
+          .hero-content p {
             font-size: 10px;
             letter-spacing: 4px;
           }
 
-          .shop-hero h1 {
+          .hero-content h1 {
             font-size: 38px;
             letter-spacing: 2px;
           }
 
-          .shop-hero span {
+          .hero-content span {
             font-size: 12px;
             margin-top: 18px;
           }
