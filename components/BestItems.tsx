@@ -13,6 +13,7 @@ export default function BestItems() {
       const { data, error } = await supabase
         .from("products")
         .select("*")
+        .eq("is_bestseller", true)
         .eq("stock_status", "available")
         .order("id", { ascending: false })
         .limit(10);
@@ -58,7 +59,9 @@ export default function BestItems() {
         {loading ? (
           <p className="section-empty-text">상품 불러오는 중...</p>
         ) : products.length === 0 ? (
-          <p className="section-empty-text">등록된 판매 상품이 없습니다.</p>
+          <p className="section-empty-text">
+            아직 선택된 베스트 상품이 없습니다.
+          </p>
         ) : (
           <div ref={scrollRef} className="best-slider">
             {products.map((product, index) => (
