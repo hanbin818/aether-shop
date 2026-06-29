@@ -16,6 +16,7 @@ type Product = {
   description?: string;
   stock_status?: string;
   stock_quantity?: number;
+  is_bestseller?: boolean;
 };
 
 type Order = {
@@ -62,6 +63,7 @@ export default function AdminPage() {
   const [description, setDescription] = useState("");
   const [stockStatus, setStockStatus] = useState("available");
   const [stockQuantity, setStockQuantity] = useState(1);
+  const [isBestseller, setIsBestseller] = useState(false);
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -194,6 +196,7 @@ export default function AdminPage() {
     setDescription("");
     setStockStatus("available");
     setStockQuantity(1);
+    setIsBestseller(false);
     setSelectedFiles([]);
     setEditingProduct(null);
   };
@@ -301,6 +304,7 @@ export default function AdminPage() {
         description,
         stock_status: getAutoStockStatus(),
         stock_quantity: stockQuantity,
+        is_bestseller: isBestseller,
       },
     ]);
 
@@ -345,6 +349,7 @@ export default function AdminPage() {
         description,
         stock_status: getAutoStockStatus(),
         stock_quantity: stockQuantity,
+        is_bestseller: isBestseller,
       })
       .eq("id", editingProduct.id);
 
@@ -415,6 +420,7 @@ export default function AdminPage() {
     setDescription(product.description || "");
     setStockStatus(product.stock_status || "available");
     setStockQuantity(product.stock_quantity ?? 1);
+    setIsBestseller(Boolean(product.is_bestseller));
     setSelectedFiles([]);
 
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -616,6 +622,16 @@ export default function AdminPage() {
           </select>
         </div>
 
+        <label style={checkBoxLabelStyle}>
+          <input
+            type="checkbox"
+            checked={isBestseller}
+            onChange={(e) => setIsBestseller(e.target.checked)}
+            style={checkBoxStyle}
+          />
+          가장 사랑받는 제품에 표시
+        </label>
+
         <textarea
           placeholder="상품 설명"
           value={description}
@@ -761,6 +777,10 @@ export default function AdminPage() {
                       opacity: isSoldOut ? 0.45 : 1,
                     }}
                   />
+
+                  {product.is_bestseller && (
+                    <div style={bestsellerBadgeStyle}>⭐ 베스트셀러</div>
+                  )}
 
                   {productImages.length > 1 && (
                     <div style={imageCountBadgeStyle}>
@@ -1129,6 +1149,26 @@ const twoColumnStyle = {
   gap: "14px",
 };
 
+const checkBoxLabelStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  padding: "15px",
+  marginBottom: "14px",
+  border: "1px solid #ddd",
+  borderRadius: "14px",
+  background: "#fafafa",
+  fontSize: "15px",
+  fontWeight: 950,
+  cursor: "pointer",
+};
+
+const checkBoxStyle = {
+  width: "18px",
+  height: "18px",
+  cursor: "pointer",
+};
+
 const imageBoxStyle = {
   padding: "18px",
   border: "1px solid #ddd",
@@ -1279,7 +1319,6 @@ const filterButtonStyle = {
   fontWeight: 950,
 };
 
-/* 여기부터 상품 목록 모바일 축소 핵심 */
 const productGridStyle = {
   maxWidth: "1180px",
   margin: "0 auto",
@@ -1309,6 +1348,18 @@ const productImageStyle = {
   borderRadius: "14px",
   display: "block",
   background: "#f4f4f4",
+};
+
+const bestsellerBadgeStyle = {
+  position: "absolute" as const,
+  left: "8px",
+  top: "8px",
+  background: "rgba(17,17,17,0.88)",
+  color: "#fff",
+  padding: "5px 8px",
+  borderRadius: "999px",
+  fontSize: "10px",
+  fontWeight: 950,
 };
 
 const mobileCardBodyStyle = {
