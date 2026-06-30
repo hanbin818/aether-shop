@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const banners = [
@@ -14,11 +15,16 @@ const banners = [
 export default function MainBanner() {
   const [current, setCurrent] = useState(0);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % banners.length);
-    }, 4000);
+  const prevBanner = () => {
+    setCurrent((prev) => (prev - 1 + banners.length) % banners.length);
+  };
 
+  const nextBanner = () => {
+    setCurrent((prev) => (prev + 1) % banners.length);
+  };
+
+  useEffect(() => {
+    const timer = setInterval(nextBanner, 4500);
     return () => clearInterval(timer);
   }, []);
 
@@ -28,16 +34,22 @@ export default function MainBanner() {
         <div
           key={image}
           className={`banner-slide ${index === current ? "active" : ""}`}
-          style={{ backgroundImage: `url("${image}")` }}
-        />
+        >
+          <Image
+            src={image}
+            alt={`AETHER 메인 배너 ${index + 1}`}
+            fill
+            priority={index === 0}
+            sizes="100vw"
+            className="banner-image"
+          />
+        </div>
       ))}
 
       <button
         type="button"
         className="arrow arrow-left"
-        onClick={() =>
-          setCurrent((prev) => (prev - 1 + banners.length) % banners.length)
-        }
+        onClick={prevBanner}
         aria-label="이전 배너"
       >
         ‹
@@ -46,7 +58,7 @@ export default function MainBanner() {
       <button
         type="button"
         className="arrow arrow-right"
-        onClick={() => setCurrent((prev) => (prev + 1) % banners.length)}
+        onClick={nextBanner}
         aria-label="다음 배너"
       >
         ›
@@ -68,7 +80,7 @@ export default function MainBanner() {
         .main-banner {
           position: relative;
           width: 100%;
-          height: 430px;
+          height: 520px;
           overflow: hidden;
           background: #f7f3ee;
         }
@@ -76,11 +88,9 @@ export default function MainBanner() {
         .banner-slide {
           position: absolute;
           inset: 0;
-          background-size: contain;
-          background-position: center;
-          background-repeat: no-repeat;
           opacity: 0;
-          transition: opacity 0.7s ease;
+          transition: opacity 0.75s ease;
+          z-index: 0;
         }
 
         .banner-slide.active {
@@ -88,28 +98,34 @@ export default function MainBanner() {
           z-index: 1;
         }
 
+        .banner-image {
+          object-fit: cover;
+          object-position: center;
+        }
+
         .arrow {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
           z-index: 3;
-          width: 42px;
-          height: 42px;
+          width: 46px;
+          height: 46px;
           border: 0;
-          background: transparent;
-          color: rgba(255, 255, 255, 0.9);
-          font-size: 48px;
+          background: rgba(0, 0, 0, 0.12);
+          color: rgba(255, 255, 255, 0.95);
+          font-size: 46px;
           font-weight: 200;
           cursor: pointer;
           line-height: 1;
+          border-radius: 50%;
         }
 
         .arrow-left {
-          left: 18px;
+          left: 22px;
         }
 
         .arrow-right {
-          right: 18px;
+          right: 22px;
         }
 
         .banner-dots {
@@ -123,10 +139,11 @@ export default function MainBanner() {
         }
 
         .banner-dots button {
-          width: 42px;
-          height: 3px;
+          width: 44px;
+          height: 4px;
           border: 0;
-          background: rgba(255, 255, 255, 0.5);
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.55);
           cursor: pointer;
           padding: 0;
         }
@@ -137,13 +154,19 @@ export default function MainBanner() {
 
         @media (max-width: 768px) {
           .main-banner {
-            height: 260px;
+            height: 330px;
+          }
+
+          .banner-image {
+            object-fit: cover;
+            object-position: center;
           }
 
           .arrow {
-            font-size: 36px;
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
+            font-size: 34px;
+            background: rgba(0, 0, 0, 0.08);
           }
 
           .arrow-left {
@@ -155,11 +178,13 @@ export default function MainBanner() {
           }
 
           .banner-dots {
-            bottom: 16px;
+            bottom: 14px;
+            gap: 7px;
           }
 
           .banner-dots button {
-            width: 26px;
+            width: 28px;
+            height: 3px;
           }
         }
       `}</style>
