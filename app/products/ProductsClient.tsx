@@ -182,7 +182,7 @@ export default function ProductsClient() {
   return (
     <main className="products-page">
       <section className="shop-hero">
-        <a href="/" className="home-button">
+        <a href="/home" className="home-button">
           ← 메인으로
         </a>
 
@@ -507,13 +507,6 @@ export default function ProductsClient() {
           }
         }
 
-        @media (max-width: 900px) {
-          .product-grid {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 8px;
-          }
-        }
-
         @media (max-width: 768px) {
           .shop-hero {
             min-height: 150px;
@@ -601,18 +594,6 @@ export default function ProductsClient() {
           .product-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 8px;
-          }
-
-          .product-grid a,
-          .product-grid article,
-          .product-grid div {
-            max-width: 100%;
-          }
-
-          .product-grid img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
           }
         }
       `}</style>

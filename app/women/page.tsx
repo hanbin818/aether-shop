@@ -30,22 +30,22 @@ export default function WomenPage() {
   }, []);
 
   return (
-    <main style={pageStyle}>
-      <button style={homeButtonStyle} onClick={() => (window.location.href = "/")}>
+    <main className="gender-page">
+      <a href="/home" className="home-button">
         ← 메인으로
-      </button>
+      </a>
 
-      <section style={heroStyle}>
-        <h1 style={titleStyle}>WOMEN</h1>
-        <p style={descStyle}>여성 명품 컬렉션을 만나보세요.</p>
+      <section className="gender-hero">
+        <h1>WOMEN</h1>
+        <p>여성 명품 컬렉션을 만나보세요.</p>
       </section>
 
       {loading ? (
-        <p style={emptyTextStyle}>상품 불러오는 중...</p>
+        <p className="empty-text">상품 불러오는 중...</p>
       ) : products.length === 0 ? (
-        <p style={emptyTextStyle}>등록된 여성 상품이 없습니다.</p>
+        <p className="empty-text">등록된 여성 상품이 없습니다.</p>
       ) : (
-        <div style={gridStyle}>
+        <section className="product-grid">
           {products.map((product) => (
             <ProductCard
               key={product.id}
@@ -55,62 +55,103 @@ export default function WomenPage() {
               image={product.image}
               href={`/product/${product.id}`}
               stockStatus={product.stock_status}
+              stockQuantity={product.stock_quantity}
             />
           ))}
-        </div>
+        </section>
       )}
+
+      <style jsx>{`
+        .gender-page {
+          min-height: 100vh;
+          background: #07080c;
+          color: #fff;
+          padding: 22px 14px 70px;
+        }
+
+        .home-button {
+          display: inline-block;
+          color: #111;
+          background: rgba(255,255,255,0.94);
+          text-decoration: none;
+          padding: 9px 15px;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 950;
+          margin-bottom: 24px;
+        }
+
+        .gender-hero {
+          max-width: 1180px;
+          margin: 0 auto 28px;
+        }
+
+        .gender-hero h1 {
+          font-size: clamp(48px, 14vw, 110px);
+          font-weight: 950;
+          letter-spacing: -3px;
+          margin: 0;
+        }
+
+        .gender-hero p {
+          font-size: 16px;
+          color: rgba(255,255,255,0.66);
+          margin: 10px 0 0;
+        }
+
+        .product-grid {
+          max-width: 1180px;
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+          gap: 13px;
+        }
+
+        .empty-text {
+          text-align: center;
+          color: rgba(255,255,255,0.72);
+          padding: 70px 0;
+          font-weight: 800;
+        }
+
+        @media (max-width: 1180px) {
+          .product-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+          }
+        }
+
+        @media (max-width: 768px) {
+          .gender-page {
+            padding: 16px 6px 60px;
+          }
+
+          .home-button {
+            margin-left: 4px;
+            padding: 7px 11px;
+            font-size: 10px;
+            margin-bottom: 18px;
+          }
+
+          .gender-hero {
+            padding: 0 6px;
+            margin-bottom: 20px;
+          }
+
+          .gender-hero h1 {
+            font-size: 38px;
+            letter-spacing: -1px;
+          }
+
+          .gender-hero p {
+            font-size: 12px;
+          }
+
+          .product-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+          }
+        }
+      `}</style>
     </main>
   );
 }
-
-const pageStyle: React.CSSProperties = {
-  minHeight: "100vh",
-  background: "#07080c",
-  color: "#fff",
-  padding: "22px 14px 60px",
-};
-
-const homeButtonStyle: React.CSSProperties = {
-  border: "1px solid rgba(255,255,255,0.22)",
-  background: "rgba(255,255,255,0.08)",
-  color: "#fff",
-  borderRadius: "999px",
-  padding: "10px 16px",
-  fontSize: "14px",
-  fontWeight: 700,
-  marginBottom: "28px",
-  cursor: "pointer",
-};
-
-const heroStyle: React.CSSProperties = {
-  maxWidth: "1180px",
-  margin: "0 auto 30px",
-};
-
-const titleStyle: React.CSSProperties = {
-  fontSize: "clamp(52px, 15vw, 120px)",
-  fontWeight: 900,
-  letterSpacing: "-4px",
-  margin: 0,
-};
-
-const descStyle: React.CSSProperties = {
-  fontSize: "clamp(16px, 4vw, 24px)",
-  color: "rgba(255,255,255,0.65)",
-  marginTop: "12px",
-};
-
-const gridStyle: React.CSSProperties = {
-  width: "100%",
-  maxWidth: "1180px",
-  margin: "0 auto",
-  display: "grid",
-  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-  gap: "14px",
-};
-
-const emptyTextStyle: React.CSSProperties = {
-  textAlign: "center",
-  color: "rgba(255,255,255,0.7)",
-  padding: "80px 0",
-};
