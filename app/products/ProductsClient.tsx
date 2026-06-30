@@ -290,8 +290,8 @@ export default function ProductsClient() {
         .shop-hero {
           position: relative;
           width: 100%;
-          min-height: 260px;
-          padding: 58px 20px;
+          min-height: 230px;
+          padding: 54px 18px;
           background:
             linear-gradient(rgba(0,0,0,0.58), rgba(0,0,0,0.76)),
             url("https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=90");
@@ -307,14 +307,14 @@ export default function ProductsClient() {
 
         .home-button {
           position: absolute;
-          top: 18px;
-          left: 18px;
+          top: 14px;
+          left: 14px;
           color: #111;
           background: rgba(255,255,255,0.92);
           text-decoration: none;
-          padding: 9px 15px;
+          padding: 8px 13px;
           border-radius: 999px;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 950;
           box-shadow: 0 10px 24px rgba(0,0,0,0.18);
           z-index: 3;
@@ -332,38 +332,38 @@ export default function ProductsClient() {
         }
 
         .hero-content p {
-          margin: 0 0 14px;
+          margin: 0 0 12px;
           color: #d8c39f;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 950;
-          letter-spacing: 6px;
+          letter-spacing: 5px;
         }
 
         .hero-content h1 {
           margin: 0 auto;
-          font-size: clamp(36px, 7vw, 82px);
+          font-size: clamp(34px, 7vw, 76px);
           font-weight: 950;
-          letter-spacing: 4px;
+          letter-spacing: 3px;
           line-height: 1.05;
           word-break: keep-all;
         }
 
         .hero-content span {
           display: block;
-          margin-top: 18px;
+          margin-top: 16px;
           color: rgba(255,255,255,0.78);
-          font-size: 15px;
-          line-height: 1.8;
+          font-size: 14px;
+          line-height: 1.7;
           word-break: keep-all;
         }
 
         .shop-control {
           max-width: 1180px;
-          margin: -34px auto 22px;
+          margin: -30px auto 18px;
           background: rgba(255,255,255,0.96);
           border: 1px solid rgba(0,0,0,0.06);
-          border-radius: 26px;
-          padding: 18px;
+          border-radius: 24px;
+          padding: 16px;
           box-shadow: 0 20px 52px rgba(0,0,0,0.08);
           position: relative;
           z-index: 2;
@@ -376,8 +376,8 @@ export default function ProductsClient() {
           align-items: center;
           gap: 8px;
           overflow-x: auto;
-          padding-bottom: 11px;
-          margin-bottom: 15px;
+          padding-bottom: 10px;
+          margin-bottom: 13px;
           border-bottom: 1px solid #eee;
         }
 
@@ -387,7 +387,7 @@ export default function ProductsClient() {
 
         .tab-row button {
           flex: 0 0 auto;
-          padding: 9px 17px;
+          padding: 8px 15px;
           border-radius: 999px;
           border: 1px solid #ddd;
           background: #fff;
@@ -413,12 +413,12 @@ export default function ProductsClient() {
 
         .search-row input {
           flex: 1;
-          height: 46px;
+          height: 43px;
           border-radius: 999px;
           border: 1px solid #ddd;
           background: #fafafa;
           color: #111;
-          padding: 0 18px;
+          padding: 0 16px;
           font-size: 13px;
           font-weight: 800;
           outline: none;
@@ -426,8 +426,8 @@ export default function ProductsClient() {
         }
 
         .search-row button {
-          width: 76px;
-          height: 46px;
+          width: 72px;
+          height: 43px;
           border-radius: 999px;
           background: #111;
           color: #fff;
@@ -438,11 +438,11 @@ export default function ProductsClient() {
         }
 
         .result-row {
-          margin-top: 14px;
+          margin-top: 13px;
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: 12px;
+          gap: 10px;
           flex-wrap: wrap;
         }
 
@@ -458,12 +458,12 @@ export default function ProductsClient() {
         }
 
         .result-row select {
-          height: 38px;
+          height: 36px;
           border-radius: 999px;
           border: 1px solid #ddd;
           background: #fff;
           color: #111;
-          padding: 0 14px;
+          padding: 0 12px;
           font-size: 12px;
           font-weight: 900;
           outline: none;
@@ -472,13 +472,13 @@ export default function ProductsClient() {
         .product-section {
           max-width: 1180px;
           margin: 0 auto;
-          padding: 0 14px;
+          padding: 0 12px;
         }
 
         .product-grid {
           display: grid;
           grid-template-columns: repeat(5, minmax(0, 1fr));
-          gap: 14px;
+          gap: 13px;
           align-items: start;
         }
 
@@ -509,97 +509,98 @@ export default function ProductsClient() {
 
         @media (max-width: 900px) {
           .product-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
           }
         }
 
         @media (max-width: 768px) {
           .shop-hero {
-            min-height: 190px;
-            padding: 42px 16px 48px;
+            min-height: 150px;
+            padding: 36px 12px 40px;
           }
 
           .home-button {
-            top: 12px;
-            left: 12px;
-            padding: 8px 12px;
-            font-size: 11px;
+            top: 10px;
+            left: 10px;
+            padding: 7px 10px;
+            font-size: 10px;
           }
 
           .hero-content p {
-            font-size: 9px;
-            letter-spacing: 3px;
-            margin-bottom: 10px;
+            font-size: 8px;
+            letter-spacing: 2px;
+            margin-bottom: 7px;
           }
 
           .hero-content h1 {
-            font-size: 32px;
+            font-size: 24px;
             letter-spacing: 1px;
           }
 
           .hero-content span {
-            font-size: 11px;
-            margin-top: 12px;
-            line-height: 1.5;
+            font-size: 10px;
+            margin-top: 8px;
+            line-height: 1.4;
           }
 
           .shop-control {
-            margin: -28px 8px 16px;
-            padding: 12px 9px;
-            border-radius: 20px;
+            margin: -22px 6px 12px;
+            padding: 9px 7px;
+            border-radius: 17px;
           }
 
           .tab-row {
             justify-content: flex-start;
-            gap: 6px;
-            padding-bottom: 9px;
-            margin-bottom: 11px;
+            gap: 5px;
+            padding-bottom: 7px;
+            margin-bottom: 8px;
           }
 
           .tab-row button {
-            padding: 7px 11px;
-            font-size: 10px;
+            padding: 6px 9px;
+            font-size: 9px;
             letter-spacing: 0;
           }
 
           .search-row {
-            gap: 6px;
+            gap: 5px;
           }
 
           .search-row input {
-            height: 39px;
-            font-size: 11px;
-            padding: 0 10px;
+            height: 34px;
+            font-size: 10px;
+            padding: 0 8px;
           }
 
           .search-row button {
-            width: 56px;
-            height: 39px;
-            font-size: 11px;
+            width: 50px;
+            height: 34px;
+            font-size: 10px;
           }
 
           .result-row {
-            margin-top: 12px;
-            gap: 8px;
+            margin-top: 9px;
+            gap: 6px;
           }
 
           .result-row p {
-            font-size: 11px;
+            font-size: 10px;
           }
 
           .result-row select {
-            height: 34px;
-            font-size: 11px;
-            padding: 0 10px;
+            height: 30px;
+            font-size: 10px;
+            padding: 0 8px;
           }
 
           .product-section {
-            padding: 0 6px;
+            padding: 0 4px;
           }
 
           .product-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 7px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 5px;
           }
 
           .product-grid a,

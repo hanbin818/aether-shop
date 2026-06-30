@@ -106,12 +106,8 @@ export default function ProductCard({
 
         <div className="info">
           <div className="brand">{brand}</div>
-
           <div className="name">{name}</div>
-
           <div className="price">{price}</div>
-
-          <div className="detail">자세히 보기 →</div>
         </div>
       </a>
 
@@ -119,24 +115,25 @@ export default function ProductCard({
         .card {
           width: 100%;
           background: #fff;
-          border-radius: 14px;
+          border-radius: 12px;
           overflow: hidden;
           text-decoration: none;
           color: #111;
-          transition: .25s;
-          box-shadow: 0 6px 18px rgba(0,0,0,.06);
-          border: 1px solid rgba(0,0,0,.05);
+          transition: 0.25s;
+          box-shadow: 0 5px 14px rgba(0, 0, 0, 0.05);
+          border: 1px solid rgba(0, 0, 0, 0.05);
+          display: block;
         }
 
         .card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 16px 34px rgba(0,0,0,.12);
+          transform: translateY(-3px);
+          box-shadow: 0 14px 28px rgba(0, 0, 0, 0.1);
         }
 
         .imageWrap {
           position: relative;
           width: 100%;
-          aspect-ratio: 1 / 0.9;
+          aspect-ratio: 1 / 0.78;
           background: #fafafa;
           overflow: hidden;
         }
@@ -145,7 +142,7 @@ export default function ProductCard({
           width: 100%;
           height: 100%;
           object-fit: contain;
-          transition: .35s;
+          transition: 0.35s;
         }
 
         .card:hover img {
@@ -153,111 +150,115 @@ export default function ProductCard({
         }
 
         .soldOutImage {
-          opacity: .35;
+          opacity: 0.35;
         }
 
         .heart {
           position: absolute;
-          top: 8px;
-          right: 8px;
-          width: 30px;
-          height: 30px;
+          top: 7px;
+          right: 7px;
+          width: 27px;
+          height: 27px;
           border-radius: 50%;
           border: none;
-          background: rgba(255,255,255,.96);
-          font-size: 17px;
+          background: rgba(255, 255, 255, 0.96);
+          font-size: 15px;
           cursor: pointer;
           z-index: 5;
-          box-shadow: 0 3px 10px rgba(0,0,0,.12);
+          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
         }
 
         .heart.active {
-          background:#111;
-          color:#fff;
+          background: #111;
+          color: #fff;
         }
 
         .soldOut {
-          position:absolute;
-          left:50%;
-          top:50%;
-          transform:translate(-50%,-50%);
-          background:#111;
-          color:#fff;
-          padding:8px 16px;
-          border-radius:999px;
-          font-size:12px;
-          font-weight:900;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          background: #111;
+          color: #fff;
+          padding: 7px 14px;
+          border-radius: 999px;
+          font-size: 11px;
+          font-weight: 900;
         }
 
         .info {
-          padding:10px;
+          padding: 8px 9px 9px;
         }
 
         .brand {
-          font-size:9px;
-          color:#9b8b73;
-          letter-spacing:2px;
-          font-weight:900;
-          margin-bottom:5px;
+          font-size: 8px;
+          color: #9b8b73;
+          letter-spacing: 1.4px;
+          font-weight: 900;
+          margin-bottom: 4px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .name {
-          font-size:12px;
-          font-weight:800;
-          line-height:1.35;
-          height:32px;
-          overflow:hidden;
+          font-size: 11px;
+          font-weight: 800;
+          line-height: 1.25;
+          height: 27px;
+          overflow: hidden;
         }
 
         .price {
-          margin-top:10px;
-          font-size:14px;
-          font-weight:900;
+          margin-top: 6px;
+          font-size: 12px;
+          font-weight: 950;
         }
 
-        .detail {
-          margin-top:8px;
-          font-size:10px;
-          color:#888;
-          font-weight:800;
+        @media (max-width: 768px) {
+          .card {
+            border-radius: 9px;
+            box-shadow: 0 3px 9px rgba(0, 0, 0, 0.05);
+          }
+
+          .imageWrap {
+            aspect-ratio: 1 / 0.72;
+          }
+
+          .heart {
+            top: 4px;
+            right: 4px;
+            width: 21px;
+            height: 21px;
+            font-size: 12px;
+          }
+
+          .info {
+            padding: 5px 5px 6px;
+          }
+
+          .brand {
+            font-size: 6.5px;
+            letter-spacing: 0.7px;
+            margin-bottom: 2px;
+          }
+
+          .name {
+            font-size: 8.5px;
+            line-height: 1.2;
+            height: 20px;
+          }
+
+          .price {
+            margin-top: 4px;
+            font-size: 9px;
+          }
+
+          .soldOut {
+            padding: 5px 9px;
+            font-size: 9px;
+          }
         }
-
-        @media (max-width:768px){
-
-          .imageWrap{
-            aspect-ratio:1 / .82;
-          }
-
-          .heart{
-            width:26px;
-            height:26px;
-            font-size:15px;
-          }
-
-          .info{
-            padding:8px;
-          }
-
-          .brand{
-            font-size:8px;
-          }
-
-          .name{
-            font-size:11px;
-            height:28px;
-          }
-
-          .price{
-            font-size:13px;
-            margin-top:8px;
-          }
-
-          .detail{
-            font-size:9px;
-          }
-
-        }
-
       `}</style>
     </>
   );
