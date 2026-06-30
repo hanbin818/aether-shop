@@ -65,6 +65,7 @@ export default function Home() {
           line-height: 1.14;
           font-weight: 950;
           letter-spacing: -2px;
+          word-break: keep-all;
         }
 
         .intro-section p:last-child {
