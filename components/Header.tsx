@@ -26,6 +26,15 @@ export default function Header() {
     window.location.href = `/products?search=${encodeURIComponent(search)}`;
   };
 
+  const handleLogoClick = () => {
+    localStorage.removeItem("aether-popup-closed");
+    localStorage.removeItem("aether-kakao-popup-closed");
+    localStorage.removeItem("aether-kakao-popup-hide");
+    localStorage.removeItem("aether-main-popup-closed");
+
+    window.location.href = "/";
+  };
+
   const logout = async () => {
     await supabase.auth.signOut();
     alert("로그아웃되었습니다.");
@@ -103,9 +112,9 @@ export default function Header() {
         </div>
 
         <div className="logo-row">
-          <a href="/" className="logo">
+          <button type="button" className="logo" onClick={handleLogoClick}>
             AETHER
-          </a>
+          </button>
         </div>
 
         <div className="search-row">
@@ -254,6 +263,11 @@ export default function Header() {
           font-size: clamp(34px, 5vw, 52px);
           font-weight: 950;
           letter-spacing: 12px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+          line-height: 1;
         }
 
         .search-row {
