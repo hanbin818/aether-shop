@@ -2,40 +2,40 @@ export default function LandingPage() {
   return (
     <main className="landing-page">
       <section className="landing-card">
-        <p className="label">AETHER OFFICIAL</p>
+        <p className="landing-label">AETHER OFFICIAL</p>
 
-        <h1>AETHER</h1>
+        <h1 className="landing-logo">AETHER</h1>
 
-        <p className="subtitle">Premium Luxury Select Shop</p>
+        <p className="landing-subtitle">Premium Luxury Select Shop</p>
 
-        <h2>
+        <h2 className="landing-title">
           카카오톡 채널 추가 시
           <br />
           전품목 10% 할인
         </h2>
 
-        <p className="desc">
+        <p className="landing-desc">
           최신 입고 소식 · 상시 이벤트 · 할인 혜택을
           <br />
           AETHER 카카오톡 채널에서 가장 먼저 만나보세요.
         </p>
 
-        <div className="button-group">
+        <div className="landing-button-group">
           <a
             href="https://pf.kakao.com/_FvxexfX"
             target="_blank"
             rel="noopener noreferrer"
-            className="kakao-button"
+            className="landing-kakao-button"
           >
             카카오톡 채널 바로가기
           </a>
 
-          <a href="/home" className="enter-button">
+          <a href="/home" className="landing-enter-button">
             홈페이지 입장
           </a>
         </div>
 
-        <p className="bottom-text">상시 이벤트 진행중</p>
+        <p className="landing-bottom-text">상시 이벤트 진행중</p>
       </section>
 
       <style>{`
@@ -79,7 +79,7 @@ export default function LandingPage() {
           pointer-events: none;
         }
 
-        .label {
+        .landing-label {
           margin: 0 0 22px;
           font-size: 12px;
           font-weight: 900;
@@ -87,7 +87,7 @@ export default function LandingPage() {
           color: #d6b15c;
         }
 
-        h1 {
+        .landing-logo {
           margin: 0;
           font-size: clamp(52px, 12vw, 82px);
           font-weight: 950;
@@ -95,7 +95,7 @@ export default function LandingPage() {
           line-height: 1;
         }
 
-        .subtitle {
+        .landing-subtitle {
           margin: 16px 0 38px;
           font-size: 13px;
           letter-spacing: 3px;
@@ -103,7 +103,7 @@ export default function LandingPage() {
           font-weight: 800;
         }
 
-        h2 {
+        .landing-title {
           margin: 0;
           font-size: clamp(28px, 7vw, 42px);
           line-height: 1.35;
@@ -112,7 +112,7 @@ export default function LandingPage() {
           color: #f2d27b;
         }
 
-        .desc {
+        .landing-desc {
           margin: 24px 0 34px;
           font-size: 15px;
           line-height: 1.8;
@@ -121,14 +121,14 @@ export default function LandingPage() {
           word-break: keep-all;
         }
 
-        .button-group {
+        .landing-button-group {
           width: 100%;
           display: flex;
           flex-direction: column;
           gap: 12px;
         }
 
-        .button-group a {
+        .landing-button-group a {
           height: 54px;
           border-radius: 999px;
           display: flex;
@@ -139,19 +139,19 @@ export default function LandingPage() {
           font-weight: 950;
         }
 
-        .kakao-button {
+        .landing-kakao-button {
           background: #fee500;
           color: #111;
           box-shadow: 0 16px 36px rgba(254,229,0,0.22);
         }
 
-        .enter-button {
+        .landing-enter-button {
           background: rgba(255,255,255,0.08);
           color: #fff;
           border: 1px solid rgba(255,255,255,0.18);
         }
 
-        .bottom-text {
+        .landing-bottom-text {
           margin: 26px 0 0;
           font-size: 12px;
           color: rgba(255,255,255,0.48);
@@ -166,16 +166,16 @@ export default function LandingPage() {
             border-radius: 28px;
           }
 
-          h1 {
+          .landing-logo {
             letter-spacing: 8px;
           }
 
-          .subtitle {
+          .landing-subtitle {
             font-size: 11px;
             letter-spacing: 2px;
           }
 
-          .desc {
+          .landing-desc {
             font-size: 13px;
           }
         }
