@@ -55,7 +55,6 @@ export default function MenPage() {
               image={product.image}
               href={`/product/${product.id}`}
               stockStatus={product.stock_status}
-              stockQuantity={product.stock_quantity}
             />
           ))}
         </section>
