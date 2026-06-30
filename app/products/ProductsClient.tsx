@@ -595,12 +595,12 @@ export default function ProductsClient() {
           }
 
           .product-section {
-            padding: 0 4px;
+            padding: 0 6px;
           }
 
           .product-grid {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 5px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
           }
 
           .product-grid a,
