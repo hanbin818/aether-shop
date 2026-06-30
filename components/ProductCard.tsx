@@ -10,7 +10,6 @@ type ProductCardProps = {
   image: string;
   href: string;
   stockStatus?: string;
-  stockQuantity?: number;
 };
 
 export default function ProductCard({
@@ -20,15 +19,12 @@ export default function ProductCard({
   image,
   href,
   stockStatus = "available",
-  stockQuantity,
 }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
   const normalizedStock = stockStatus.toLowerCase().replace(/[_-\s]/g, "");
-  const isSoldOut =
-    normalizedStock === "soldout" || Number(stockQuantity || 0) <= 0;
-
+  const isSoldOut = normalizedStock === "soldout";
   const productId = Number(href.split("/").pop());
 
   useEffect(() => {
@@ -115,38 +111,31 @@ export default function ProductCard({
         .card {
           width: 100%;
           background: #fff;
-          border-radius: 12px;
+          border-radius: 18px;
           overflow: hidden;
           text-decoration: none;
           color: #111;
-          transition: 0.25s;
-          box-shadow: 0 5px 14px rgba(0, 0, 0, 0.05);
-          border: 1px solid rgba(0, 0, 0, 0.05);
           display: block;
-        }
-
-        .card:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 14px 28px rgba(0, 0, 0, 0.1);
+          border: 1px solid rgba(0, 0, 0, 0.05);
+          box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
         }
 
         .imageWrap {
           position: relative;
           width: 100%;
-          aspect-ratio: 1 / 0.78;
-          background: #fafafa;
+          aspect-ratio: 1 / 1.18;
+          background: #f5f5f5;
           overflow: hidden;
+          padding: 12px;
+          box-sizing: border-box;
         }
 
         .imageWrap img {
           width: 100%;
           height: 100%;
           object-fit: contain;
-          transition: 0.35s;
-        }
-
-        .card:hover img {
-          transform: scale(1.04);
+          object-position: center;
+          display: block;
         }
 
         .soldOutImage {
@@ -155,10 +144,10 @@ export default function ProductCard({
 
         .heart {
           position: absolute;
-          top: 7px;
-          right: 7px;
-          width: 27px;
-          height: 27px;
+          top: 8px;
+          right: 8px;
+          width: 28px;
+          height: 28px;
           border-radius: 50%;
           border: none;
           background: rgba(255, 255, 255, 0.96);
@@ -187,76 +176,65 @@ export default function ProductCard({
         }
 
         .info {
-          padding: 8px 9px 9px;
+          padding: 12px 12px 14px;
         }
 
         .brand {
-          font-size: 8px;
-          color: #9b8b73;
-          letter-spacing: 1.4px;
-          font-weight: 900;
-          margin-bottom: 4px;
+          font-size: 11px;
+          color: #8f826f;
+          font-weight: 800;
+          margin-bottom: 7px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
         .name {
-          font-size: 11px;
-          font-weight: 800;
-          line-height: 1.25;
-          height: 27px;
-          overflow: hidden;
+          font-size: 15px;
+          font-weight: 900;
+          line-height: 1.35;
+          min-height: 40px;
+          word-break: keep-all;
         }
 
         .price {
-          margin-top: 6px;
-          font-size: 12px;
+          margin-top: 10px;
+          font-size: 15px;
           font-weight: 950;
         }
 
         @media (max-width: 768px) {
           .card {
-            border-radius: 9px;
-            box-shadow: 0 3px 9px rgba(0, 0, 0, 0.05);
+            border-radius: 16px;
           }
 
           .imageWrap {
-            aspect-ratio: 1 / 0.72;
+            aspect-ratio: 1 / 1.2;
+            padding: 10px;
           }
 
           .heart {
-            top: 4px;
-            right: 4px;
-            width: 21px;
-            height: 21px;
-            font-size: 12px;
+            width: 24px;
+            height: 24px;
+            font-size: 13px;
           }
 
           .info {
-            padding: 5px 5px 6px;
+            padding: 10px 10px 12px;
           }
 
           .brand {
-            font-size: 6.5px;
-            letter-spacing: 0.7px;
-            margin-bottom: 2px;
+            font-size: 10px;
+            margin-bottom: 6px;
           }
 
           .name {
-            font-size: 8.5px;
-            line-height: 1.2;
-            height: 20px;
+            font-size: 14px;
+            min-height: 38px;
           }
 
           .price {
-            margin-top: 4px;
-            font-size: 9px;
-          }
-
-          .soldOut {
-            padding: 5px 9px;
-            font-size: 9px;
+            font-size: 14px;
           }
         }
       `}</style>
