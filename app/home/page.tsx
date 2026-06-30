@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import TopButton from "../../components/TopButton";
 import Footer from "../../components/Footer";
-import MainBanner from "../components/MainBanner";
+import MainBanner from "../../components/MainBanner";
 import CategoryIcons from "../../components/CategoryIcons";
 import BrandSection from "../../components/BrandSection";
 import NewArrivals from "../../components/NewArrivals";
@@ -13,19 +13,12 @@ export default function Home() {
   return (
     <main className="home-page">
       <Header />
-
       <SummerPopup />
-
       <MainBanner />
-
       <CategoryIcons />
-
       <NewArrivals />
-
       <BestItems />
-
       <GenderBanners />
-
       <BrandSection />
 
       <section className="intro-section">
@@ -42,7 +35,6 @@ export default function Home() {
       </section>
 
       <Footer />
-
       <TopButton />
 
       <style>{`

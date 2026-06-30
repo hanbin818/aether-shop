@@ -1,230 +1,96 @@
-"use client";
+import Header from "@/components/Header";
+import TopButton from "../components/TopButton";
+import Footer from "../components/Footer";
+import MainBanner from "../components/MainBanner";
+import CategoryIcons from "../components/CategoryIcons";
+import BrandSection from "../components/BrandSection";
+import NewArrivals from "../components/NewArrivals";
+import BestItems from "../components/BestItems";
+import GenderBanners from "../components/GenderBanners";
+import SummerPopup from "../components/SummerPopup";
 
-import { useEffect, useState } from "react";
-
-const KAKAO_CHANNEL_URL = "http://pf.kakao.com/_FvxexfX";
-
-export default function LandingPage() {
-  const [showBenefitPopup, setShowBenefitPopup] = useState(false);
-
-  useEffect(() => {
-    const closed = sessionStorage.getItem("aether-benefit-popup-closed");
-
-    if (!closed) {
-      setShowBenefitPopup(true);
-    }
-  }, []);
-
-  const closeBenefitPopup = () => {
-    sessionStorage.setItem("aether-benefit-popup-closed", "true");
-    setShowBenefitPopup(false);
-  };
-
+export default function Home() {
   return (
-    <main style={pageStyle}>
-      <div style={cardStyle}>
-        <div style={logoStyle}>
-          <h1 style={logoTextStyle}>A</h1>
-        </div>
+    <main className="home-page">
+      <Header />
+      <SummerPopup />
+      <MainBanner />
+      <CategoryIcons />
+      <NewArrivals />
+      <BestItems />
+      <GenderBanners />
+      <BrandSection />
 
-        <p style={brandStyle}>AETHER</p>
-
-        <h2 style={titleStyle}>
-          프리미엄 명품 셀렉트샵
+      <section className="intro-section">
+        <p className="section-label">LUXURY SELECT SHOP</p>
+        <h1>
+          감각적인 명품 셀렉션을
           <br />
-          AETHER
-        </h2>
-
-        <p style={descStyle}>
-          상품 문의는 카카오톡 채널로,
-          <br />
-          쇼핑은 공식 웹사이트에서 이용해주세요.
+          한 곳에서 만나보세요
+        </h1>
+        <p>
+          AETHER는 남성·여성 프리미엄 패션 아이템을 엄선해 소개하는
+          럭셔리 셀렉트샵입니다.
         </p>
+      </section>
 
-        {showBenefitPopup && (
-          <div style={benefitPopupStyle}>
-            <button style={benefitCloseStyle} onClick={closeBenefitPopup}>
-              ×
-            </button>
+      <Footer />
+      <TopButton />
 
-            <div style={kakaoIconStyle}>Ch</div>
+      <style>{`
+        .home-page {
+          background: #fff;
+          color: #111;
+          min-height: 100vh;
+          overflow-x: hidden;
+        }
 
-            <div style={benefitTextBoxStyle}>
-              <p style={benefitLabelStyle}>SPECIAL BENEFIT</p>
-              <p style={benefitTextStyle}>
-                신규 가입 후 카카오톡 채널 추가시
-                <br />
-                전품목 <span style={benefitPercentStyle}>10%</span> 할인
-              </p>
-            </div>
+        .intro-section {
+          padding: 64px 20px 58px;
+          text-align: center;
+          background: linear-gradient(180deg, #fff 0%, #faf7f1 100%);
+        }
 
-            <div style={giftIconStyle}>🎁</div>
-          </div>
-        )}
+        .section-label {
+          margin: 0 0 14px;
+          color: #9b8b73;
+          font-size: 12px;
+          font-weight: 950;
+          letter-spacing: 5px;
+        }
 
-        <a
-          style={{ ...buttonStyle, ...kakaoButtonStyle }}
-          href={KAKAO_CHANNEL_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          카카오톡 채널 문의 / 제품문의
-        </a>
+        .intro-section h1 {
+          margin: 0 0 18px;
+          font-size: clamp(34px, 6vw, 58px);
+          line-height: 1.14;
+          font-weight: 950;
+          letter-spacing: -2px;
+        }
 
-        <a style={{ ...buttonStyle, ...websiteButtonStyle }} href="/home">
-          공식 웹사이트
-        </a>
-      </div>
+        .intro-section p:last-child {
+          max-width: 660px;
+          margin: 0 auto;
+          color: #666;
+          font-size: 16px;
+          line-height: 1.9;
+          word-break: keep-all;
+        }
+
+        @media (max-width: 768px) {
+          .intro-section {
+            padding: 46px 18px 42px;
+          }
+
+          .intro-section h1 {
+            font-size: 32px;
+            letter-spacing: -1.3px;
+          }
+
+          .intro-section p:last-child {
+            font-size: 14px;
+          }
+        }
+      `}</style>
     </main>
   );
 }
-
-const pageStyle = {
-  minHeight: "100vh",
-  background: "linear-gradient(180deg, #f5c2b0 0%, #efb19e 100%)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  padding: "20px",
-} as const;
-
-const cardStyle = {
-  width: "100%",
-  maxWidth: "500px",
-  textAlign: "center",
-} as const;
-
-const logoStyle = {
-  width: "130px",
-  height: "130px",
-  margin: "0 auto 24px",
-  borderRadius: "50%",
-  background: "#7b2738",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-} as const;
-
-const logoTextStyle = {
-  color: "white",
-  fontSize: "70px",
-  margin: 0,
-  fontFamily: "serif",
-} as const;
-
-const brandStyle = {
-  fontSize: "14px",
-  letterSpacing: "6px",
-  fontWeight: 700,
-  marginBottom: "10px",
-  color: "#fff",
-} as const;
-
-const titleStyle = {
-  color: "#fff",
-  fontSize: "30px",
-  marginBottom: "16px",
-  lineHeight: 1.4,
-  fontWeight: 900,
-} as const;
-
-const descStyle = {
-  color: "#3f3f3f",
-  marginBottom: "28px",
-  lineHeight: 1.8,
-  fontSize: "17px",
-  fontWeight: 500,
-} as const;
-
-const benefitPopupStyle = {
-  position: "relative",
-  width: "100%",
-  boxSizing: "border-box",
-  margin: "0 auto 24px",
-  padding: "18px 46px 18px 18px",
-  borderRadius: "18px",
-  background: "rgba(255, 255, 255, 0.92)",
-  display: "flex",
-  alignItems: "center",
-  gap: "14px",
-  boxShadow: "0 16px 40px rgba(0, 0, 0, 0.16)",
-} as const;
-
-const benefitCloseStyle = {
-  position: "absolute",
-  top: "12px",
-  right: "14px",
-  background: "transparent",
-  border: "none",
-  color: "#222",
-  fontSize: "26px",
-  lineHeight: 1,
-  cursor: "pointer",
-} as const;
-
-const kakaoIconStyle = {
-  width: "58px",
-  height: "58px",
-  borderRadius: "50%",
-  background: "#fee500",
-  color: "#111",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "24px",
-  fontWeight: 950,
-  flexShrink: 0,
-} as const;
-
-const benefitTextBoxStyle = {
-  textAlign: "left",
-  flex: 1,
-} as const;
-
-const benefitLabelStyle = {
-  margin: "0 0 5px",
-  color: "#d38770",
-  fontSize: "11px",
-  fontWeight: 950,
-  letterSpacing: "2px",
-} as const;
-
-const benefitTextStyle = {
-  margin: 0,
-  color: "#222",
-  fontSize: "18px",
-  lineHeight: 1.45,
-  fontWeight: 900,
-  wordBreak: "keep-all",
-} as const;
-
-const benefitPercentStyle = {
-  color: "#ef5b3c",
-  fontSize: "24px",
-  fontWeight: 950,
-} as const;
-
-const giftIconStyle = {
-  fontSize: "30px",
-  flexShrink: 0,
-} as const;
-
-const buttonStyle = {
-  display: "block",
-  textDecoration: "none",
-  color: "#111",
-  marginBottom: "18px",
-  padding: "22px",
-  borderRadius: "18px",
-  fontSize: "18px",
-  fontWeight: 700,
-  boxShadow: "0 10px 25px rgba(0, 0, 0, 0.12)",
-} as const;
-
-const kakaoButtonStyle = {
-  background: "#fee500",
-} as const;
-
-const websiteButtonStyle = {
-  background: "white",
-} as const;
