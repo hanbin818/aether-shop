@@ -182,7 +182,7 @@ export default function ProductsClient() {
   return (
     <main className="products-page">
       <section className="shop-hero">
-        <a href="/home" className="home-button">
+        <a href="/" className="home-button">
           ← 메인으로
         </a>
 
@@ -290,8 +290,8 @@ export default function ProductsClient() {
         .shop-hero {
           position: relative;
           width: 100%;
-          min-height: 300px;
-          padding: 68px 20px;
+          min-height: 260px;
+          padding: 58px 20px;
           background:
             linear-gradient(rgba(0,0,0,0.58), rgba(0,0,0,0.76)),
             url("https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=90");
@@ -303,17 +303,6 @@ export default function ProductsClient() {
           justify-content: center;
           text-align: center;
           box-sizing: border-box;
-        }
-
-        .hero-content {
-          width: 100%;
-          max-width: 980px;
-          margin: 0 auto;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-direction: column;
-          text-align: center;
         }
 
         .home-button {
@@ -328,47 +317,53 @@ export default function ProductsClient() {
           font-size: 12px;
           font-weight: 950;
           box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+          z-index: 3;
+        }
+
+        .hero-content {
+          width: 100%;
+          max-width: 980px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          text-align: center;
         }
 
         .hero-content p {
-          width: 100%;
           margin: 0 0 14px;
           color: #d8c39f;
           font-size: 12px;
           font-weight: 950;
           letter-spacing: 6px;
-          text-align: center;
         }
 
         .hero-content h1 {
-          width: 100%;
           margin: 0 auto;
-          font-size: clamp(38px, 7vw, 82px);
+          font-size: clamp(36px, 7vw, 82px);
           font-weight: 950;
           letter-spacing: 4px;
           line-height: 1.05;
           word-break: keep-all;
-          text-align: center;
         }
 
         .hero-content span {
-          width: 100%;
           display: block;
-          margin-top: 22px;
+          margin-top: 18px;
           color: rgba(255,255,255,0.78);
           font-size: 15px;
           line-height: 1.8;
           word-break: keep-all;
-          text-align: center;
         }
 
         .shop-control {
           max-width: 1180px;
-          margin: -36px auto 24px;
+          margin: -34px auto 22px;
           background: rgba(255,255,255,0.96);
           border: 1px solid rgba(0,0,0,0.06);
           border-radius: 26px;
-          padding: 20px;
+          padding: 18px;
           box-shadow: 0 20px 52px rgba(0,0,0,0.08);
           position: relative;
           z-index: 2;
@@ -399,7 +394,6 @@ export default function ProductsClient() {
           color: #111;
           font-size: 12px;
           font-weight: 950;
-          letter-spacing: 0.3px;
           cursor: pointer;
         }
 
@@ -444,7 +438,7 @@ export default function ProductsClient() {
         }
 
         .result-row {
-          margin-top: 16px;
+          margin-top: 14px;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -464,7 +458,7 @@ export default function ProductsClient() {
         }
 
         .result-row select {
-          height: 40px;
+          height: 38px;
           border-radius: 999px;
           border: 1px solid #ddd;
           background: #fff;
@@ -486,6 +480,12 @@ export default function ProductsClient() {
           grid-template-columns: repeat(5, minmax(0, 1fr));
           gap: 14px;
           align-items: start;
+        }
+
+        .product-grid > * {
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
         }
 
         .empty-box {
@@ -515,8 +515,8 @@ export default function ProductsClient() {
 
         @media (max-width: 768px) {
           .shop-hero {
-            min-height: 230px;
-            padding: 48px 18px 56px;
+            min-height: 190px;
+            padding: 42px 16px 48px;
           }
 
           .home-button {
@@ -527,35 +527,37 @@ export default function ProductsClient() {
           }
 
           .hero-content p {
-            font-size: 10px;
-            letter-spacing: 4px;
+            font-size: 9px;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
           }
 
           .hero-content h1 {
-            font-size: 38px;
-            letter-spacing: 2px;
+            font-size: 32px;
+            letter-spacing: 1px;
           }
 
           .hero-content span {
-            font-size: 12px;
-            margin-top: 18px;
+            font-size: 11px;
+            margin-top: 12px;
+            line-height: 1.5;
           }
 
           .shop-control {
-            margin: -32px 10px 20px;
-            padding: 14px 10px;
-            border-radius: 22px;
+            margin: -28px 8px 16px;
+            padding: 12px 9px;
+            border-radius: 20px;
           }
 
           .tab-row {
             justify-content: flex-start;
             gap: 6px;
-            padding-bottom: 10px;
-            margin-bottom: 13px;
+            padding-bottom: 9px;
+            margin-bottom: 11px;
           }
 
           .tab-row button {
-            padding: 8px 12px;
+            padding: 7px 11px;
             font-size: 10px;
             letter-spacing: 0;
           }
@@ -565,39 +567,51 @@ export default function ProductsClient() {
           }
 
           .search-row input {
-            height: 42px;
+            height: 39px;
             font-size: 11px;
             padding: 0 10px;
           }
 
           .search-row button {
-            width: 60px;
-            height: 42px;
-            font-size: 12px;
+            width: 56px;
+            height: 39px;
+            font-size: 11px;
           }
 
           .result-row {
-            margin-top: 14px;
-            gap: 10px;
+            margin-top: 12px;
+            gap: 8px;
           }
 
           .result-row p {
-            font-size: 12px;
+            font-size: 11px;
           }
 
           .result-row select {
-            height: 38px;
-            font-size: 12px;
-            padding: 0 12px;
+            height: 34px;
+            font-size: 11px;
+            padding: 0 10px;
           }
 
           .product-section {
-            padding: 0 8px;
+            padding: 0 6px;
           }
 
           .product-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 8px 6px;
+            gap: 7px;
+          }
+
+          .product-grid a,
+          .product-grid article,
+          .product-grid div {
+            max-width: 100%;
+          }
+
+          .product-grid img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
           }
         }
       `}</style>
