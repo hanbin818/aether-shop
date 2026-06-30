@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import TopButton from "../../components/TopButton";
 import Footer from "../../components/Footer";
-import MainBanner from "../components/MainBanner";
+import Hero from "../../components/Hero";
 import CategoryIcons from "../../components/CategoryIcons";
 import BrandSection from "../../components/BrandSection";
 import NewArrivals from "../../components/NewArrivals";
@@ -16,7 +16,7 @@ export default function Home() {
 
       <SummerPopup />
 
-      <MainBanner />
+      <Hero />
 
       <CategoryIcons />
 
