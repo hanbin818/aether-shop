@@ -85,6 +85,7 @@ export default function ProductCard({
       <a href={href} className="card">
         <div className="imageWrap">
           <button
+            type="button"
             onClick={toggleWishlist}
             className={isWishlisted ? "heart active" : "heart"}
           >
@@ -116,24 +117,22 @@ export default function ProductCard({
           text-decoration: none;
           color: #111;
           display: block;
-          border: 1px solid rgba(0, 0, 0, 0.05);
+          border: 1px solid rgba(0, 0, 0, 0.06);
           box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
         }
 
         .imageWrap {
           position: relative;
           width: 100%;
-          aspect-ratio: 1 / 1.38;
+          aspect-ratio: 1 / 1;
           background: #f7f7f7;
           overflow: hidden;
-          padding: 16px;
-          box-sizing: border-box;
         }
 
         .imageWrap img {
           width: 100%;
           height: 100%;
-          object-fit: contain;
+          object-fit: cover;
           object-position: center;
           display: block;
         }
@@ -151,10 +150,15 @@ export default function ProductCard({
           border-radius: 50%;
           border: none;
           background: rgba(255, 255, 255, 0.96);
-          font-size: 15px;
+          color: #2f80ed;
+          font-size: 16px;
           cursor: pointer;
           z-index: 5;
-          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          line-height: 1;
         }
 
         .heart.active {
@@ -173,6 +177,7 @@ export default function ProductCard({
           border-radius: 999px;
           font-size: 11px;
           font-weight: 900;
+          z-index: 4;
         }
 
         .info {
@@ -209,14 +214,13 @@ export default function ProductCard({
           }
 
           .imageWrap {
-            aspect-ratio: 1 / 1.45;
-            padding: 14px;
+            aspect-ratio: 1 / 1;
           }
 
           .heart {
-            width: 24px;
-            height: 24px;
-            font-size: 13px;
+            width: 26px;
+            height: 26px;
+            font-size: 15px;
           }
 
           .info {
