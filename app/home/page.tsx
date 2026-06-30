@@ -7,13 +7,11 @@ import BrandSection from "../../components/BrandSection";
 import NewArrivals from "../../components/NewArrivals";
 import BestItems from "../../components/BestItems";
 import GenderBanners from "../../components/GenderBanners";
-import SummerPopup from "../../components/SummerPopup";
 
 export default function Home() {
   return (
     <main className="home-page">
       <Header />
-      <SummerPopup />
       <MainBanner />
       <CategoryIcons />
       <NewArrivals />
@@ -23,11 +21,13 @@ export default function Home() {
 
       <section className="intro-section">
         <p className="section-label">LUXURY SELECT SHOP</p>
+
         <h1>
           감각적인 명품 셀렉션을
           <br />
           한 곳에서 만나보세요
         </h1>
+
         <p>
           AETHER는 남성·여성 프리미엄 패션 아이템을 엄선해 소개하는
           럭셔리 셀렉트샵입니다.
