@@ -121,7 +121,7 @@ export default function MenPage() {
 
         @media (max-width: 768px) {
           .gender-page {
-            padding: 16px 6px 60px;
+            padding: 16px 8px 60px;
           }
 
           .home-button {
@@ -146,8 +146,8 @@ export default function MenPage() {
           }
 
           .product-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 8px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
           }
         }
       `}</style>
