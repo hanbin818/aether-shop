@@ -3,42 +3,12 @@
 import { useEffect, useState } from "react";
 
 const banners = [
-  {
-    image: "/banners/banner1.png",
-    label: "AETHER SPECIAL",
-    title: "LUXURY SELECT",
-    desc: "프리미엄 명품 셀렉션",
-  },
-  {
-    image: "/banners/banner2.png",
-    label: "SUMMER EVENT",
-    title: "SEASON SALE",
-    desc: "여름맞이 특별 혜택",
-  },
-  {
-    image: "/banners/banner3.png",
-    label: "NEW COLLECTION",
-    title: "NEW ARRIVALS",
-    desc: "새롭게 입고된 프리미엄 아이템",
-  },
-  {
-    image: "/banners/banner4.png",
-    label: "AETHER PICK",
-    title: "DAILY LUXURY",
-    desc: "매일 즐기는 감각적인 스타일",
-  },
-  {
-    image: "/banners/banner5.png",
-    label: "PREMIUM STYLE",
-    title: "MODERN LOOK",
-    desc: "고급스러운 데일리 셀렉션",
-  },
-  {
-    image: "/banners/banner6.png",
-    label: "LIMITED BENEFIT",
-    title: "SPECIAL OFFER",
-    desc: "지금만 만나는 특별한 혜택",
-  },
+  "/banners/banner1.png",
+  "/banners/banner2.png",
+  "/banners/banner3.png",
+  "/banners/banner4.png",
+  "/banners/banner5.png",
+  "/banners/banner6.png",
 ];
 
 export default function MainBanner() {
@@ -54,21 +24,33 @@ export default function MainBanner() {
 
   return (
     <section className="main-banner">
-      {banners.map((banner, index) => (
+      {banners.map((image, index) => (
         <div
-          key={banner.image}
+          key={image}
           className={`banner-slide ${index === current ? "active" : ""}`}
-          style={{
-            backgroundImage: `linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.38)), url("${banner.image}")`,
-          }}
-        >
-          <div className="banner-content">
-            <p>{banner.label}</p>
-            <h1>{banner.title}</h1>
-            <span>{banner.desc}</span>
-          </div>
-        </div>
+          style={{ backgroundImage: `url("${image}")` }}
+        />
       ))}
+
+      <button
+        type="button"
+        className="arrow arrow-left"
+        onClick={() =>
+          setCurrent((prev) => (prev - 1 + banners.length) % banners.length)
+        }
+        aria-label="이전 배너"
+      >
+        ‹
+      </button>
+
+      <button
+        type="button"
+        className="arrow arrow-right"
+        onClick={() => setCurrent((prev) => (prev + 1) % banners.length)}
+        aria-label="다음 배너"
+      >
+        ›
+      </button>
 
       <div className="banner-dots">
         {banners.map((_, index) => (
@@ -88,63 +70,52 @@ export default function MainBanner() {
           width: 100%;
           height: 430px;
           overflow: hidden;
-          background: #111;
+          background: #f7f3ee;
         }
 
         .banner-slide {
           position: absolute;
           inset: 0;
-          background-size: cover;
+          background-size: contain;
           background-position: center;
           background-repeat: no-repeat;
           opacity: 0;
-          transform: scale(1.03);
-          transition: opacity 0.8s ease, transform 1.8s ease;
+          transition: opacity 0.7s ease;
         }
 
         .banner-slide.active {
           opacity: 1;
-          transform: scale(1);
           z-index: 1;
         }
 
-        .banner-content {
-          position: relative;
-          z-index: 2;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          color: #fff;
-          padding: 0 20px;
-        }
-
-        .banner-content p {
-          margin: 0 0 16px;
-          font-size: 15px;
-          font-weight: 900;
-          letter-spacing: 8px;
-        }
-
-        .banner-content h1 {
-          margin: 0 0 18px;
-          font-size: clamp(42px, 7vw, 78px);
+        .arrow {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 3;
+          width: 42px;
+          height: 42px;
+          border: 0;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.9);
+          font-size: 48px;
+          font-weight: 200;
+          cursor: pointer;
           line-height: 1;
-          font-weight: 950;
-          letter-spacing: -2px;
         }
 
-        .banner-content span {
-          font-size: 18px;
-          font-weight: 800;
+        .arrow-left {
+          left: 18px;
+        }
+
+        .arrow-right {
+          right: 18px;
         }
 
         .banner-dots {
           position: absolute;
           left: 50%;
-          bottom: 28px;
+          bottom: 26px;
           transform: translateX(-50%);
           z-index: 3;
           display: flex;
@@ -155,7 +126,7 @@ export default function MainBanner() {
           width: 42px;
           height: 3px;
           border: 0;
-          background: rgba(255,255,255,0.45);
+          background: rgba(255, 255, 255, 0.5);
           cursor: pointer;
           padding: 0;
         }
@@ -166,24 +137,29 @@ export default function MainBanner() {
 
         @media (max-width: 768px) {
           .main-banner {
-            height: 360px;
+            height: 260px;
           }
 
-          .banner-content p {
-            font-size: 11px;
-            letter-spacing: 5px;
+          .arrow {
+            font-size: 36px;
+            width: 32px;
+            height: 32px;
           }
 
-          .banner-content h1 {
-            font-size: 42px;
+          .arrow-left {
+            left: 8px;
           }
 
-          .banner-content span {
-            font-size: 14px;
+          .arrow-right {
+            right: 8px;
+          }
+
+          .banner-dots {
+            bottom: 16px;
           }
 
           .banner-dots button {
-            width: 28px;
+            width: 26px;
           }
         }
       `}</style>
