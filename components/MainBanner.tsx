@@ -46,21 +46,11 @@ export default function MainBanner() {
         </div>
       ))}
 
-      <button
-        type="button"
-        className="arrow arrow-left"
-        onClick={prevBanner}
-        aria-label="이전 배너"
-      >
+      <button type="button" className="arrow arrow-left" onClick={prevBanner}>
         ‹
       </button>
 
-      <button
-        type="button"
-        className="arrow arrow-right"
-        onClick={nextBanner}
-        aria-label="다음 배너"
-      >
+      <button type="button" className="arrow arrow-right" onClick={nextBanner}>
         ›
       </button>
 
@@ -71,7 +61,6 @@ export default function MainBanner() {
             type="button"
             className={index === current ? "active" : ""}
             onClick={() => setCurrent(index)}
-            aria-label={`배너 ${index + 1}`}
           />
         ))}
       </div>
@@ -80,9 +69,9 @@ export default function MainBanner() {
         .main-banner {
           position: relative;
           width: 100%;
-          height: 520px;
+          height: 450px;
           overflow: hidden;
-          background: #f7f3ee;
+          background: #f6f1eb;
         }
 
         .banner-slide {
@@ -99,7 +88,7 @@ export default function MainBanner() {
         }
 
         .banner-image {
-          object-fit: cover;
+          object-fit: contain;
           object-position: center;
         }
 
@@ -108,42 +97,41 @@ export default function MainBanner() {
           top: 50%;
           transform: translateY(-50%);
           z-index: 3;
-          width: 46px;
-          height: 46px;
+          width: 42px;
+          height: 42px;
           border: 0;
+          border-radius: 50%;
           background: rgba(0, 0, 0, 0.12);
-          color: rgba(255, 255, 255, 0.95);
-          font-size: 46px;
-          font-weight: 200;
+          color: #fff;
+          font-size: 42px;
           cursor: pointer;
           line-height: 1;
-          border-radius: 50%;
         }
 
         .arrow-left {
-          left: 22px;
+          left: 18px;
         }
 
         .arrow-right {
-          right: 22px;
+          right: 18px;
         }
 
         .banner-dots {
           position: absolute;
           left: 50%;
-          bottom: 26px;
+          bottom: 22px;
           transform: translateX(-50%);
           z-index: 3;
           display: flex;
-          gap: 10px;
+          gap: 9px;
         }
 
         .banner-dots button {
-          width: 44px;
+          width: 40px;
           height: 4px;
           border: 0;
           border-radius: 999px;
-          background: rgba(255, 255, 255, 0.55);
+          background: rgba(255,255,255,0.55);
           cursor: pointer;
           padding: 0;
         }
@@ -154,18 +142,19 @@ export default function MainBanner() {
 
         @media (max-width: 768px) {
           .main-banner {
-            height: 330px;
+            height: 250px;
+            background: #f6f1eb;
           }
 
           .banner-image {
-            object-fit: cover;
+            object-fit: contain;
             object-position: center;
           }
 
           .arrow {
-            width: 34px;
-            height: 34px;
-            font-size: 34px;
+            width: 30px;
+            height: 30px;
+            font-size: 30px;
             background: rgba(0, 0, 0, 0.08);
           }
 
@@ -178,12 +167,12 @@ export default function MainBanner() {
           }
 
           .banner-dots {
-            bottom: 14px;
-            gap: 7px;
+            bottom: 12px;
+            gap: 6px;
           }
 
           .banner-dots button {
-            width: 28px;
+            width: 26px;
             height: 3px;
           }
         }
