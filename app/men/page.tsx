@@ -30,14 +30,20 @@ export default function MenPage() {
   }, []);
 
   return (
-    <main style={mainStyle}>
-      <h1 style={titleStyle}>MEN</h1>
-      <p style={subTitleStyle}>남성 명품 상품을 만나보세요.</p>
+    <main style={pageStyle}>
+      <button style={homeButtonStyle} onClick={() => (window.location.href = "/")}>
+        ← 메인으로
+      </button>
+
+      <section style={heroStyle}>
+        <h1 style={titleStyle}>MEN</h1>
+        <p style={descStyle}>남성 명품 컬렉션을 만나보세요.</p>
+      </section>
 
       {loading ? (
-        <p>상품 불러오는 중...</p>
+        <p style={emptyTextStyle}>상품 불러오는 중...</p>
       ) : products.length === 0 ? (
-        <p>등록된 남성 상품이 없습니다.</p>
+        <p style={emptyTextStyle}>등록된 남성 상품이 없습니다.</p>
       ) : (
         <div style={gridStyle}>
           {products.map((product) => (
@@ -48,6 +54,7 @@ export default function MenPage() {
               price={`₩${Number(product.price).toLocaleString()}`}
               image={product.image}
               href={`/product/${product.id}`}
+              stockStatus={product.stock_status}
             />
           ))}
         </div>
@@ -56,27 +63,54 @@ export default function MenPage() {
   );
 }
 
-const mainStyle = {
+const pageStyle: React.CSSProperties = {
   minHeight: "100vh",
-  background: "#0b0b0f",
+  background: "#07080c",
   color: "#fff",
-  padding: "60px 40px",
+  padding: "22px 14px 60px",
 };
 
-const titleStyle = {
-  fontSize: "48px",
-  letterSpacing: "4px",
-  marginBottom: "10px",
+const homeButtonStyle: React.CSSProperties = {
+  border: "1px solid rgba(255,255,255,0.22)",
+  background: "rgba(255,255,255,0.08)",
+  color: "#fff",
+  borderRadius: "999px",
+  padding: "10px 16px",
+  fontSize: "14px",
+  fontWeight: 700,
+  marginBottom: "28px",
+  cursor: "pointer",
 };
 
-const subTitleStyle = {
-  color: "#aaa",
-  marginBottom: "40px",
+const heroStyle: React.CSSProperties = {
+  maxWidth: "1180px",
+  margin: "0 auto 30px",
 };
 
-const gridStyle = {
-  display: "flex",
-  gap: "24px",
-  flexWrap: "wrap" as const,
-  justifyContent: "center",
+const titleStyle: React.CSSProperties = {
+  fontSize: "clamp(52px, 15vw, 120px)",
+  fontWeight: 900,
+  letterSpacing: "-4px",
+  margin: 0,
+};
+
+const descStyle: React.CSSProperties = {
+  fontSize: "clamp(16px, 4vw, 24px)",
+  color: "rgba(255,255,255,0.65)",
+  marginTop: "12px",
+};
+
+const gridStyle: React.CSSProperties = {
+  width: "100%",
+  maxWidth: "1180px",
+  margin: "0 auto",
+  display: "grid",
+  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+  gap: "14px",
+};
+
+const emptyTextStyle: React.CSSProperties = {
+  textAlign: "center",
+  color: "rgba(255,255,255,0.7)",
+  padding: "80px 0",
 };
