@@ -112,7 +112,7 @@ export default function ProductCard({
         .card {
           width: 100%;
           background: #fff;
-          border-radius: 18px;
+          border-radius: 16px;
           overflow: hidden;
           text-decoration: none;
           color: #111;
@@ -127,12 +127,14 @@ export default function ProductCard({
           aspect-ratio: 1 / 1;
           background: #f7f7f7;
           overflow: hidden;
+          padding: 4px;
+          box-sizing: border-box;
         }
 
         .imageWrap img {
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          object-fit: contain;
           object-position: center;
           display: block;
         }
@@ -143,15 +145,15 @@ export default function ProductCard({
 
         .heart {
           position: absolute;
-          top: 8px;
-          right: 8px;
-          width: 28px;
-          height: 28px;
+          top: 7px;
+          right: 7px;
+          width: 27px;
+          height: 27px;
           border-radius: 50%;
           border: none;
           background: rgba(255, 255, 255, 0.96);
           color: #2f80ed;
-          font-size: 16px;
+          font-size: 15px;
           cursor: pointer;
           z-index: 5;
           box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
@@ -181,64 +183,84 @@ export default function ProductCard({
         }
 
         .info {
-          padding: 12px 12px 14px;
+          padding: 10px 10px 12px;
         }
 
         .brand {
-          font-size: 11px;
+          font-size: 10px;
           color: #8f826f;
           font-weight: 800;
-          margin-bottom: 7px;
+          margin-bottom: 6px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
         .name {
-          font-size: 15px;
+          font-size: 14px;
           font-weight: 900;
           line-height: 1.35;
-          min-height: 40px;
+          min-height: 38px;
           word-break: keep-all;
         }
 
         .price {
-          margin-top: 10px;
-          font-size: 15px;
+          margin-top: 8px;
+          font-size: 14px;
           font-weight: 950;
         }
 
         @media (max-width: 768px) {
           .card {
-            border-radius: 16px;
+            border-radius: 14px;
           }
 
           .imageWrap {
             aspect-ratio: 1 / 1;
+            padding: 3px;
           }
 
           .heart {
-            width: 26px;
-            height: 26px;
-            font-size: 15px;
+            top: 6px;
+            right: 6px;
+            width: 24px;
+            height: 24px;
+            font-size: 13px;
           }
 
           .info {
-            padding: 10px 10px 12px;
+            padding: 8px 8px 10px;
           }
 
           .brand {
-            font-size: 10px;
-            margin-bottom: 6px;
+            font-size: 9px;
+            margin-bottom: 5px;
           }
 
           .name {
-            font-size: 14px;
-            min-height: 38px;
+            font-size: 12px;
+            min-height: 33px;
+            line-height: 1.35;
           }
 
           .price {
-            font-size: 14px;
+            margin-top: 7px;
+            font-size: 12px;
+          }
+        }
+
+        @media (max-width: 390px) {
+          .info {
+            padding: 7px 7px 9px;
+          }
+
+          .name {
+            font-size: 11px;
+            min-height: 31px;
+          }
+
+          .price {
+            font-size: 11px;
           }
         }
       `}</style>
