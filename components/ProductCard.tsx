@@ -123,10 +123,10 @@ export default function ProductCard({
         .imageWrap {
           position: relative;
           width: 100%;
-          aspect-ratio: 1 / 1.18;
-          background: #f5f5f5;
+          aspect-ratio: 1 / 1.38;
+          background: #f7f7f7;
           overflow: hidden;
-          padding: 12px;
+          padding: 16px;
           box-sizing: border-box;
         }
 
@@ -209,8 +209,8 @@ export default function ProductCard({
           }
 
           .imageWrap {
-            aspect-ratio: 1 / 1.2;
-            padding: 10px;
+            aspect-ratio: 1 / 1.45;
+            padding: 14px;
           }
 
           .heart {
