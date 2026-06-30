@@ -4,37 +4,37 @@ import { useEffect, useState } from "react";
 
 const banners = [
   {
-    image: "/banners/banner1.jpg",
+    image: "/banners/banner1.png",
     label: "AETHER SPECIAL",
     title: "LUXURY SELECT",
     desc: "프리미엄 명품 셀렉션",
   },
   {
-    image: "/banners/banner2.jpg",
+    image: "/banners/banner2.png",
     label: "SUMMER EVENT",
     title: "SEASON SALE",
     desc: "여름맞이 특별 혜택",
   },
   {
-    image: "/banners/banner3.jpg",
+    image: "/banners/banner3.png",
     label: "NEW COLLECTION",
     title: "NEW ARRIVALS",
     desc: "새롭게 입고된 프리미엄 아이템",
   },
   {
-    image: "/banners/banner4.jpg",
+    image: "/banners/banner4.png",
     label: "AETHER PICK",
     title: "DAILY LUXURY",
     desc: "매일 즐기는 감각적인 스타일",
   },
   {
-    image: "/banners/banner5.jpg",
+    image: "/banners/banner5.png",
     label: "PREMIUM STYLE",
     title: "MODERN LOOK",
     desc: "고급스러운 데일리 셀렉션",
   },
   {
-    image: "/banners/banner6.jpg",
+    image: "/banners/banner6.png",
     label: "LIMITED BENEFIT",
     title: "SPECIAL OFFER",
     desc: "지금만 만나는 특별한 혜택",
@@ -59,7 +59,7 @@ export default function MainBanner() {
           key={banner.image}
           className={`banner-slide ${index === current ? "active" : ""}`}
           style={{
-            backgroundImage: `linear-gradient(rgba(0,0,0,0.28), rgba(0,0,0,0.42)), url(${banner.image})`,
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.38)), url("${banner.image}")`,
           }}
         >
           <div className="banner-content">
@@ -74,6 +74,7 @@ export default function MainBanner() {
         {banners.map((_, index) => (
           <button
             key={index}
+            type="button"
             className={index === current ? "active" : ""}
             onClick={() => setCurrent(index)}
             aria-label={`배너 ${index + 1}`}
@@ -95,6 +96,7 @@ export default function MainBanner() {
           inset: 0;
           background-size: cover;
           background-position: center;
+          background-repeat: no-repeat;
           opacity: 0;
           transform: scale(1.03);
           transition: opacity 0.8s ease, transform 1.8s ease;
