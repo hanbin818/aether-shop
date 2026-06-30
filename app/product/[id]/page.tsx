@@ -299,16 +299,25 @@ export default function ProductDetail() {
 
               {productImages.length > 1 && (
                 <>
-                  <button type="button" onClick={goPrevImage} style={{ ...slideButtonStyle, left: isMobile ? "12px" : "20px" }}>
+                  <button
+                    type="button"
+                    onClick={goPrevImage}
+                    style={{ ...slideButtonStyle, left: isMobile ? "12px" : "20px" }}
+                  >
                     ‹
                   </button>
 
-                  <button type="button" onClick={goNextImage} style={{ ...slideButtonStyle, right: isMobile ? "12px" : "20px" }}>
+                  <button
+                    type="button"
+                    onClick={goNextImage}
+                    style={{ ...slideButtonStyle, right: isMobile ? "12px" : "20px" }}
+                  >
                     ›
                   </button>
 
                   <div style={imageCountStyle}>
-                    {(selectedIndex >= 0 ? selectedIndex : 0) + 1} / {productImages.length}
+                    {(selectedIndex >= 0 ? selectedIndex : 0) + 1} /{" "}
+                    {productImages.length}
                   </div>
                 </>
               )}
@@ -332,7 +341,11 @@ export default function ProductDetail() {
                         opacity: active ? 1 : 0.62,
                       }}
                     >
-                      <img src={image} alt={`${product.name} 이미지 ${index + 1}`} style={thumbnailImageStyle} />
+                      <img
+                        src={image}
+                        alt={`${product.name} 이미지 ${index + 1}`}
+                        style={thumbnailImageStyle}
+                      />
                     </button>
                   );
                 })}
@@ -443,7 +456,6 @@ export default function ProductDetail() {
                       image={relatedImages[0] || item.image}
                       href={`/product/${item.id}`}
                       stockStatus={item.stock_status}
-                      stockQuantity={item.stock_quantity || undefined}
                     />
                   </div>
                 );
