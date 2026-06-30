@@ -477,7 +477,7 @@ export default function ProductsClient() {
         .product-grid {
           display: grid;
           grid-template-columns: repeat(5, minmax(0, 1fr));
-          gap: 13px;
+          gap: 14px;
           align-items: start;
         }
 
@@ -508,8 +508,8 @@ export default function ProductsClient() {
 
         @media (max-width: 768px) {
           .shop-hero {
-            min-height: 150px;
-            padding: 36px 12px 40px;
+            min-height: 130px;
+            padding: 34px 12px 36px;
           }
 
           .home-button {
@@ -537,7 +537,7 @@ export default function ProductsClient() {
           }
 
           .shop-control {
-            margin: -22px 6px 12px;
+            margin: -20px 6px 12px;
             padding: 9px 7px;
             border-radius: 17px;
           }
@@ -587,12 +587,22 @@ export default function ProductsClient() {
           }
 
           .product-section {
-            padding: 0 6px;
+            padding: 0 8px;
           }
 
           .product-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 8px;
+          }
+        }
+
+        @media (max-width: 390px) {
+          .product-section {
+            padding: 0 6px;
+          }
+
+          .product-grid {
+            gap: 7px;
           }
         }
       `}</style>
