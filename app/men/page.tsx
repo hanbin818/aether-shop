@@ -61,7 +61,7 @@ export default function MenPage() {
         </section>
       )}
 
-      <style jsx>{`
+      <style>{`
         .gender-page {
           min-height: 100vh;
           background: #07080c;
