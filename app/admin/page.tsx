@@ -36,6 +36,7 @@ const categoryOptions = [
   { value: "shoes", label: "신발" },
   { value: "accessory", label: "액세서리" },
   { value: "sunglasses", label: "선글라스" },
+  { value: "watch", label: "시계" },
 ];
 
 const getCategoryLabel = (value?: string) => {
@@ -590,6 +591,7 @@ export default function AdminPage() {
             <option value="shoes">신발</option>
             <option value="accessory">액세서리</option>
             <option value="sunglasses">선글라스</option>
+            <option value="watch">시계</option>
           </select>
         </div>
 
