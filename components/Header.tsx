@@ -11,6 +11,7 @@ const categoryLinks = [
   { name: "클러치", href: "/products?search=clutch" },
   { name: "지갑", href: "/products?search=wallet" },
   { name: "신발", href: "/products?search=shoes" },
+  { name: "시계", href: "/products?search=watch" },
   { name: "액세서리", href: "/products?search=accessory" },
   { name: "선글라스", href: "/products?search=sunglasses" },
 ];
