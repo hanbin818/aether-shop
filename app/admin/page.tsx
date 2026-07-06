@@ -56,6 +56,12 @@ const getCategoryLabel = (value?: string) => {
   );
 };
 
+const getGenderLabel = (value?: string) => {
+  if (value === "WOMEN") return "여성";
+  if (value === "UNISEX") return "공용";
+  return "남성";
+};
+
 export default function AdminPage() {
   const router = useRouter();
 
@@ -692,6 +698,7 @@ export default function AdminPage() {
           >
             <option value="MEN">남성</option>
             <option value="WOMEN">여성</option>
+            <option value="UNISEX">공용</option>
           </select>
 
           <select
@@ -1018,7 +1025,7 @@ export default function AdminPage() {
                 <div style={mobileCardBodyStyle}>
                   <div style={badgeRowStyle}>
                     <span style={badgeStyle}>
-                      {product.gender === "WOMEN" ? "여성" : "남성"} ·{" "}
+                      {getGenderLabel(product.gender)} ·{" "}
                       {getCategoryLabel(product.category)}
                     </span>
 
