@@ -16,6 +16,7 @@ const categoryTabs = [
   { label: "신발", value: "shoes" },
   { label: "액세서리", value: "accessory" },
   { label: "선글라스", value: "sunglasses" },
+  { label: "시계", value: "watch" },
 ];
 
 const sortOptions = [
@@ -38,11 +39,17 @@ export default function ProductsClient() {
   const [activeTab, setActiveTab] = useState("ALL");
   const [sort, setSort] = useState("newest");
 
+  const [urlGender, setUrlGender] = useState(initialGender);
+  const [urlCategory, setUrlCategory] = useState(initialCategory);
+
   useEffect(() => {
     setSearch(initialSearch);
   }, [initialSearch]);
 
   useEffect(() => {
+    setUrlGender(initialGender);
+    setUrlCategory(initialCategory);
+
     if (initialGender) {
       setActiveTab(initialGender.toUpperCase());
       return;
@@ -82,6 +89,13 @@ export default function ProductsClient() {
     return category === "bag" || category === "clutch";
   };
 
+  const handleTabClick = (value: string) => {
+    setUrlGender("");
+    setUrlCategory("");
+    setActiveTab(value);
+    router.replace("/products", { scroll: false });
+  };
+
   const handleSearchSubmit = () => {
     const keyword = search.trim();
 
@@ -91,12 +105,6 @@ export default function ProductsClient() {
     }
 
     router.push(`/products?search=${encodeURIComponent(keyword)}`);
-  };
-
-  const clearUrlFilters = () => {
-    if (initialGender || initialCategory) {
-      router.push("/products");
-    }
   };
 
   const filteredProducts = useMemo(() => {
@@ -121,14 +129,14 @@ export default function ProductsClient() {
         product.category?.toLowerCase().includes(keyword) ||
         product.gender?.toLowerCase().includes(keyword);
 
-      const matchesGender =
-        !initialGender || productGender === initialGender.toUpperCase();
+      const matchesUrlGender =
+        !urlGender || productGender === urlGender.toUpperCase();
 
-      const matchesCategory =
-        !initialCategory ||
-        (initialCategory.toLowerCase() === "bag"
+      const matchesUrlCategory =
+        !urlCategory ||
+        (urlCategory.toLowerCase() === "bag"
           ? isBagFamily(productCategory)
-          : productCategory === initialCategory.toLowerCase());
+          : productCategory === urlCategory.toLowerCase());
 
       const matchesTab =
         activeTab === "ALL" ||
@@ -138,7 +146,7 @@ export default function ProductsClient() {
           ? isBagFamily(productCategory)
           : productCategory === activeTab.toLowerCase());
 
-      return matchesSearch && matchesGender && matchesCategory && matchesTab;
+      return matchesSearch && matchesUrlGender && matchesUrlCategory && matchesTab;
     });
 
     result = result.sort((a, b) => {
@@ -159,19 +167,19 @@ export default function ProductsClient() {
     });
 
     return result;
-  }, [products, search, activeTab, sort, initialGender, initialCategory]);
+  }, [products, search, activeTab, sort, urlGender, urlCategory]);
 
   const pageTitle =
-    initialGender === "WOMEN" && initialCategory === "bag"
+    urlGender === "WOMEN" && urlCategory === "bag"
       ? "여성 가방"
-      : initialGender === "MEN" && initialCategory === "bag"
+      : urlGender === "MEN" && urlCategory === "bag"
       ? "남성 가방"
       : "전체 상품";
 
   const pageDescription =
-    initialGender === "WOMEN" && initialCategory === "bag"
+    urlGender === "WOMEN" && urlCategory === "bag"
       ? "여성 가방과 클러치 셀렉션을 만나보세요."
-      : initialGender === "MEN" && initialCategory === "bag"
+      : urlGender === "MEN" && urlCategory === "bag"
       ? "남성 가방과 클러치 셀렉션을 만나보세요."
       : "엄선된 프리미엄 명품 셀렉션을 만나보세요.";
 
@@ -198,10 +206,7 @@ export default function ProductsClient() {
           {categoryTabs.map((tab) => (
             <button
               key={tab.value}
-              onClick={() => {
-                clearUrlFilters();
-                setActiveTab(tab.value);
-              }}
+              onClick={() => handleTabClick(tab.value)}
               className={activeTab === tab.value ? "active" : ""}
             >
               {tab.label}
