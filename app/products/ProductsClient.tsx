@@ -89,6 +89,13 @@ export default function ProductsClient() {
     return category === "bag" || category === "clutch";
   };
 
+  const isGenderMatchWithUnisex = (
+    productGender: string,
+    targetGender: string
+  ) => {
+    return productGender === targetGender || productGender === "UNISEX";
+  };
+
   const handleTabClick = (value: string) => {
     setUrlGender("");
     setUrlCategory("");
@@ -121,6 +128,7 @@ export default function ProductsClient() {
 
       const productGender = product.gender?.toUpperCase() || "";
       const productCategory = product.category?.toLowerCase() || "";
+      const targetUrlGender = urlGender.toUpperCase();
 
       const matchesSearch =
         keyword === "" ||
@@ -130,7 +138,7 @@ export default function ProductsClient() {
         product.gender?.toLowerCase().includes(keyword);
 
       const matchesUrlGender =
-        !urlGender || productGender === urlGender.toUpperCase();
+        !urlGender || isGenderMatchWithUnisex(productGender, targetUrlGender);
 
       const matchesUrlCategory =
         !urlCategory ||
@@ -141,7 +149,9 @@ export default function ProductsClient() {
       const matchesTab =
         activeTab === "ALL" ||
         (activeTab === "NEW" && !isSoldOut) ||
-        productGender === activeTab ||
+        ((activeTab === "MEN" || activeTab === "WOMEN")
+          ? isGenderMatchWithUnisex(productGender, activeTab)
+          : productGender === activeTab) ||
         (activeTab.toLowerCase() === "bag"
           ? isBagFamily(productCategory)
           : productCategory === activeTab.toLowerCase());
@@ -170,17 +180,25 @@ export default function ProductsClient() {
   }, [products, search, activeTab, sort, urlGender, urlCategory]);
 
   const pageTitle =
-    urlGender === "WOMEN" && urlCategory === "bag"
+    urlGender.toUpperCase() === "WOMEN" && urlCategory === "bag"
       ? "여성 가방"
-      : urlGender === "MEN" && urlCategory === "bag"
+      : urlGender.toUpperCase() === "MEN" && urlCategory === "bag"
       ? "남성 가방"
+      : urlGender.toUpperCase() === "WOMEN"
+      ? "여성 상품"
+      : urlGender.toUpperCase() === "MEN"
+      ? "남성 상품"
       : "전체 상품";
 
   const pageDescription =
-    urlGender === "WOMEN" && urlCategory === "bag"
-      ? "여성 가방과 클러치 셀렉션을 만나보세요."
-      : urlGender === "MEN" && urlCategory === "bag"
-      ? "남성 가방과 클러치 셀렉션을 만나보세요."
+    urlGender.toUpperCase() === "WOMEN" && urlCategory === "bag"
+      ? "여성 가방과 클러치, 공용 상품까지 함께 만나보세요."
+      : urlGender.toUpperCase() === "MEN" && urlCategory === "bag"
+      ? "남성 가방과 클러치, 공용 상품까지 함께 만나보세요."
+      : urlGender.toUpperCase() === "WOMEN"
+      ? "여성 상품과 공용 상품을 함께 만나보세요."
+      : urlGender.toUpperCase() === "MEN"
+      ? "남성 상품과 공용 상품을 함께 만나보세요."
       : "엄선된 프리미엄 명품 셀렉션을 만나보세요.";
 
   if (loading) {

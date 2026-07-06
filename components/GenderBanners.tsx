@@ -5,7 +5,7 @@ export default function GenderBanners() {
     {
       title: "MEN",
       subtitle: "남성 컬렉션",
-      desc: "절제된 실루엣과 고급스러운 무드의 남성 럭셔리 패션을 만나보세요.",
+      desc: "남성 상품과 공용 상품까지 함께 만나볼 수 있는 럭셔리 셀렉션입니다.",
       image:
         "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1600&q=90",
       href: "/products?gender=men",
@@ -13,7 +13,7 @@ export default function GenderBanners() {
     {
       title: "WOMEN",
       subtitle: "여성 컬렉션",
-      desc: "우아함과 세련미를 담은 여성 프리미엄 컬렉션을 경험해보세요.",
+      desc: "여성 상품과 공용 상품까지 함께 만나볼 수 있는 프리미엄 셀렉션입니다.",
       image:
         "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=90",
       href: "/products?gender=women",
@@ -25,7 +25,7 @@ export default function GenderBanners() {
       <div className="gender-head">
         <p>COLLECTION</p>
         <h2>MEN & WOMEN</h2>
-        <span>취향에 맞는 AETHER 컬렉션을 선택해보세요.</span>
+        <span>공용 상품까지 함께 볼 수 있는 AETHER 컬렉션을 선택해보세요.</span>
       </div>
 
       <div className="gender-grid">
