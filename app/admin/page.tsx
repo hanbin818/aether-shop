@@ -28,6 +28,15 @@ type Order = {
   customer_name?: string;
 };
 
+type Review = {
+  id: number;
+  title: string;
+  content: string;
+  image: string;
+  rating: number;
+  created_at?: string;
+};
+
 const categoryOptions = [
   { value: "all", label: "전체" },
   { value: "bag", label: "가방" },
@@ -52,7 +61,13 @@ export default function AdminPage() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [checkingLogin, setCheckingLogin] = useState(true);
+
+  const [reviewTitle, setReviewTitle] = useState("");
+  const [reviewContent, setReviewContent] = useState("");
+  const [reviewImage, setReviewImage] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
 
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("AETHER");
@@ -69,7 +84,6 @@ export default function AdminPage() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-
   const [productCategoryFilter, setProductCategoryFilter] = useState("all");
 
   const checkLogin = async () => {
@@ -112,10 +126,70 @@ export default function AdminPage() {
     setOrders(data || []);
   };
 
+  const fetchReviews = async () => {
+    const { data, error } = await supabase
+      .from("reviews")
+      .select("*")
+      .order("id", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    setReviews(data || []);
+  };
+
+  const addReview = async () => {
+    if (!reviewTitle || !reviewContent || !reviewImage) {
+      alert("리뷰 제목, 내용, 이미지를 입력해주세요.");
+      return;
+    }
+
+    const { error } = await supabase.from("reviews").insert([
+      {
+        title: reviewTitle,
+        content: reviewContent,
+        image: reviewImage,
+        rating: reviewRating,
+      },
+    ]);
+
+    if (error) {
+      console.error(error);
+      alert("리뷰 등록 실패");
+      return;
+    }
+
+    alert("리뷰 등록 완료!");
+
+    setReviewTitle("");
+    setReviewContent("");
+    setReviewImage("");
+    setReviewRating(5);
+
+    fetchReviews();
+  };
+
+  const deleteReview = async (id: number) => {
+    if (!confirm("리뷰를 삭제하시겠습니까?")) return;
+
+    const { error } = await supabase.from("reviews").delete().eq("id", id);
+
+    if (error) {
+      console.error(error);
+      alert("삭제 실패");
+      return;
+    }
+
+    fetchReviews();
+  };
+
   useEffect(() => {
     checkLogin();
     fetchProducts();
     fetchOrders();
+    fetchReviews();
   }, []);
 
   const resetOrders = async () => {
@@ -171,9 +245,7 @@ export default function AdminPage() {
     (order) => order.status === "배송준비중"
   ).length;
 
-  const shippingOrders = orders.filter(
-    (order) => order.status === "배송중"
-  ).length;
+  const shippingOrders = orders.filter((order) => order.status === "배송중").length;
 
   const completedOrders = orders.filter(
     (order) => order.status === "배송완료"
@@ -444,7 +516,8 @@ export default function AdminPage() {
           <p style={heroLabelStyle}>AETHER ADMIN</p>
           <h1 style={heroTitleStyle}>관리자 페이지</h1>
           <p style={heroTextStyle}>
-            상품, 주문, 재고, 매출을 한눈에 관리하는 AETHER 운영 화면입니다.
+            상품, 주문, 리뷰, 재고, 매출을 한눈에 관리하는 AETHER 운영
+            화면입니다.
           </p>
         </div>
 
@@ -477,6 +550,9 @@ export default function AdminPage() {
       <section style={quickSectionStyle}>
         <a href="#product-form" style={quickButtonStyle}>
           상품 등록
+        </a>
+        <a href="#review-form" style={quickButtonStyle}>
+          리뷰 등록
         </a>
         <a href="/admin/orders" style={quickButtonStyle}>
           주문 관리
@@ -550,7 +626,7 @@ export default function AdminPage() {
         </h2>
 
         <input
-          placeholder="브랜드 ex) CHANEL, Louis Vuitton"
+          placeholder="브랜드 ex) 샤넬, 루이비통"
           value={brand}
           onChange={(e) => setBrand(e.target.value)}
           style={inputStyle}
@@ -720,6 +796,83 @@ export default function AdminPage() {
             수정 취소
           </button>
         )}
+      </section>
+
+      <section id="review-form" style={formSectionStyle}>
+        <p style={sectionLabelStyle}>REVIEW MANAGEMENT</p>
+        <h2 style={sectionTitleStyle}>리뷰 등록</h2>
+
+        <input
+          placeholder="리뷰 제목"
+          value={reviewTitle}
+          onChange={(e) => setReviewTitle(e.target.value)}
+          style={inputStyle}
+        />
+
+        <textarea
+          placeholder="리뷰 내용"
+          value={reviewContent}
+          onChange={(e) => setReviewContent(e.target.value)}
+          style={textareaStyle}
+        />
+
+        <input
+          placeholder="리뷰 이미지 주소"
+          value={reviewImage}
+          onChange={(e) => setReviewImage(e.target.value)}
+          style={inputStyle}
+        />
+
+        <select
+          value={reviewRating}
+          onChange={(e) => setReviewRating(Number(e.target.value))}
+          style={inputStyle}
+        >
+          <option value={5}>★★★★★ 5점</option>
+          <option value={4}>★★★★ 4점</option>
+          <option value={3}>★★★ 3점</option>
+          <option value={2}>★★ 2점</option>
+          <option value={1}>★ 1점</option>
+        </select>
+
+        <button onClick={addReview} style={mainButtonStyle}>
+          리뷰 등록하기
+        </button>
+
+        <div style={{ marginTop: "28px" }}>
+          <h3 style={{ fontSize: "22px", fontWeight: 950, marginBottom: "16px" }}>
+            등록된 리뷰
+          </h3>
+
+          {reviews.length === 0 ? (
+            <p style={emptyTextStyle}>등록된 리뷰가 없습니다.</p>
+          ) : (
+            <div style={productGridStyle}>
+              {reviews.map((review) => (
+                <div key={review.id} style={productCardStyle}>
+                  <img
+                    src={review.image}
+                    alt={review.title}
+                    style={productImageStyle}
+                  />
+
+                  <div style={mobileCardBodyStyle}>
+                    <p style={starStyle}>{"★".repeat(review.rating || 5)}</p>
+                    <h3 style={productNameStyle}>{review.title}</h3>
+                    <p style={descStyle}>{review.content}</p>
+
+                    <button
+                      onClick={() => deleteReview(review.id)}
+                      style={deleteButtonStyle}
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </section>
 
       <section id="product-list">
@@ -1426,6 +1579,14 @@ const quantityStyle = {
   color: "#666",
   fontSize: "12px",
   fontWeight: "900",
+};
+
+const starStyle = {
+  color: "#b8975a",
+  fontSize: "14px",
+  letterSpacing: "2px",
+  margin: "0 0 8px",
+  fontWeight: 900,
 };
 
 const productNameStyle = {
