@@ -7,13 +7,13 @@ const categoryLinks = [
   { name: "전체상품", href: "/products" },
   { name: "남성", href: "/men" },
   { name: "여성", href: "/women" },
-  { name: "가방", href: "/products?search=bag" },
-  { name: "클러치", href: "/products?search=clutch" },
-  { name: "지갑", href: "/products?search=wallet" },
-  { name: "신발", href: "/products?search=shoes" },
-  { name: "시계", href: "/products?search=watch" },
-  { name: "액세서리", href: "/products?search=accessory" },
-  { name: "선글라스", href: "/products?search=sunglasses" },
+  { name: "가방", href: "/products?category=bag" },
+  { name: "클러치", href: "/products?category=clutch" },
+  { name: "지갑", href: "/products?category=wallet" },
+  { name: "신발", href: "/products?category=shoes" },
+  { name: "시계", href: "/products?category=watch" },
+  { name: "액세서리", href: "/products?category=accessory" },
+  { name: "선글라스", href: "/products?category=sunglasses" },
 ];
 
 export default function Header() {
