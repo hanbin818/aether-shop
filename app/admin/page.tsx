@@ -68,6 +68,8 @@ export default function AdminPage() {
   const [reviewContent, setReviewContent] = useState("");
   const [reviewImage, setReviewImage] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
+  const [selectedReviewFile, setSelectedReviewFile] = useState<File | null>(null);
+  const [reviewUploading, setReviewUploading] = useState(false);
 
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("AETHER");
@@ -140,6 +142,41 @@ export default function AdminPage() {
     setReviews(data || []);
   };
 
+  const uploadReviewImage = async () => {
+    if (!selectedReviewFile) {
+      alert("먼저 리뷰 이미지 파일을 선택해줘!");
+      return;
+    }
+
+    setReviewUploading(true);
+
+    const fileExt = selectedReviewFile.name.split(".").pop();
+    const fileName = `review-${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2)}.${fileExt}`;
+
+    const { error } = await supabase.storage
+      .from("product-images")
+      .upload(fileName, selectedReviewFile);
+
+    if (error) {
+      console.error(error);
+      alert("리뷰 이미지 업로드 실패 ㅠㅠ");
+      setReviewUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage
+      .from("product-images")
+      .getPublicUrl(fileName);
+
+    setReviewImage(data.publicUrl);
+    setSelectedReviewFile(null);
+    setReviewUploading(false);
+
+    alert("리뷰 이미지 업로드 완료!");
+  };
+
   const addReview = async () => {
     if (!reviewTitle || !reviewContent || !reviewImage) {
       alert("리뷰 제목, 내용, 이미지를 입력해주세요.");
@@ -167,6 +204,7 @@ export default function AdminPage() {
     setReviewContent("");
     setReviewImage("");
     setReviewRating(5);
+    setSelectedReviewFile(null);
 
     fetchReviews();
   };
@@ -816,12 +854,43 @@ export default function AdminPage() {
           style={textareaStyle}
         />
 
-        <input
-          placeholder="리뷰 이미지 주소"
-          value={reviewImage}
-          onChange={(e) => setReviewImage(e.target.value)}
-          style={inputStyle}
-        />
+        <div style={imageBoxStyle}>
+          <p style={{ marginTop: 0, fontWeight: 900 }}>리뷰 이미지</p>
+
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0] || null;
+              setSelectedReviewFile(file);
+            }}
+            style={{ marginBottom: "12px" }}
+          />
+
+          <button
+            type="button"
+            onClick={uploadReviewImage}
+            disabled={reviewUploading}
+            style={uploadButtonStyle}
+          >
+            {reviewUploading ? "업로드 중..." : "리뷰 이미지 업로드"}
+          </button>
+
+          <input
+            placeholder="리뷰 이미지 주소"
+            value={reviewImage}
+            onChange={(e) => setReviewImage(e.target.value)}
+            style={{ ...inputStyle, marginTop: "12px", marginBottom: "0" }}
+          />
+
+          {reviewImage && (
+            <img
+              src={reviewImage}
+              alt="리뷰 미리보기"
+              style={reviewPreviewImageStyle}
+            />
+          )}
+        </div>
 
         <select
           value={reviewRating}
@@ -1421,6 +1490,16 @@ const smallRedButtonStyle = {
   cursor: "pointer",
   fontWeight: 900,
   fontSize: "12px",
+};
+
+const reviewPreviewImageStyle = {
+  width: "120px",
+  height: "120px",
+  objectFit: "cover" as const,
+  borderRadius: "14px",
+  marginTop: "12px",
+  display: "block",
+  background: "#f4f4f4",
 };
 
 const mainButtonStyle = {
