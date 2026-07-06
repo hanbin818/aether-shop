@@ -1,10 +1,5 @@
-import { Suspense } from "react";
-import ProductsClient from "./ProductsClient";
+import { redirect } from "next/navigation";
 
 export default function ProductsPage() {
-  return (
-    <Suspense fallback={<div>상품 불러오는 중...</div>}>
-      <ProductsClient />
-    </Suspense>
-  );
+  redirect("/");
 }
