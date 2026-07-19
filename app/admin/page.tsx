@@ -42,6 +42,7 @@ const categoryOptions = [
   { value: "bag", label: "가방" },
   { value: "clutch", label: "클러치" },
   { value: "wallet", label: "지갑" },
+  { value: "clothing", label: "의류" },
   { value: "shoes", label: "신발" },
   { value: "accessory", label: "액세서리" },
   { value: "sunglasses", label: "선글라스" },
@@ -709,6 +710,7 @@ export default function AdminPage() {
             <option value="bag">가방</option>
             <option value="clutch">클러치</option>
             <option value="wallet">지갑</option>
+            <option value="clothing">의류</option>
             <option value="shoes">신발</option>
             <option value="accessory">액세서리</option>
             <option value="sunglasses">선글라스</option>

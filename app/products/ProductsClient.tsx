@@ -5,24 +5,94 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
 import ProductCard from "@/components/ProductCard";
 
-const categoryTabs = [
-  { label: "전체", value: "ALL" },
-  { label: "신상품", value: "NEW" },
-  { label: "남성", value: "MEN" },
-  { label: "여성", value: "WOMEN" },
-  { label: "가방", value: "bag" },
-  { label: "클러치", value: "clutch" },
-  { label: "지갑", value: "wallet" },
-  { label: "신발", value: "shoes" },
-  { label: "액세서리", value: "accessory" },
-  { label: "선글라스", value: "sunglasses" },
-  { label: "시계", value: "watch" },
+type CategoryTab = {
+  label: string;
+  value: string;
+  gender?: "MEN" | "WOMEN";
+  category?: string;
+};
+
+const categoryTabs: CategoryTab[] = [
+  {
+    label: "전체",
+    value: "ALL",
+  },
+  {
+    label: "신상품",
+    value: "NEW",
+  },
+  {
+    label: "남성",
+    value: "MEN",
+    gender: "MEN",
+  },
+  {
+    label: "여성",
+    value: "WOMEN",
+    gender: "WOMEN",
+  },
+  {
+    label: "가방",
+    value: "bag",
+    category: "bag",
+  },
+  {
+    label: "클러치",
+    value: "clutch",
+    category: "clutch",
+  },
+  {
+    label: "지갑",
+    value: "wallet",
+    category: "wallet",
+  },
+  {
+    label: "남성의류",
+    value: "MEN_CLOTHING",
+    gender: "MEN",
+    category: "clothing",
+  },
+  {
+    label: "여성의류",
+    value: "WOMEN_CLOTHING",
+    gender: "WOMEN",
+    category: "clothing",
+  },
+  {
+    label: "신발",
+    value: "shoes",
+    category: "shoes",
+  },
+  {
+    label: "액세서리",
+    value: "accessory",
+    category: "accessory",
+  },
+  {
+    label: "선글라스",
+    value: "sunglasses",
+    category: "sunglasses",
+  },
+  {
+    label: "시계",
+    value: "watch",
+    category: "watch",
+  },
 ];
 
 const sortOptions = [
-  { label: "최신순", value: "newest" },
-  { label: "낮은가격", value: "low" },
-  { label: "높은가격", value: "high" },
+  {
+    label: "최신순",
+    value: "newest",
+  },
+  {
+    label: "낮은가격",
+    value: "low",
+  },
+  {
+    label: "높은가격",
+    value: "high",
+  },
 ];
 
 export default function ProductsClient() {
@@ -47,16 +117,40 @@ export default function ProductsClient() {
   }, [initialSearch]);
 
   useEffect(() => {
-    setUrlGender(initialGender);
-    setUrlCategory(initialCategory);
+    const normalizedGender = initialGender.toUpperCase();
+    const normalizedCategory = initialCategory.toLowerCase();
 
-    if (initialGender) {
-      setActiveTab(initialGender.toUpperCase());
+    setUrlGender(normalizedGender);
+    setUrlCategory(normalizedCategory);
+
+    if (
+      normalizedGender === "MEN" &&
+      normalizedCategory === "clothing"
+    ) {
+      setActiveTab("MEN_CLOTHING");
       return;
     }
 
-    if (initialCategory) {
-      setActiveTab(initialCategory.toLowerCase());
+    if (
+      normalizedGender === "WOMEN" &&
+      normalizedCategory === "clothing"
+    ) {
+      setActiveTab("WOMEN_CLOTHING");
+      return;
+    }
+
+    if (normalizedGender === "MEN") {
+      setActiveTab("MEN");
+      return;
+    }
+
+    if (normalizedGender === "WOMEN") {
+      setActiveTab("WOMEN");
+      return;
+    }
+
+    if (normalizedCategory) {
+      setActiveTab(normalizedCategory);
       return;
     }
 
@@ -64,6 +158,8 @@ export default function ProductsClient() {
   }, [initialGender, initialCategory]);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchProducts = async () => {
       setLoading(true);
 
@@ -72,8 +168,11 @@ export default function ProductsClient() {
         .select("*")
         .order("created_at", { ascending: false });
 
+      if (!isMounted) return;
+
       if (error) {
-        console.error(error);
+        console.error("상품 조회 오류:", error);
+        setProducts([]);
         setLoading(false);
         return;
       }
@@ -83,7 +182,19 @@ export default function ProductsClient() {
     };
 
     fetchProducts();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  const normalizeGender = (gender?: string) => {
+    return gender?.trim().toUpperCase() || "";
+  };
+
+  const normalizeCategory = (category?: string) => {
+    return category?.trim().toLowerCase() || "";
+  };
 
   const isBagFamily = (category: string) => {
     return category === "bag" || category === "clutch";
@@ -93,116 +204,338 @@ export default function ProductsClient() {
     productGender: string,
     targetGender: string
   ) => {
-    return productGender === targetGender || productGender === "UNISEX";
+    return (
+      productGender === targetGender ||
+      productGender === "UNISEX"
+    );
   };
 
-  const handleTabClick = (value: string) => {
-    setUrlGender("");
-    setUrlCategory("");
-    setActiveTab(value);
-    router.replace("/products", { scroll: false });
+  const getStockInformation = (product: any) => {
+    const normalizedStock =
+      product.stock_status
+        ?.toLowerCase()
+        .replace(/[_-\s]/g, "") || "";
+
+    const hasStockQuantity =
+      product.stock_quantity !== null &&
+      product.stock_quantity !== undefined &&
+      product.stock_quantity !== "";
+
+    const stockQuantity = hasStockQuantity
+      ? Number(product.stock_quantity)
+      : null;
+
+    const isSoldOut =
+      normalizedStock === "soldout" ||
+      normalizedStock === "품절" ||
+      (stockQuantity !== null &&
+        !Number.isNaN(stockQuantity) &&
+        stockQuantity <= 0);
+
+    return {
+      normalizedStock,
+      isSoldOut,
+    };
+  };
+
+  const handleTabClick = (tab: CategoryTab) => {
+    setActiveTab(tab.value);
+    setSearch("");
+
+    if (tab.value === "ALL") {
+      setUrlGender("");
+      setUrlCategory("");
+
+      router.replace("/products", {
+        scroll: false,
+      });
+
+      return;
+    }
+
+    if (tab.value === "NEW") {
+      setUrlGender("");
+      setUrlCategory("");
+
+      router.replace("/products", {
+        scroll: false,
+      });
+
+      return;
+    }
+
+    const nextGender = tab.gender || "";
+    const nextCategory = tab.category || "";
+
+    setUrlGender(nextGender);
+    setUrlCategory(nextCategory);
+
+    const params = new URLSearchParams();
+
+    if (nextCategory) {
+      params.set("category", nextCategory);
+    }
+
+    if (nextGender) {
+      params.set("gender", nextGender.toLowerCase());
+    }
+
+    const queryString = params.toString();
+
+    router.replace(
+      queryString ? `/products?${queryString}` : "/products",
+      {
+        scroll: false,
+      }
+    );
   };
 
   const handleSearchSubmit = () => {
     const keyword = search.trim();
 
     if (!keyword) {
+      setUrlGender("");
+      setUrlCategory("");
+      setActiveTab("ALL");
+
       router.push("/products");
       return;
     }
 
-    router.push(`/products?search=${encodeURIComponent(keyword)}`);
+    setUrlGender("");
+    setUrlCategory("");
+    setActiveTab("ALL");
+
+    router.push(
+      `/products?search=${encodeURIComponent(keyword)}`
+    );
   };
 
   const filteredProducts = useMemo(() => {
     const keyword = search.trim().toLowerCase();
 
     let result = products.filter((product) => {
-      const normalizedStock = product.stock_status
-        ?.toLowerCase()
-        .replace(/[_-\s]/g, "");
+      const productGender = normalizeGender(product.gender);
+      const productCategory = normalizeCategory(product.category);
+      const targetGender = normalizeGender(urlGender);
+      const targetCategory = normalizeCategory(urlCategory);
 
-      const isSoldOut =
-        normalizedStock === "soldout" ||
-        Number(product.stock_quantity || 0) <= 0;
+      const { isSoldOut } = getStockInformation(product);
 
-      const productGender = product.gender?.toUpperCase() || "";
-      const productCategory = product.category?.toLowerCase() || "";
-      const targetUrlGender = urlGender.toUpperCase();
+      const productName =
+        typeof product.name === "string"
+          ? product.name.toLowerCase()
+          : "";
+
+      const productBrand =
+        typeof product.brand === "string"
+          ? product.brand.toLowerCase()
+          : "";
+
+      const productDescription =
+        typeof product.description === "string"
+          ? product.description.toLowerCase()
+          : "";
 
       const matchesSearch =
         keyword === "" ||
-        product.name?.toLowerCase().includes(keyword) ||
-        product.brand?.toLowerCase().includes(keyword) ||
-        product.category?.toLowerCase().includes(keyword) ||
-        product.gender?.toLowerCase().includes(keyword);
+        productName.includes(keyword) ||
+        productBrand.includes(keyword) ||
+        productDescription.includes(keyword) ||
+        productCategory.includes(keyword) ||
+        productGender.toLowerCase().includes(keyword);
 
-      const matchesUrlGender =
-        !urlGender || isGenderMatchWithUnisex(productGender, targetUrlGender);
+      const matchesGender =
+        !targetGender ||
+        isGenderMatchWithUnisex(
+          productGender,
+          targetGender
+        );
 
-      const matchesUrlCategory =
-        !urlCategory ||
-        (urlCategory.toLowerCase() === "bag"
+      const matchesCategory =
+        !targetCategory ||
+        (targetCategory === "bag"
           ? isBagFamily(productCategory)
-          : productCategory === urlCategory.toLowerCase());
+          : productCategory === targetCategory);
 
-      const matchesTab =
-        activeTab === "ALL" ||
-        (activeTab === "NEW" && !isSoldOut) ||
-        ((activeTab === "MEN" || activeTab === "WOMEN")
-          ? isGenderMatchWithUnisex(productGender, activeTab)
-          : productGender === activeTab) ||
-        (activeTab.toLowerCase() === "bag"
-          ? isBagFamily(productCategory)
-          : productCategory === activeTab.toLowerCase());
+      const matchesNewTab =
+        activeTab !== "NEW" || !isSoldOut;
 
-      return matchesSearch && matchesUrlGender && matchesUrlCategory && matchesTab;
+      return (
+        matchesSearch &&
+        matchesGender &&
+        matchesCategory &&
+        matchesNewTab
+      );
     });
 
-    result = result.sort((a, b) => {
-      const aStock = a.stock_status?.toLowerCase().replace(/[_-\s]/g, "");
-      const bStock = b.stock_status?.toLowerCase().replace(/[_-\s]/g, "");
+    result = [...result].sort((a, b) => {
+      const aStock = getStockInformation(a);
+      const bStock = getStockInformation(b);
 
-      const aSoldOut =
-        aStock === "soldout" || Number(a.stock_quantity || 0) <= 0;
-      const bSoldOut =
-        bStock === "soldout" || Number(b.stock_quantity || 0) <= 0;
+      if (aStock.isSoldOut !== bStock.isSoldOut) {
+        return aStock.isSoldOut ? 1 : -1;
+      }
 
-      if (aSoldOut !== bSoldOut) return aSoldOut ? 1 : -1;
+      if (sort === "low") {
+        return Number(a.price || 0) - Number(b.price || 0);
+      }
 
-      if (sort === "low") return Number(a.price || 0) - Number(b.price || 0);
-      if (sort === "high") return Number(b.price || 0) - Number(a.price || 0);
+      if (sort === "high") {
+        return Number(b.price || 0) - Number(a.price || 0);
+      }
+
+      const aCreatedAt = a.created_at
+        ? new Date(a.created_at).getTime()
+        : 0;
+
+      const bCreatedAt = b.created_at
+        ? new Date(b.created_at).getTime()
+        : 0;
+
+      if (aCreatedAt !== bCreatedAt) {
+        return bCreatedAt - aCreatedAt;
+      }
 
       return Number(b.id || 0) - Number(a.id || 0);
     });
 
     return result;
-  }, [products, search, activeTab, sort, urlGender, urlCategory]);
+  }, [
+    products,
+    search,
+    activeTab,
+    sort,
+    urlGender,
+    urlCategory,
+  ]);
 
-  const pageTitle =
-    urlGender.toUpperCase() === "WOMEN" && urlCategory === "bag"
-      ? "여성 가방"
-      : urlGender.toUpperCase() === "MEN" && urlCategory === "bag"
-      ? "남성 가방"
-      : urlGender.toUpperCase() === "WOMEN"
-      ? "여성 상품"
-      : urlGender.toUpperCase() === "MEN"
-      ? "남성 상품"
-      : "전체 상품";
+  const normalizedPageGender = normalizeGender(urlGender);
+  const normalizedPageCategory =
+    normalizeCategory(urlCategory);
 
-  const pageDescription =
-    urlGender.toUpperCase() === "WOMEN" && urlCategory === "bag"
-      ? "여성 가방과 클러치, 공용 상품까지 함께 만나보세요."
-      : urlGender.toUpperCase() === "MEN" && urlCategory === "bag"
-      ? "남성 가방과 클러치, 공용 상품까지 함께 만나보세요."
-      : urlGender.toUpperCase() === "WOMEN"
-      ? "여성 상품과 공용 상품을 함께 만나보세요."
-      : urlGender.toUpperCase() === "MEN"
-      ? "남성 상품과 공용 상품을 함께 만나보세요."
-      : "엄선된 프리미엄 명품 셀렉션을 만나보세요.";
+  const pageTitle = (() => {
+    if (
+      normalizedPageGender === "MEN" &&
+      normalizedPageCategory === "clothing"
+    ) {
+      return "남성 의류";
+    }
+
+    if (
+      normalizedPageGender === "WOMEN" &&
+      normalizedPageCategory === "clothing"
+    ) {
+      return "여성 의류";
+    }
+
+    if (
+      normalizedPageGender === "WOMEN" &&
+      normalizedPageCategory === "bag"
+    ) {
+      return "여성 가방";
+    }
+
+    if (
+      normalizedPageGender === "MEN" &&
+      normalizedPageCategory === "bag"
+    ) {
+      return "남성 가방";
+    }
+
+    if (normalizedPageGender === "WOMEN") {
+      return "여성 상품";
+    }
+
+    if (normalizedPageGender === "MEN") {
+      return "남성 상품";
+    }
+
+    if (normalizedPageCategory === "bag") {
+      return "가방";
+    }
+
+    if (normalizedPageCategory === "clutch") {
+      return "클러치";
+    }
+
+    if (normalizedPageCategory === "wallet") {
+      return "지갑";
+    }
+
+    if (normalizedPageCategory === "clothing") {
+      return "의류";
+    }
+
+    if (normalizedPageCategory === "shoes") {
+      return "신발";
+    }
+
+    if (normalizedPageCategory === "watch") {
+      return "시계";
+    }
+
+    if (normalizedPageCategory === "accessory") {
+      return "액세서리";
+    }
+
+    if (normalizedPageCategory === "sunglasses") {
+      return "선글라스";
+    }
+
+    return "전체 상품";
+  })();
+
+  const pageDescription = (() => {
+    if (
+      normalizedPageGender === "MEN" &&
+      normalizedPageCategory === "clothing"
+    ) {
+      return "남성 의류와 공용 의류 컬렉션을 함께 만나보세요.";
+    }
+
+    if (
+      normalizedPageGender === "WOMEN" &&
+      normalizedPageCategory === "clothing"
+    ) {
+      return "여성 의류와 공용 의류 컬렉션을 함께 만나보세요.";
+    }
+
+    if (
+      normalizedPageGender === "WOMEN" &&
+      normalizedPageCategory === "bag"
+    ) {
+      return "여성 가방과 클러치, 공용 상품까지 함께 만나보세요.";
+    }
+
+    if (
+      normalizedPageGender === "MEN" &&
+      normalizedPageCategory === "bag"
+    ) {
+      return "남성 가방과 클러치, 공용 상품까지 함께 만나보세요.";
+    }
+
+    if (normalizedPageGender === "WOMEN") {
+      return "여성 상품과 공용 상품을 함께 만나보세요.";
+    }
+
+    if (normalizedPageGender === "MEN") {
+      return "남성 상품과 공용 상품을 함께 만나보세요.";
+    }
+
+    if (normalizedPageCategory === "clothing") {
+      return "에테르가 엄선한 프리미엄 의류 컬렉션을 만나보세요.";
+    }
+
+    return "엄선된 프리미엄 명품 셀렉션을 만나보세요.";
+  })();
 
   if (loading) {
-    return <main className="loading-page">상품 불러오는 중...</main>;
+    return (
+      <main className="loading-page">
+        상품 불러오는 중...
+      </main>
+    );
   }
 
   return (
@@ -223,9 +556,12 @@ export default function ProductsClient() {
         <div className="tab-row">
           {categoryTabs.map((tab) => (
             <button
+              type="button"
               key={tab.value}
-              onClick={() => handleTabClick(tab.value)}
-              className={activeTab === tab.value ? "active" : ""}
+              onClick={() => handleTabClick(tab)}
+              className={
+                activeTab === tab.value ? "active" : ""
+              }
             >
               {tab.label}
             </button>
@@ -234,25 +570,45 @@ export default function ProductsClient() {
 
         <div className="search-row">
           <input
+            type="search"
             placeholder="브랜드, 상품명, 카테고리 검색"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSearchSubmit();
+            onChange={(event) =>
+              setSearch(event.target.value)
+            }
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                handleSearchSubmit();
+              }
             }}
           />
 
-          <button onClick={handleSearchSubmit}>검색</button>
+          <button
+            type="button"
+            onClick={handleSearchSubmit}
+          >
+            검색
+          </button>
         </div>
 
         <div className="result-row">
           <p>
-            총 <strong>{filteredProducts.length}</strong>개 상품
+            총{" "}
+            <strong>{filteredProducts.length}</strong>개 상품
           </p>
 
-          <select value={sort} onChange={(e) => setSort(e.target.value)}>
+          <select
+            value={sort}
+            onChange={(event) =>
+              setSort(event.target.value)
+            }
+            aria-label="상품 정렬"
+          >
             {sortOptions.map((option) => (
-              <option key={option.value} value={option.value}>
+              <option
+                key={option.value}
+                value={option.value}
+              >
                 {option.label}
               </option>
             ))}
@@ -262,24 +618,32 @@ export default function ProductsClient() {
 
       <section className="product-section">
         {filteredProducts.length === 0 ? (
-          <div className="empty-box">검색 결과가 없습니다.</div>
+          <div className="empty-box">
+            검색 결과가 없습니다.
+          </div>
         ) : (
           <div className="product-grid">
             {filteredProducts.map((product) => {
               const productImages =
-                product.images && product.images.length > 0
+                Array.isArray(product.images) &&
+                product.images.length > 0
                   ? product.images
                   : product.image
                   ? [product.image]
                   : [];
+
+              const mainImage =
+                productImages[0] || product.image || "";
 
               return (
                 <ProductCard
                   key={product.id}
                   brand={product.brand}
                   name={product.name}
-                  price={`₩${Number(product.price).toLocaleString()}`}
-                  image={productImages[0] || product.image}
+                  price={`₩${Number(
+                    product.price || 0
+                  ).toLocaleString()}`}
+                  image={mainImage}
                   href={`/product/${product.id}`}
                   stockStatus={product.stock_status}
                 />
@@ -292,7 +656,11 @@ export default function ProductsClient() {
       <style>{`
         .products-page {
           min-height: 100vh;
-          background: linear-gradient(180deg, #fff 0%, #f7f2ea 100%);
+          background: linear-gradient(
+            180deg,
+            #fff 0%,
+            #f7f2ea 100%
+          );
           color: #111;
           padding-bottom: 90px;
           overflow-x: hidden;
@@ -315,7 +683,10 @@ export default function ProductsClient() {
           min-height: 230px;
           padding: 54px 18px;
           background:
-            linear-gradient(rgba(0,0,0,0.58), rgba(0,0,0,0.76)),
+            linear-gradient(
+              rgba(0, 0, 0, 0.58),
+              rgba(0, 0, 0, 0.76)
+            ),
             url("https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=90");
           background-size: cover;
           background-position: center;
@@ -332,13 +703,13 @@ export default function ProductsClient() {
           top: 14px;
           left: 14px;
           color: #111;
-          background: rgba(255,255,255,0.92);
+          background: rgba(255, 255, 255, 0.92);
           text-decoration: none;
           padding: 8px 13px;
           border-radius: 999px;
           font-size: 11px;
           font-weight: 950;
-          box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
           z-index: 3;
         }
 
@@ -373,7 +744,7 @@ export default function ProductsClient() {
         .hero-content span {
           display: block;
           margin-top: 16px;
-          color: rgba(255,255,255,0.78);
+          color: rgba(255, 255, 255, 0.78);
           font-size: 14px;
           line-height: 1.7;
           word-break: keep-all;
@@ -382,11 +753,11 @@ export default function ProductsClient() {
         .shop-control {
           max-width: 1180px;
           margin: -30px auto 18px;
-          background: rgba(255,255,255,0.96);
-          border: 1px solid rgba(0,0,0,0.06);
+          background: rgba(255, 255, 255, 0.96);
+          border: 1px solid rgba(0, 0, 0, 0.06);
           border-radius: 24px;
           padding: 16px;
-          box-shadow: 0 20px 52px rgba(0,0,0,0.08);
+          box-shadow: 0 20px 52px rgba(0, 0, 0, 0.08);
           position: relative;
           z-index: 2;
         }
@@ -401,6 +772,7 @@ export default function ProductsClient() {
           padding-bottom: 10px;
           margin-bottom: 13px;
           border-bottom: 1px solid #eee;
+          scrollbar-width: none;
         }
 
         .tab-row::-webkit-scrollbar {
@@ -417,6 +789,10 @@ export default function ProductsClient() {
           font-size: 12px;
           font-weight: 950;
           cursor: pointer;
+          transition:
+            background 0.2s ease,
+            color 0.2s ease,
+            border-color 0.2s ease;
         }
 
         .tab-row button.active {
@@ -435,6 +811,7 @@ export default function ProductsClient() {
 
         .search-row input {
           flex: 1;
+          min-width: 0;
           height: 43px;
           border-radius: 999px;
           border: 1px solid #ddd;
@@ -447,9 +824,15 @@ export default function ProductsClient() {
           text-align: center;
         }
 
+        .search-row input:focus {
+          border-color: #111;
+          background: #fff;
+        }
+
         .search-row button {
           width: 72px;
           height: 43px;
+          flex-shrink: 0;
           border-radius: 999px;
           background: #111;
           color: #fff;
@@ -499,7 +882,10 @@ export default function ProductsClient() {
 
         .product-grid {
           display: grid;
-          grid-template-columns: repeat(5, minmax(0, 1fr));
+          grid-template-columns: repeat(
+            5,
+            minmax(0, 1fr)
+          );
           gap: 14px;
           align-items: start;
         }
@@ -520,12 +906,19 @@ export default function ProductsClient() {
           font-size: 15px;
           font-weight: 900;
           border: 1px solid #eee;
-          box-shadow: 0 18px 50px rgba(0,0,0,0.06);
+          box-shadow: 0 18px 50px rgba(0, 0, 0, 0.06);
         }
 
         @media (max-width: 1180px) {
           .product-grid {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(
+              4,
+              minmax(0, 1fr)
+            );
+          }
+
+          .tab-row {
+            justify-content: flex-start;
           }
         }
 
@@ -614,7 +1007,10 @@ export default function ProductsClient() {
           }
 
           .product-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(
+              3,
+              minmax(0, 1fr)
+            );
             gap: 8px;
           }
         }
