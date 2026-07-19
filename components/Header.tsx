@@ -11,7 +11,6 @@ const categoryLinks = [
   { name: "클러치", href: "/products?category=clutch" },
   { name: "지갑", href: "/products?category=wallet" },
 
-  // 의류 카테고리
   {
     name: "남성의류",
     href: "/products?category=clothing&gender=men",
@@ -370,15 +369,18 @@ export default function Header() {
         }
 
         .category-nav {
+          width: 100%;
           display: flex;
           justify-content: center;
           align-items: center;
           gap: 22px;
           border-top: 1px solid #eee;
           padding: 15px 0;
+          margin: 0 auto;
           overflow-x: auto;
           white-space: nowrap;
           scrollbar-width: none;
+          box-sizing: border-box;
         }
 
         .category-nav::-webkit-scrollbar {
@@ -422,12 +424,6 @@ export default function Header() {
           border: none;
           text-align: left;
           cursor: pointer;
-        }
-
-        @media (max-width: 1100px) {
-          .category-nav {
-            justify-content: flex-start;
-          }
         }
 
         @media (max-width: 768px) {
