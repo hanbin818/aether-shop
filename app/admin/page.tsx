@@ -94,6 +94,7 @@ export default function AdminPage() {
   const [uploading, setUploading] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [productCategoryFilter, setProductCategoryFilter] = useState("all");
+  const [productSearch, setProductSearch] = useState("");
 
   const checkLogin = async () => {
     const { data } = await supabase.auth.getSession();
@@ -298,10 +299,28 @@ export default function AdminPage() {
 
   const recentOrders = orders.slice(0, 5);
 
-  const filteredProducts =
-    productCategoryFilter === "all"
-      ? products
-      : products.filter((product) => product.category === productCategoryFilter);
+  const normalizedProductSearch = productSearch.trim().toLowerCase();
+
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      productCategoryFilter === "all" ||
+      product.category === productCategoryFilter;
+
+    const searchableText = [
+      product.name,
+      product.brand,
+      product.description,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    const matchesSearch =
+      normalizedProductSearch === "" ||
+      searchableText.includes(normalizedProductSearch);
+
+    return matchesCategory && matchesSearch;
+  });
 
   const resetForm = () => {
     setName("");
@@ -965,6 +984,31 @@ export default function AdminPage() {
           </button>
         </div>
 
+        <div style={productSearchWrapStyle}>
+          <input
+            type="search"
+            value={productSearch}
+            onChange={(e) => setProductSearch(e.target.value)}
+            placeholder="상품명, 브랜드, 상품 설명을 검색하세요"
+            aria-label="관리자 상품 검색"
+            style={productSearchInputStyle}
+          />
+
+          {productSearch && (
+            <button
+              type="button"
+              onClick={() => setProductSearch("")}
+              style={productSearchResetButtonStyle}
+            >
+              검색 초기화
+            </button>
+          )}
+        </div>
+
+        <div style={productResultInfoStyle}>
+          검색 결과 <strong>{filteredProducts.length}</strong>개
+        </div>
+
         <div style={filterWrapStyle}>
           {categoryOptions.map((item) => (
             <button
@@ -982,8 +1026,13 @@ export default function AdminPage() {
           ))}
         </div>
 
-        <div style={productGridStyle}>
-          {filteredProducts.map((product) => {
+        {filteredProducts.length === 0 ? (
+          <div style={noProductResultStyle}>
+            조건에 맞는 상품이 없습니다.
+          </div>
+        ) : (
+          <div style={productGridStyle}>
+            {filteredProducts.map((product) => {
             const quantity = product.stock_quantity ?? 0;
             const normalizedStock = product.stock_status
               ?.toLowerCase()
@@ -1101,8 +1150,9 @@ export default function AdminPage() {
                 </div>
               </div>
             );
-          })}
-        </div>
+            })}
+          </div>
+        )}
       </section>
     </main>
   );
@@ -1544,6 +1594,62 @@ const refreshButtonStyle = {
   borderRadius: "999px",
   cursor: "pointer",
   fontWeight: 950,
+};
+
+const productSearchWrapStyle = {
+  maxWidth: "1180px",
+  margin: "0 auto 12px",
+  display: "flex",
+  gap: "10px",
+  alignItems: "center",
+  flexWrap: "wrap" as const,
+};
+
+const productSearchInputStyle = {
+  flex: 1,
+  minWidth: "240px",
+  padding: "15px 18px",
+  border: "1px solid #ccc",
+  borderRadius: "999px",
+  background: "#fff",
+  color: "#111",
+  fontSize: "15px",
+  fontWeight: 800,
+  outline: "none",
+  boxSizing: "border-box" as const,
+};
+
+const productSearchResetButtonStyle = {
+  padding: "14px 18px",
+  border: "none",
+  borderRadius: "999px",
+  background: "#777",
+  color: "#fff",
+  cursor: "pointer",
+  fontSize: "13px",
+  fontWeight: 950,
+  whiteSpace: "nowrap" as const,
+};
+
+const productResultInfoStyle = {
+  maxWidth: "1180px",
+  margin: "0 auto 12px",
+  color: "#666",
+  fontSize: "13px",
+  fontWeight: 850,
+};
+
+const noProductResultStyle = {
+  maxWidth: "1180px",
+  margin: "0 auto",
+  padding: "38px 20px",
+  borderRadius: "22px",
+  background: "#fff",
+  color: "#777",
+  textAlign: "center" as const,
+  fontSize: "15px",
+  fontWeight: 900,
+  boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
 };
 
 const filterWrapStyle = {
